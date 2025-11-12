@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tasklist:*)",
+      "Bash(timeout /t 2)",
+      "Bash(nul)",
+      "Bash(npm install:*)",
+      "Bash(timeout:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Skill(backend-dev)",
+      "Bash(node tests/test-proposal-e2e.js:*)",
+      "Skill(telecom-product-manager)",
+      "Bash(node:*)",
+      "Skill(frontend-dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
