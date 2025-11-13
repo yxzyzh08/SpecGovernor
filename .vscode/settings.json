@@ -2,7 +2,7 @@
     "python.defaultInterpreterPath": "d:\\miniconda3\\envs\\specgovernor\\python.exe",
     "terminal.integrated.defaultProfile.windows": "specgovernor",
     "terminal.integrated.profiles.windows": {
-        "CVM": {
+        "specgovernor": {
             "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
             "args": [
                 "-NoExit",
