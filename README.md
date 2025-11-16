@@ -48,18 +48,17 @@ bash --version
 
 ### 1. 下载安装脚本
 
-**Windows (PowerShell)**:
-\`\`\`powershell
-# 在您的项目根目录
-cd your-project
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1"
-\`\`\`
+Windows (PowerShell): 
+```powershell
 
-**Linux/Mac (Bash)**:
-\`\`\`bash
+#在您的项目根目录
+cd your-project
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1" 
+```
+
 # 在您的项目根目录
 cd your-project
-curl -O https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.sh
+curl -O https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install-specgov.sh
 chmod +x install-specgov.sh
 \`\`\`
 
