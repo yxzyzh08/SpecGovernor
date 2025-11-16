@@ -72,13 +72,20 @@
 
 目标用户是**超级个体**，即一人承担多个研发角色的技术专家：
 
-| 角色 | 职责 |
-| :---- | :---- |
-| **需求分析师** | 使用 RD Generator 提示词生成需求文档 |
-| **产品经理** | 使用 PRD Generator 提示词生成产品文档 |
-| **架构师** | 使用 Design Document Generator 提示词生成设计文档 |
-| **测试经理** | 使用 Test Plan Generator 提示词生成测试计划 |
-| **开发工程师** | 使用 Code Generator 提示词生成代码 |
+| 角色 | 职责 | 任务视角 |
+| :---- | :---- | :---- |
+| **项目经理** | 创建 Epic，分解子任务，跟踪整体进度，协调各角色 | High-level（Epic 级别） |
+| **需求分析师** | 使用 RD Generator 提示词生成需求文档 | Low-level（Task 级别） |
+| **产品经理** | 使用 PRD Generator 提示词生成产品文档 | Low-level（Task 级别） |
+| **架构师** | 使用 Design Document Generator 提示词生成设计文档 | Low-level（Task 级别） |
+| **测试经理** | 使用 Test Plan Generator 提示词生成测试计划 | Low-level（Task 级别） |
+| **开发工程师** | 使用 Code Generator 提示词生成代码 | Low-level（Task 级别） |
+
+**说明**：
+- 虽然使用者是同一个人（超级个体），但需要在**不同视角**间切换
+- **项目经理视角**：关注整体进度、里程碑、交付物（High-level）
+- **具体角色视角**：关注具体任务、技术细节、实现（Low-level）
+- 每个角色完成任务后需要更新**两处**：自己的任务文档 + 项目经理的任务文档
 
 ### **3.2 使用方式**
 
@@ -370,11 +377,109 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 
 ---
 
-### **4.5 示例项目 (Example Projects)**
+### **4.5 任务管理文档 (Task Management Documents)**
 
-#### **FR-5.1 提供完整示例**
+#### **FR-5.1 两层任务管理**
 
 **[ID: RD-FR-5.1]**
+
+提供两层任务管理文档：
+
+**1. 项目经理层（High-level）**
+
+文件：`.specgov/tasks/project-manager.md`
+
+内容：
+- Epic 列表（高层级任务）
+- 每个 Epic 的状态、进度、负责角色
+- 整体项目进度概览
+
+**2. 角色层（Low-level）**
+
+文件：
+- `.specgov/tasks/rd-analyst.md` - 需求分析师任务
+- `.specgov/tasks/product-manager.md` - 产品经理任务
+- `.specgov/tasks/architect.md` - 架构师任务
+- `.specgov/tasks/test-manager.md` - 测试经理任务
+- `.specgov/tasks/developer.md` - 开发工程师任务
+
+内容：
+- 当前任务列表
+- 任务状态（待办、进行中、已完成）
+- 关联的 Epic
+- 验收标准
+
+#### **FR-5.2 任务工作流程**
+
+**[ID: RD-FR-5.2]**
+
+**步骤 1：项目经理下达任务**
+
+1. 使用者切换到**项目经理角色**
+2. 在 `.specgov/tasks/project-manager.md` 创建 High-level 任务（Epic）
+3. 示例：
+   ```markdown
+   ## Epic 1: OAuth2 登录功能
+   - 状态：未开始
+   - 优先级：高
+   - 预计时间：5 天
+   - 交付物：RD.md, PRD.md, Design-Document.md, Test-Plan.md, 代码
+   - 子任务：
+     - [ ] 1.1 需求分析（需求分析师）
+     - [ ] 1.2 产品设计（产品经理）
+     - [ ] 1.3 架构设计（架构师）
+     - [ ] 1.4 测试设计（测试经理）
+     - [ ] 1.5 代码实现（开发工程师）
+   ```
+
+**步骤 2：角色执行子任务**
+
+1. 使用者切换到**具体角色**（如需求分析师）
+2. 查看 `.specgov/tasks/rd-analyst.md`
+3. 执行分配的任务
+4. 完成后更新自己的任务文档：
+   ```markdown
+   ## 当前任务
+   - [x] Task 1.1: 生成 RD（关联 Epic 1）
+   - [x] Task 1.2: 评审 RD
+   - [x] Task 1.3: 修订 RD
+   ```
+
+**步骤 3：完成后更新项目经理任务**
+
+1. 角色完成所有子任务后
+2. 切换回**项目经理角色**
+3. 更新 `.specgov/tasks/project-manager.md`：
+   ```markdown
+   ## Epic 1: OAuth2 登录功能
+   - 状态：进行中
+   - 进度：20% (1/5 完成)
+   - 子任务：
+     - [x] 1.1 需求分析（需求分析师）✅ 已完成
+     - [ ] 1.2 产品设计（产品经理）← 下一步
+     - [ ] 1.3 架构设计（架构师）
+     - [ ] 1.4 测试设计（测试经理）
+     - [ ] 1.5 代码实现（开发工程师）
+   ```
+
+#### **FR-5.3 任务文档模板**
+
+**[ID: RD-FR-5.3]**
+
+提供以下模板：
+
+| 模板文件 | 用途 |
+| :---- | :---- |
+| `templates/project-manager-tasks.md` | 项目经理任务文档模板 |
+| `templates/role-tasks.md` | 角色任务文档模板 |
+
+---
+
+### **4.6 示例项目 (Example Projects)**
+
+#### **FR-6.1 提供完整示例**
+
+**[ID: RD-FR-6.1]**
 
 提供 `examples/oauth2-login/`，包含：
 
@@ -384,6 +489,8 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 - `docs/Test-Plan.md`：示例测试计划
 - `src/auth.controller.ts`：示例代码
 - `.specgov/dependency-graph.json`：示例依赖图
+- `.specgov/tasks/project-manager.md`：示例项目经理任务文档
+- `.specgov/tasks/rd-analyst.md`：示例需求分析师任务文档
 
 人类开发者可以参考这个示例，理解如何使用 SpecGovernor。
 
@@ -475,7 +582,9 @@ SpecGovernor/
 │   ├── RD-template.md
 │   ├── PRD-template.md
 │   ├── Design-Document-template.md
-│   └── Test-Plan-template.md
+│   ├── Test-Plan-template.md
+│   ├── project-manager-tasks.md  # 项目经理任务模板
+│   └── role-tasks.md              # 角色任务模板
 ├── examples/                   # 示例项目
 │   └── oauth2-login/
 │       ├── docs/
@@ -486,7 +595,14 @@ SpecGovernor/
 │       ├── src/
 │       │   └── auth.controller.ts
 │       └── .specgov/
-│           └── dependency-graph.json
+│           ├── dependency-graph.json
+│           └── tasks/
+│               ├── project-manager.md
+│               ├── rd-analyst.md
+│               ├── product-manager.md
+│               ├── architect.md
+│               ├── test-manager.md
+│               └── developer.md
 └── docs/                       # SpecGovernor 自身的设计文档
     ├── RD.md                   # 本文档
     ├── PRD.md
@@ -540,11 +656,52 @@ SpecGovernor/
 | **工作流程文档** | ✅ 清晰的步骤说明<br>✅ 示例截图或命令<br>✅ 验收标准明确 |
 | **辅助脚本** | ✅ 运行正常，无报错<br>✅ 性能达标<br>✅ 提供 `--help` |
 | **文档模板** | ✅ 结构清晰<br>✅ 标记位置示例 |
-| **示例项目** | ✅ 完整的 RD/PRD/Design Document/Test Plan/Code<br>✅ 可追溯性标记完整 |
+| **任务管理文档** | ✅ 项目经理层（High-level）<br>✅ 角色层（Low-level）<br>✅ 任务流程清晰 |
+| **示例项目** | ✅ 完整的 RD/PRD/Design Document/Test Plan/Code<br>✅ 可追溯性标记完整<br>✅ 任务文档示例完整 |
 
 ---
 
 ## **九、使用场景示例 (Usage Scenarios)**
+
+### **9.1 场景 0：项目经理创建 High-level 任务**
+
+**[ID: RD-SCENARIO-000]**
+
+**步骤**：
+
+1. 使用者切换到**项目经理角色**
+2. 打开 `.specgov/tasks/project-manager.md`
+3. 创建新的 Epic：
+   ```markdown
+   # 项目任务进展
+
+   ## Epic 1: OAuth2 登录功能
+
+   **状态**: 未开始
+   **优先级**: 高
+   **创建时间**: 2025-11-16
+   **预计完成**: 2025-11-21（5天）
+
+   **交付物**:
+   - [ ] RD.md
+   - [ ] PRD.md
+   - [ ] Design-Document.md
+   - [ ] Test-Plan.md
+   - [ ] 代码实现
+
+   **子任务分解**:
+   - [ ] 1.1 需求分析（需求分析师）- 预计 1 天
+   - [ ] 1.2 产品设计（产品经理）- 预计 1 天
+   - [ ] 1.3 架构设计（架构师）- 预计 1 天
+   - [ ] 1.4 测试设计（测试经理）- 预计 1 天
+   - [ ] 1.5 代码实现（开发工程师）- 预计 1 天
+
+   **当前进度**: 0% (0/5)
+   ```
+
+4. 提交到 Git：`git add .specgov/tasks/project-manager.md && git commit -m "Create Epic 1"`
+
+---
 
 ### **9.1 场景 1：生成 RD**
 
@@ -552,20 +709,38 @@ SpecGovernor/
 
 **步骤**：
 
-1. 人类开发者打开 Claude Code
-2. 复制 `prompts/rd-generator.md` 的内容
-3. 粘贴到 Claude Code
-4. 提供用户故事：
+1. 使用者切换到**需求分析师角色**
+2. 查看 `.specgov/tasks/rd-analyst.md`，看到分配的任务
+3. 打开 Claude Code
+4. 复制 `prompts/rd-generator.md` 的内容
+5. 粘贴到 Claude Code
+6. 提供用户故事：
    ```
    用户需要通过 Google 账号登录系统
    ```
-5. Claude Code 生成 `RD.md`：
+7. Claude Code 生成 `RD.md`：
    ```markdown
    ## OAuth2 登录需求
    **[ID: RD-REQ-005]**
 
    系统需支持通过 Google OAuth2 进行用户登录。
    ```
+
+8. 完成后，更新 `.specgov/tasks/rd-analyst.md`：
+   ```markdown
+   ## 当前任务
+   - [x] Task 1.1: 生成 RD（关联 Epic 1）✅ 完成
+   - [ ] Task 1.2: 评审 RD
+   ```
+
+9. 切换回**项目经理角色**，更新 `.specgov/tasks/project-manager.md`：
+    ```markdown
+    **子任务分解**:
+    - [x] 1.1 需求分析（需求分析师）✅ 完成 - RD.md 已生成
+    - [ ] 1.2 产品设计（产品经理）← 下一步
+
+    **当前进度**: 20% (1/5)
+    ```
 
 ### **9.2 场景 2：评审 RD**
 
@@ -640,8 +815,9 @@ SpecGovernor 提供：
 1. ✅ **标准化的提示词模板**，引导 Claude Code 生成规范文档/代码（generator 既能创建也能修改）
 2. ✅ **清晰的工作流程**，指导人类开发者进行规范化开发
 3. ✅ **可追溯性机制**，建立 RD → PRD → Design Document → Test Plan → Code 的追溯链
-4. ✅ **轻量级辅助脚本**，自动化解析、分析任务
-5. ✅ **易于使用**，无需安装，直接配合 Claude Code 使用
+4. ✅ **两层任务管理**，项目经理视角（Epic）+ 角色视角（Task），跟踪整体进度和具体任务
+5. ✅ **轻量级辅助脚本**，自动化解析、分析任务
+6. ✅ **易于使用**，无需安装，直接配合 Claude Code 使用
 
 ### **10.2 下一步工作**
 
