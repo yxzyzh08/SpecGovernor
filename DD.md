@@ -27,36 +27,81 @@
 **[ID: DD-ARCH-001]**
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      SpecGovernor CLI                       │
-│                  (基于 spec-kit 改造)                        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌───────────────┐    ┌────────────────┐    ┌──────────────┐
-│  CLI Layer    │    │  Core Engine   │    │  Task Mgmt   │
-│               │    │                │    │  System      │
-├───────────────┤    ├────────────────┤    ├──────────────┤
-│ • Click CLI   │    │ • Tag Parser   │    │ • Epic Mgmt  │
-│ • Commands    │    │ • Dep Graph    │    │ • Role Tasks │
-│ • UI Format   │    │ • Impact Anal  │    │ • Context    │
-└───────────────┘    │ • Consistency  │    └──────────────┘
-                     └────────────────┘
-                              │
-                     ┌────────┴────────┐
-                     ▼                 ▼
-            ┌─────────────┐   ┌──────────────┐
-            │  AI Layer   │   │ Storage Layer│
-            │ (spec-kit)  │   │              │
-            ├─────────────┤   ├──────────────┤
-            │ • Generator │   │ • File I/O   │
-            │ • Reviewer  │   │ • Git Ops    │
-            │ • Backend   │   │ • JSON/MD    │
-            │   Adapters  │   │              │
-            └─────────────┘   └──────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                       SpecGovernor CLI                           │
+│                     (基于 spec-kit 改造)                          │
+│                                                                  │
+│  用户输入：specgov rd:generate --input=user-stories.md          │
+└──────────────────────────────────────────────────────────────────┘
+                                ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                      CLI Commands Layer                          │
+│                      (命令层 - 业务逻辑)                          │
+├──────────────────────────────────────────────────────────────────┤
+│  rd:generate  │  rd:review  │  prd:generate  │  index:build  │  │
+│  check:consistency  │  analyze:impact  │  tasks:next  │  ...    │
+│                                                                  │
+│  职责：解析命令参数、协调各模块、控制执行流程                      │
+└──────────────────────────────────────────────────────────────────┘
+          │              │              │              │
+          │              │              │              │
+    ┌─────▼──────┐  ┌───▼────┐  ┌─────▼─────┐  ┌────▼──────┐
+    │  Context   │  │ State  │  │   Core    │  │   Task    │
+    │  Builder   │  │ Manager│  │  Engine   │  │   Mgmt    │
+    ├────────────┤  ├────────┤  ├───────────┤  ├───────────┤
+    │ • 加载背景  │  │ • 读取  │  │ • Tag     │  │ • Epic    │
+    │ • 裁剪文档  │  │   状态  │  │   Parser  │  │   Tracker │
+    │ • 构建     │  │ • 更新  │  │ • Graph   │  │ • Role    │
+    │   提示词    │  │   进度  │  │   Builder │  │   Tasks   │
+    │ • 控制     │  │ • 记录  │  │ • Impact  │  │ • Compl-  │
+    │   大小     │  │   成本  │  │   Analyzer│  │   exity   │
+    │   <5K      │  │        │  │ • Consist │  │   Check   │
+    └────────────┘  └────────┘  │   Checker │  └───────────┘
+                                └───────────┘
+          │              │              │
+          └──────────────┼──────────────┘
+                         ▼
+        ┌────────────────────────────────────┐
+        │        Shared Services             │
+        ├────────────────┬───────────────────┤
+        │   AI Layer     │   Storage Layer   │
+        ├────────────────┼───────────────────┤
+        │ • Generator    │ • File I/O        │
+        │ • Reviewer     │ • Git Ops         │
+        │ • AI Backend   │ • JSON/MD         │
+        │   (Claude Code)│   Serializer      │
+        └────────────────┴───────────────────┘
 ```
+
+**架构说明**：
+
+1. **CLI Commands Layer（命令层）**
+   - 每个命令独立实现业务逻辑
+   - 负责协调各个模块完成任务
+   - 无需独立的"流程编排器"
+   - 直接调用下层服务
+
+2. **Context Builder（上下文构建器）**
+   - 加载项目背景（project-brief.md）
+   - 从依赖图定位相关节点
+   - 裁剪文档片段
+   - 构建 AI 提示词（< 5K tokens）
+
+3. **State Manager（状态管理器）**
+   - 读写 `.specgov/state.json`
+   - 记录任务进度、成本、时间
+   - 管理文档版本状态
+
+4. **Core Engine（核心引擎）**
+   - Tag Parser: 解析可追溯性标记
+   - Graph Builder: 构建依赖图
+   - Impact Analyzer: 影响分析
+   - Consistency Checker: 一致性检查
+
+5. **Task Management（任务管理）**
+   - Epic Tracker: 跟踪高层任务
+   - Role Tasks: 管理角色任务
+   - Complexity Check: 任务复杂度检查
 
 ---
 
@@ -126,12 +171,22 @@ specgov/                           # 项目根目录
 │   │       ├── indexer.py         # 索引构建
 │   │       └── scanner.py         # 文件扫描
 │   │
+│   ├── context/                   # 上下文构建器（新增）
+│   │   ├── __init__.py
+│   │   ├── builder.py             # Context Builder 主逻辑
+│   │   ├── loader.py              # 文档加载器
+│   │   └── slicer.py              # 文档裁剪器
+│   │
+│   ├── state/                     # 状态管理器（新增）
+│   │   ├── __init__.py
+│   │   ├── manager.py             # State Manager 主逻辑
+│   │   └── state_types.py         # 状态数据结构
+│   │
 │   ├── tasks/                     # 任务管理系统（新增）
 │   │   ├── __init__.py
 │   │   ├── epic.py                # Epic 数据结构
 │   │   ├── task.py                # Task 数据结构
 │   │   ├── role.py                # Role 定义
-│   │   ├── context.py             # 上下文管理
 │   │   ├── complexity.py          # 任务复杂度检查
 │   │   └── decomposer.py          # 任务分解器
 │   │
@@ -181,13 +236,404 @@ specgov/                           # 项目根目录
 
 ---
 
-## **二、核心模块设计**
+## **二、新增架构模块设计**
 
-### **2.1 标记解析器 (Tag Parser)**
+### **2.1 CLI Commands Layer（命令层）**
+
+**[ID: DD-MOD-CLI-001]**
+
+#### **2.1.1 设计原则**
+
+CLI Commands Layer 是用户与系统交互的入口，每个命令实现独立的业务逻辑，无需依赖"流程编排器"。
+
+**职责**：
+1. 解析命令行参数
+2. 协调各模块完成任务
+3. 控制执行流程
+4. 输出结果给用户
+
+**示例：rd:generate 命令实现**
+
+```python
+# src/cli/commands/rd.py
+
+import click
+from ...context.builder import ContextBuilder
+from ...state.manager import StateManager
+from ...ai.generator import GeneratorAgent
+from ...ai.claude_code import ClaudeCodeBackend
+
+@click.group()
+def rd():
+    """RD 阶段命令"""
+    pass
+
+@rd.command()
+@click.option('--input', type=click.Path(exists=True), help='输入文件')
+@click.option('--ai', default='claude-code', help='AI 后端')
+@click.option('--output', default='docs/RD.md', help='输出路径')
+def generate(input: str, ai: str, output: str):
+    """生成需求文档 (RD)
+
+    执行流程：
+    1. CLI Command 读取输入文件
+    2. 调用 Context Builder 构建 AI 提示词
+    3. 调用 Generator Agent 生成文档
+    4. 保存结果
+    5. 调用 State Manager 更新状态
+    """
+    click.echo("🤖 RD Generator Agent 正在工作...")
+
+    # 1. 读取输入（CLI Command 的职责）
+    input_content = ""
+    if input:
+        click.echo(f"  读取输入：{input}")
+        with open(input, 'r', encoding='utf-8') as f:
+            input_content = f.read()
+
+    # 2. 构建上下文（调用 Context Builder）
+    click.echo("  构建 AI 上下文...")
+    context_builder = ContextBuilder(project_dir='.')
+    prompt = context_builder.build_for_rd_generation(input_content)
+
+    # 3. 调用 AI（调用 Generator Agent）
+    click.echo(f"  调用 AI：{ai} (claude-sonnet-4)")
+    backend = ClaudeCodeBackend()
+    generator = GeneratorAgent(backend, stage='rd')
+    result = generator.generate(prompt)
+
+    # 4. 保存结果（CLI Command 的职责）
+    click.echo("  保存文档...")
+    output_path = Path(output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(result.content, encoding='utf-8')
+
+    # 5. 更新状态（调用 State Manager）
+    state_mgr = StateManager(project_dir='.')
+    state_mgr.update({
+        'rd_generated': True,
+        'rd_version': 1,
+        'last_generation_time': datetime.now(),
+        'tokens_used': result.tokens_input + result.tokens_output,
+        'cost': result.cost
+    })
+
+    # 6. 输出统计信息
+    click.echo(f"✓ 生成完成：{output}")
+    click.echo(f"\n📊 统计：")
+    click.echo(f"  - 生成时间：{result.generation_time}秒")
+    click.echo(f"  - 成本：${result.cost:.2f}")
+    click.echo(f"\n📚 下一步：")
+    click.echo("  运行 specgov rd:review 进行评审")
+```
+
+**关键点**：
+- ✅ 命令自己负责业务逻辑
+- ✅ 调用其他模块作为服务
+- ✅ 无需独立的"编排器"
+- ✅ 清晰的职责划分
+
+---
+
+### **2.2 Context Builder（上下文构建器）**
+
+**[ID: DD-MOD-CONTEXT-001]**
+
+#### **2.2.1 设计目标**
+
+Context Builder 负责为 AI Agent 构建精准的上下文，确保：
+1. 上下文大小 < 5K tokens
+2. 包含所有必要信息
+3. 裁剪无关内容
+
+#### **2.2.2 核心实现**
+
+```python
+# src/context/builder.py
+
+from pathlib import Path
+from typing import Dict, List
+from ..core.graph.graph import DependencyGraph
+
+class ContextBuilder:
+    """上下文构建器
+
+    负责：
+    1. 加载项目背景
+    2. 从依赖图定位相关节点
+    3. 裁剪文档片段
+    4. 构建 AI 提示词
+    5. 控制上下文大小 < 5K tokens
+    """
+
+    # Token 估算（粗略）
+    CHARS_PER_TOKEN = 4
+    MAX_CONTEXT_TOKENS = 5000
+
+    def __init__(self, project_dir: str | Path):
+        self.project_dir = Path(project_dir)
+        self.context_dir = self.project_dir / '.specgov' / 'context'
+
+    def build_for_rd_generation(self, input_content: str) -> str:
+        """为 RD 生成构建上下文"""
+
+        # 1. 加载项目简介（永久背景）
+        project_brief = self._load_project_brief()
+
+        # 2. 加载 RD Generator 提示词模板
+        template = self._load_prompt_template('rd_generator')
+
+        # 3. 构建完整提示词
+        prompt = template.format(
+            project_brief=project_brief,
+            input_content=input_content
+        )
+
+        # 4. 检查并裁剪（如果超出）
+        prompt = self._ensure_token_limit(prompt)
+
+        return prompt
+
+    def build_for_prd_generation(self, rd_content: str) -> str:
+        """为 PRD 生成构建上下文
+
+        需要加载：
+        1. 项目简介
+        2. RD 文档（裁剪）
+        3. PRD Generator 提示词模板
+        """
+
+        # 1. 加载项目简介
+        project_brief = self._load_project_brief()
+
+        # 2. 裁剪 RD 文档（智能提取相关部分）
+        rd_excerpt = self._extract_relevant_sections(
+            rd_content,
+            max_tokens=2000  # RD 最多占 2K tokens
+        )
+
+        # 3. 加载提示词模板
+        template = self._load_prompt_template('prd_generator')
+
+        # 4. 构建提示词
+        prompt = template.format(
+            project_brief=project_brief,
+            rd_content=rd_excerpt
+        )
+
+        # 5. 检查并裁剪
+        prompt = self._ensure_token_limit(prompt)
+
+        return prompt
+
+    def build_for_consistency_check(
+        self,
+        scope_id: str,
+        dependency_graph: DependencyGraph
+    ) -> str:
+        """为一致性检查构建上下文
+
+        步骤：
+        1. 从依赖图定位依赖链
+        2. 加载依赖链涉及的文档和代码
+        3. 智能裁剪（< 20K tokens for consistency check）
+        """
+
+        # 1. 获取依赖链
+        chain = self._get_dependency_chain(scope_id, dependency_graph)
+
+        # 2. 加载每个节点的内容
+        context_parts = []
+        for node in chain:
+            content = self._load_node_content(node)
+            context_parts.append(f"## {node.id} ({node.type})\n{content}")
+
+        # 3. 合并并裁剪
+        full_context = "\n\n".join(context_parts)
+        full_context = self._ensure_token_limit(
+            full_context,
+            max_tokens=20000  # 一致性检查允许更多上下文
+        )
+
+        return full_context
+
+    def _load_project_brief(self) -> str:
+        """加载项目简介"""
+        brief_file = self.context_dir / 'project-brief.md'
+        if brief_file.exists():
+            return brief_file.read_text(encoding='utf-8')
+        return ""
+
+    def _load_prompt_template(self, template_name: str) -> str:
+        """加载提示词模板"""
+        template_file = Path(__file__).parent.parent / 'ai' / 'prompts' / f'{template_name}.txt'
+        return template_file.read_text(encoding='utf-8')
+
+    def _extract_relevant_sections(self, content: str, max_tokens: int) -> str:
+        """智能提取相关章节
+
+        策略：
+        1. 保留标题和第一段
+        2. 保留所有可追溯性标记
+        3. 裁剪详细描述
+        """
+        # 简化实现：直接截断
+        max_chars = max_tokens * self.CHARS_PER_TOKEN
+        if len(content) > max_chars:
+            return content[:max_chars] + "\n\n[... 内容已裁剪 ...]"
+        return content
+
+    def _ensure_token_limit(self, text: str, max_tokens: int = None) -> str:
+        """确保文本不超过 token 限制"""
+        if max_tokens is None:
+            max_tokens = self.MAX_CONTEXT_TOKENS
+
+        max_chars = max_tokens * self.CHARS_PER_TOKEN
+        if len(text) > max_chars:
+            return text[:max_chars] + "\n\n[... 上下文已自动裁剪以适应 AI 窗口 ...]"
+        return text
+
+    def _get_dependency_chain(
+        self,
+        scope_id: str,
+        graph: DependencyGraph
+    ) -> List:
+        """从依赖图获取依赖链"""
+        # 使用依赖图的方法获取上游和下游节点
+        upstream = graph.get_upstream_nodes(scope_id)
+        downstream = graph.get_downstream_nodes(scope_id)
+        current = [graph.nodes[scope_id]]
+        return list(upstream) + current + list(downstream)
+```
+
+**关键点**：
+- ✅ 独立的服务模块
+- ✅ 负责所有上下文裁剪逻辑
+- ✅ 确保 AI 调用的上下文大小在限制内
+- ✅ 可被任何 CLI Command 调用
+
+---
+
+### **2.3 State Manager（状态管理器）**
+
+**[ID: DD-MOD-STATE-001]**
+
+#### **2.3.1 设计目标**
+
+State Manager 负责管理系统的所有状态，包括：
+1. 流程状态（RD 是否已生成）
+2. 文档版本
+3. 任务进度
+4. 成本和时间统计
+
+#### **2.3.2 核心实现**
+
+```python
+# src/state/manager.py
+
+import json
+from pathlib import Path
+from datetime import datetime
+from typing import Dict, Any, Optional
+
+class StateManager:
+    """状态管理器
+
+    负责：
+    1. 读写 .specgov/state.json
+    2. 记录任务进度
+    3. 记录成本和时间
+    4. 管理文档版本状态
+    """
+
+    def __init__(self, project_dir: str | Path):
+        self.project_dir = Path(project_dir)
+        self.state_file = self.project_dir / '.specgov' / 'state.json'
+        self.state_file.parent.mkdir(parents=True, exist_ok=True)
+
+    def get_state(self) -> Dict[str, Any]:
+        """读取当前状态"""
+        if not self.state_file.exists():
+            return self._default_state()
+
+        try:
+            with open(self.state_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Warning: Could not load state: {e}")
+            return self._default_state()
+
+    def update(self, updates: Dict[str, Any]):
+        """更新状态"""
+        state = self.get_state()
+        state.update(updates)
+        state['last_update'] = datetime.now().isoformat()
+
+        with open(self.state_file, 'w', encoding='utf-8') as f:
+            json.dump(state, f, indent=2, ensure_ascii=False)
+
+    def can_generate_prd(self) -> bool:
+        """检查是否可以生成 PRD（RD 必须已生成）"""
+        state = self.get_state()
+        return state.get('rd_generated', False)
+
+    def can_generate_dd(self) -> bool:
+        """检查是否可以生成 DD（PRD 必须已生成）"""
+        state = self.get_state()
+        return state.get('prd_generated', False)
+
+    def record_generation(
+        self,
+        stage: str,
+        cost: float,
+        tokens: int,
+        time_seconds: float
+    ):
+        """记录生成操作的统计信息"""
+        state = self.get_state()
+
+        # 更新阶段状态
+        state[f'{stage}_generated'] = True
+        state[f'{stage}_version'] = state.get(f'{stage}_version', 0) + 1
+        state[f'{stage}_last_generation'] = datetime.now().isoformat()
+
+        # 累计统计
+        state['total_cost'] = state.get('total_cost', 0) + cost
+        state['total_tokens'] = state.get('total_tokens', 0) + tokens
+        state['total_time_seconds'] = state.get('total_time_seconds', 0) + time_seconds
+
+        self.update(state)
+
+    def _default_state(self) -> Dict[str, Any]:
+        """默认状态"""
+        return {
+            'version': '1.0',
+            'created_at': datetime.now().isoformat(),
+            'rd_generated': False,
+            'prd_generated': False,
+            'dd_generated': False,
+            'td_generated': False,
+            'total_cost': 0.0,
+            'total_tokens': 0,
+            'total_time_seconds': 0.0
+        }
+```
+
+**关键点**：
+- ✅ 简单的文件读写
+- ✅ 提供状态查询和更新接口
+- ✅ 可被任何 CLI Command 调用
+- ✅ 支持流程验证（如 PRD 生成前必须先有 RD）
+
+---
+
+## **三、核心引擎模块设计**
+
+### **3.1 标记解析器 (Tag Parser)**
 
 **[ID: DD-MOD-PARSER-001] [Designs-for: PRD-CMD-006]**
 
-#### **2.1.1 数据结构**
+#### **3.1.1 数据结构**
 
 ```python
 # src/core/parser/tag_types.py

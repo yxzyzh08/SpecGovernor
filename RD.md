@@ -25,7 +25,9 @@
 | **Agent** | AI Agent | 基于 Claude Code 或 Gemini CLI 等大模型的软件智能体 |
 | **Generator Agent** | Generator Agent | 负责生成文档或代码的 AI Agent |
 | **Reviewer Agent** | Reviewer Agent | 负责评审文档或代码的 AI Agent |
-| **Orchestrator** | 流程编排器 | 负责定义、管理和执行 AI Agent 流程的核心组件 |
+| **CLI Commands** | CLI 命令层 | 实现各个 CLI 命令的模块，直接处理用户请求和业务逻辑 |
+| **State Manager** | 状态管理器 | 负责读写 `.specgov/state.json`，管理流程状态和任务进度 |
+| **Context Builder** | 上下文构建器 | 负责加载项目背景、裁剪文档片段、构建 AI 提示词 |
 | **Project Index** | 项目索引 | 预先构建的项目结构化元数据，包含依赖关系图等 |
 | **Dependency Graph** | 依赖图 | 描述 RD → PRD → DD → TD → Code 之间依赖关系的有向图 |
 | **Traceability Tag** | 可追溯性标记 | 在文档或代码中嵌入的结构化标记，如 `[ID: RD-REQ-005]` |
@@ -175,13 +177,15 @@ $ specgov check:consistency --scope=full
 
 **关键组件**：
 - RD/PRD/DD/TD Generator & Reviewer Agent 对
-- 流程编排器
+- CLI Commands（命令层）
+- Context Builder（上下文构建器）
+- State Manager（状态管理器）
 
 #### **FR-1.2 Generator Agent 规范**
 **[ID: RD-FR-1.2]**
 
 Generator Agent 的输入必须包含：
-1. 上游文档内容（由编排器精准裁剪）
+1. 上游文档内容（由 Context Builder 精准裁剪）
 2. 生成提示词模板
 3. 项目上下文元数据
 
@@ -295,7 +299,12 @@ Reviewer Agent 的输入必须包含：
 #### **FR-4.3 外部工具集成（可选）**
 **[ID: RD-FR-4.3]**
 
-流程编排器可根据校验结果，通过集成连接器在外部工具（如 Jira）中创建同步任务，或通过 Git Hooks 阻塞不符合规范的提交。
+系统可根据校验结果，通过集成连接器在外部工具（如 Jira）中创建同步任务，或通过 Git Hooks 阻塞不符合规范的提交。
+
+**实现方式**：
+- CLI Commands 执行完成后调用集成连接器
+- 通过配置文件定义集成规则
+- 支持自定义 Hook 脚本
 
 ---
 
@@ -548,7 +557,10 @@ gemini-cli:
 
 **禁止**使用统一的向量数据库 (RAG/Vector DB) 作为知识持久化层。
 
-**对设计的影响**：流程编排器必须通过**项目索引 + 依赖图**实现上下文检索和拼接。
+**对设计的影响**：
+- Context Builder 必须通过**项目索引 + 依赖图**实现上下文检索和拼接
+- CLI Commands 负责协调各模块完成任务
+- 所有上下文数据从文件系统读取，无需外部数据库
 
 #### **NFR-1.2 纯 CLI 架构**
 **[ID: RD-NFR-1.2]**
@@ -607,12 +619,18 @@ gemini-cli:
 #### **NFR-3.1 精准裁剪和拼接**
 **[ID: RD-NFR-3.1]**
 
-流程中的所有 AI Agent 必须通过**流程编排器**提供的**精准裁剪和拼接**的上下文来工作。
+流程中的所有 AI Agent 必须通过 **Context Builder** 提供的**精准裁剪和拼接**的上下文来工作。
 
-编排器必须具备基于索引的上下文裁剪能力：
+**Context Builder 必须具备的能力**：
 1. 根据依赖图定位相关节点
 2. 只加载相关文档和代码片段
 3. 控制上下文大小在 AI 窗口范围内
+4. 智能合并多个文档片段形成连贯上下文
+
+**实现方式**：
+- CLI Commands 调用 Context Builder 构建提示词
+- Context Builder 从依赖图中查询相关节点
+- 从文件系统读取并裁剪文档内容
 
 #### **NFR-3.2 上下文大小控制**
 **[ID: RD-NFR-3.2]**
@@ -712,10 +730,10 @@ gemini-cli:
 
 | 步骤 | CLI 命令 | 执行流程 | 涉及组件 |
 | :---- | :---- | :---- | :---- |
-| **1. 生成** | `specgov rd:generate` | (1) 编排器读取项目上下文<br>(2) 调用 RD Generator Agent 生成初稿，嵌入ID标记<br>(3) 保存到 `docs/rd.md`<br>(4) 更新 `.specgov/state.json` | RD Generator Agent<br>流程编排器 |
-| **2. 评审** | `specgov rd:review` | (1) 编排器读取生成的 RD<br>(2) 调用 RD Reviewer Agent 评审<br>(3) 输出结构化评审报告（JSON）<br>(4) 如发现严重问题，提示人工介入 | RD Reviewer Agent<br>流程编排器 |
-| **3. 修订** | `specgov rd:revise` | (1) 编排器读取评审报告<br>(2) 调用 RD Generator Agent 根据评审意见修订<br>(3) 更新文档和状态 | RD Generator Agent<br>流程编排器 |
-| **4. 索引更新** | `specgov index:update --scope=rd` | (1) 高速解析 RD 文档中的标记<br>(2) 更新依赖图中的 RD 节点<br>(3) 保存到 `.specgov/index/` | 索引更新服务 |
+| **1. 生成** | `specgov rd:generate` | (1) CLI Command 读取输入文件和项目上下文<br>(2) Context Builder 构建 AI 提示词（裁剪到 < 5K tokens）<br>(3) 调用 RD Generator Agent 生成初稿，嵌入ID标记<br>(4) 保存到 `docs/RD.md`<br>(5) State Manager 更新 `.specgov/state.json` | CLI Command<br>Context Builder<br>RD Generator Agent<br>State Manager |
+| **2. 评审** | `specgov rd:review` | (1) CLI Command 读取生成的 RD<br>(2) Context Builder 构建评审提示词<br>(3) 调用 RD Reviewer Agent 评审<br>(4) 输出结构化评审报告（JSON）<br>(5) 如发现严重问题，CLI Command 提示人工介入 | CLI Command<br>Context Builder<br>RD Reviewer Agent |
+| **3. 修订** | `specgov rd:revise` | (1) CLI Command 读取 RD 和评审报告<br>(2) Context Builder 构建修订提示词<br>(3) 调用 RD Generator Agent 根据评审意见修订<br>(4) 更新文档<br>(5) State Manager 更新状态 | CLI Command<br>Context Builder<br>RD Generator Agent<br>State Manager |
+| **4. 索引更新** | `specgov index:update --scope=rd` | (1) Tag Parser 高速解析 RD 文档中的标记<br>(2) Graph Builder 更新依赖图中的 RD 节点<br>(3) 保存到 `.specgov/index/dependency-graph.json` | Tag Parser<br>Graph Builder |
 
 ### **7.2 变更传播与影响分析流程**
 
