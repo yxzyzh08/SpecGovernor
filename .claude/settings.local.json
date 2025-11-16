@@ -12,7 +12,10 @@
       "Bash(node tests/test-proposal-e2e.js:*)",
       "Skill(telecom-product-manager)",
       "Bash(node:*)",
-      "Skill(frontend-dev)"
+      "Skill(frontend-dev)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:github.blog)"
     ],
     "deny": [],
     "ask": []
