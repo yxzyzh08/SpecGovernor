@@ -49,8 +49,10 @@ SpecGovernor 是一个工具包产品，测试需要在**独立的测试项目**
 D:\test_workspace\                 # 测试工作区
 │
 ├── SpecGovernor\                  # 工具包开发项目（本项目）
-│   ├── templates/                 # 产品：Prompt Templates
-│   ├── scripts/                   # 产品：Helper Scripts
+│   ├── .specgov/                  # 产品：所有 SpecGovernor 文件
+│   │   ├── scripts/               # Helper Scripts
+│   │   ├── prompts/               # Prompt Templates
+│   │   └── workflows/             # Workflow 文档
 │   ├── install-specgov.ps1        # 安装脚本
 │   ├── install-specgov.sh         # 安装脚本
 │   ├── docs/
@@ -62,20 +64,19 @@ D:\test_workspace\                 # 测试工作区
 │
 └── TestProject-TodoApp\           # 独立的测试项目
     ├── .specgov/                  # 由 init_project.py 创建
-    │   ├── prompts/               # 从 SpecGovernor/templates/prompts/ 复制
-    │   ├── workflows/             # 从 SpecGovernor/templates/workflows/ 复制
+    │   ├── scripts/               # 从 SpecGovernor/.specgov/scripts/ 下载
+    │   │   ├── init_project.py
+    │   │   ├── parse_tags.py
+    │   │   ├── build_graph.py
+    │   │   ├── check_consistency.py
+    │   │   └── impact_analysis.py
+    │   ├── prompts/               # 从 SpecGovernor/.specgov/prompts/ 下载
+    │   ├── workflows/             # 从 SpecGovernor/.specgov/workflows/ 下载
     │   ├── tasks/
     │   ├── index/
-    │   └── config.json
-    ├── templates/                 # 从 SpecGovernor 复制（供 init_project.py 使用）
-    │   ├── prompts/
-    │   └── workflows/
-    ├── scripts/                   # 从 SpecGovernor 复制
-    │   ├── init_project.py
-    │   ├── parse_tags.py
-    │   ├── build_graph.py
-    │   ├── check_consistency.py
-    │   └── impact_analysis.py
+    │   └── project-config.json
+    ├── .claude/                   # Claude Code 命令集成
+    │   └── commands/              # 20 个斜杠命令
     ├── docs/                      # TodoApp 的文档（由测试生成）
     │   ├── RD.md                  # TodoApp 的需求文档
     │   ├── PRD.md                 # TodoApp 的产品文档
@@ -164,7 +165,7 @@ ls .specgov\prompts\ | Measure-Object
 ls .specgov\workflows\ | Measure-Object
 # 应该显示 7 个 .md 文件
 
-ls scripts\ | Measure-Object
+ls .specgov\scripts\ | Measure-Object
 # 应该显示 5 个 .py 文件
 
 # Linux/Mac
@@ -174,15 +175,16 @@ ls .specgov/prompts/ | wc -l
 ls .specgov/workflows/ | wc -l
 # 应该显示 7
 
-ls scripts/ | wc -l
+ls .specgov/scripts/ | wc -l
 # 应该显示 5
 ```
 
 **验证清单：**
 - [ ] `.specgov/prompts/rd-generator.md` 存在
 - [ ] `.specgov/workflows/workflow-overview.md` 存在
-- [ ] `scripts/parse_tags.py` 存在
-- [ ] `.specgov/config.json` 存在
+- [ ] `.specgov/scripts/parse_tags.py` 存在
+- [ ] `.specgov/project-config.json` 存在
+- [ ] `.claude/commands/` 目录已创建
 - [ ] `docs/` 目录已创建
 
 ---
@@ -201,7 +203,7 @@ ls scripts/ | wc -l
 |---------|----------------|
 | `.specgov/prompts/rd-generator.md` | `D:\test_workspace\TestProject-TodoApp\.specgov\prompts\rd-generator.md` |
 | `docs/RD.md` | `D:\test_workspace\TestProject-TodoApp\docs\RD.md` |
-| `python scripts/parse_tags.py` | 在 `TestProject-TodoApp/` 目录下运行 `python scripts\parse_tags.py` |
+| `python .specgov/scripts/parse_tags.py` | 在 `TestProject-TodoApp/` 目录下运行 `python .specgov\scripts\parse_tags.py` |
 
 **当前工作目录：**
 
@@ -671,7 +673,7 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 
 **测试步骤：**
 1. 导航到空目录
-2. 运行：`python path/to/specgov/scripts/init_project.py`
+2. 运行：`python .specgov/scripts/init_project.py`
 3. 选择选项 1（small project）
 4. 验证创建的结构
 
@@ -733,7 +735,7 @@ def test_init_small_project(tmp_path):
 
 **测试步骤：**
 1. 导航到空目录
-2. 运行：`python path/to/specgov/scripts/init_project.py`
+2. 运行：`python .specgov/scripts/init_project.py`
 3. 选择选项 2（large project）
 4. 验证创建的结构
 
@@ -796,7 +798,7 @@ System must support OAuth2 login.
 
 **测试步骤：**
 1. 创建包含上述内容的测试 RD.md
-2. 运行：`python scripts/parse_tags.py`
+2. 运行：`python .specgov/scripts/parse_tags.py`
 3. 验证输出
 
 **预期结果：**
@@ -899,7 +901,7 @@ def test_parse_tags_single_file(tmp_path):
 - tags.json 存在（来自 parse_tags.py）
 
 **测试步骤：**
-1. 运行：`python scripts/build_graph.py`
+1. 运行：`python .specgov/scripts/build_graph.py`
 2. 验证输出
 
 **预期结果：**
@@ -993,7 +995,7 @@ def test_build_graph(tmp_path):
 **测试步骤：**
 1. 修改 RD.md（更改需求 [ID: RD-REQ-005]）
 2. Git add 并 commit 更改
-3. 运行：`python scripts/impact_analysis.py --changed=docs/RD.md`
+3. 运行：`python .specgov/scripts/impact_analysis.py --changed=docs/RD.md`
 4. 验证输出
 
 **预期结果：**
@@ -1093,7 +1095,7 @@ def test_impact_analysis(tmp_path):
 ```python
 def test_build_dependency_chain():
     """测试构建完整依赖链"""
-    from scripts.check_consistency import build_dependency_chain
+    from .specgov.scripts.check_consistency import build_dependency_chain
 
     # 给定中间节点 PRD-FEAT-012
     scope_id = "PRD-FEAT-012"
@@ -1125,7 +1127,7 @@ def test_build_dependency_chain():
 def test_generate_context_md():
     """测试生成 context.md 文件"""
     import os
-    from scripts.check_consistency import generate_context
+    from .specgov.scripts.check_consistency import generate_context
 
     scope_id = "PRD-FEAT-012"
     output_file = ".specgov/context/PRD-FEAT-012-context.md"
@@ -1166,7 +1168,7 @@ def test_generate_context_md():
 ```python
 def test_handle_missing_scope():
     """测试不存在的 scope ID"""
-    from scripts.check_consistency import build_dependency_chain
+    from .specgov.scripts.check_consistency import build_dependency_chain
     import pytest
 
     # 不存在的 ID
@@ -1190,7 +1192,7 @@ def test_handle_missing_scope():
 ```python
 def test_warn_large_context():
     """测试超大上下文警告"""
-    from scripts.check_consistency import generate_context
+    from .specgov.scripts.check_consistency import generate_context
     import logging
 
     # 假设有一个超长依赖链（> 5K tokens）

@@ -1,18 +1,37 @@
 # SpecGovernor 快速开始指南
 
-5 分钟快速上手 SpecGovernor！
+5 分钟快速上手 SpecGovernor - 使用待办事项管理应用作为示例！
 
 ---
 
-## 🎯 目标
+## 🎯 学习目标
 
 完成本指南后，您将：
-- ✅ 创建第一个 Epic
-- ✅ 生成第一个 RD（Requirements Document）
-- ✅ 理解基本工作流程
-- ✅ 运行 Helper Scripts
+- ✅ 了解 SpecGovernor 的基本工作流
+- ✅ 使用 Claude Code 生成第一个需求文档（RD）
+- ✅ 使用 Claude Code 审查文档质量
+- ✅ 运行 Helper Scripts 构建依赖图谱
+- ✅ 理解可追溯性标记的工作原理
 
 **预计时间**: 5-10 分钟
+
+---
+
+## 🛠️ 工具要求
+
+本指南假设您使用以下工具：
+
+| 工具 | 版本要求 | 用途 |
+|------|----------|------|
+| **Claude Code** | 最新版 | AI 编程助手，执行所有文档生成任务 |
+| **VS Code** | 推荐 | 代码编辑器（可选） |
+| **Python** | 3.8+ | 运行 Helper Scripts |
+| **Git** | 2.0+ | 版本控制 |
+
+**重要说明**：
+- ✅ 所有文件操作都由 **Claude Code** 自动完成
+- ✅ 您**无需手动编辑文件**
+- ✅ 只需复制粘贴命令到 Claude Code 即可
 
 ---
 
@@ -20,108 +39,80 @@
 
 - ✅ 已完成 SpecGovernor 安装（参见 [INSTALLATION.md](INSTALLATION.md)）
 - ✅ 项目目录包含 `.specgov/` 文件夹
-- ✅ 已安装 Claude Code
+- ✅ Claude Code 已启动并可访问
+- ✅ 已运行 `python .specgov/scripts/init_project.py` 初始化项目
 
----
-
-## 第1步: 创建您的第一个 Epic
-
-### 1.1 打开 Project Manager 任务文件
-
-```powershell
-# 使用 VS Code 打开任务文件
-code .specgov/tasks/project-manager.md
-```
-
-### 1.2 定义 Epic
-
-在文件中添加以下内容：
-
-```markdown
-# Project Manager Tasks
-
-## Active Epics
-
-### Epic 1: 用户身份验证系统
-- **目标**：实现一个安全、便捷的用户身份验证系统，支持 OAuth2 社交登录
-- **进度**：0%
-- **状态**：进行中
-- **子任务**：
-  - ⬜ RD.md（需求分析）
-  - ⬜ PRD.md（产品规划）
-  - ⬜ Design-Document.md（技术设计）
-  - ⬜ Test-Plan.md（测试规划）
-  - ⬜ 代码实现
-- **预估时间**：20-30 小时
-- **预估成本**：$15-25（Claude Code 使用）
-```
-
-### 1.3 保存文件
-
-```powershell
-# 提交到 Git（推荐）
-git add .specgov/tasks/project-manager.md
-git commit -m "Create Epic 1: User Authentication System"
+验证安装：
+```bash
+# 检查目录结构
+ls .specgov/prompts/     # 应该有 20 个 .md 文件
+ls .specgov/scripts/     # 应该有 5 个 .py 文件
+ls .claude/commands/     # 应该有 20 个 .md 文件
 ```
 
 ---
 
-## 第2步: 生成需求文档（RD）
+## 📖 示例项目：待办事项管理应用
 
-### 2.1 切换到 Requirements Analyst 角色
+本指南使用一个简单的**待办事项管理应用（To-Do List App）**作为示例，带您完整体验 SpecGovernor 工作流。
 
-打开 `.specgov/tasks/rd-analyst.md`，添加任务：
+**项目特点**：
+- ✅ 小巧简单（适合 5-10 分钟快速上手）
+- ✅ 功能清晰（创建、完成、删除任务）
+- ✅ 涵盖完整 SDLC 流程（RD → PRD → Design → Test → Code）
 
-```markdown
-# Requirements Analyst Tasks
+---
 
-## Active Tasks
+## 第 1 步：生成需求文档（RD）
 
-### Task 1: 生成用户身份验证需求文档
-- **Epic**：Epic 1 - 用户身份验证系统
-- **状态**：进行中
-- **预估时间**：3 小时
-- **输出**：docs/RD.md
-```
+### 1.1 在 Claude Code 中生成 RD
 
-### 2.2 在 Claude Code 中加载 RD Generator Prompt
-
-打开 Claude Code，输入以下内容：
+**在 Claude Code 对话框中，复制粘贴以下完整内容**（一次性发送）：
 
 ```
-请加载 .specgov/prompts/rd-generator.md 文件的内容。
+/specgov-rd-gen
 
-然后，请生成 Requirements Document (RD)。
+请生成待办事项管理应用（To-Do List App）的需求文档。
 
-项目上下文：
-- 项目名称：我的项目
+**项目信息**：
+- 项目名称：To-Do List App
 - 项目规模：小项目（< 10 万行代码）
-- 目标用户：Web 应用的终端用户
+- 目标用户：个人用户（学生、职场人士、自由职业者）
+- 部署平台：Web 应用（浏览器访问）
 
-用户故事：
-- As a new user, I want to register with my email, so that I can create an account
-- As a new user, I want to log in with my Google account, so that I don't need to create a new password
-- As a user, I want my session to persist for 24 hours, so that I don't need to log in frequently
-- As an admin, I want to view all login activities, so that I can monitor security
+**用户故事**：
+1. As a user, I want to create a new task with title and description, so that I can track what I need to do
+2. As a user, I want to mark tasks as completed, so that I can see my progress
+3. As a user, I want to delete tasks, so that I can remove tasks I no longer need
+4. As a user, I want to filter tasks by status (all/active/completed), so that I can focus on relevant tasks
+5. As a user, I want tasks to persist after refreshing the page, so that I don't lose my data
+6. As a user, I want to edit existing tasks, so that I can update task details
 
-业务需求：
-- 降低用户注册门槛（支持社交媒体登录）
-- 提高安全性（密码加密、账户锁定保护）
-- 支持主流 OAuth2 提供商（Google、GitHub、Microsoft）
+**业务需求**：
+- 简单直观的用户界面（扁平化设计）
+- 无需注册登录（本地存储，保护隐私）
+- 响应式设计（支持桌面和移动端）
+- 快速加载（< 1 秒首屏渲染）
+- 离线可用（PWA 支持）
 
-技术约束：
-- 操作系统：Windows / Linux / macOS
-- Shell 环境：PowerShell 5.1+ / Bash 4.0+
-- Python 版本：Python 3.8+
-- AI 助手：Claude Code
-- 版本控制：Git
+**技术约束**：
+- 前端框架：React 18 + TypeScript
+- 状态管理：React Hooks (useState, useEffect)
+- 存储方案：localStorage
+- 构建工具：Vite
+- 样式方案：Tailwind CSS
+- 部署平台：Vercel / GitHub Pages
 ```
 
-### 2.3 Claude Code 生成 RD
+### 1.2 Claude Code 自动生成 RD
 
-Claude Code 将生成 RD.md 内容。将输出保存到 `docs/RD.md`。
+Claude Code 将：
+1. ✅ 加载 `.specgov/prompts/rd-generator.md` 模板
+2. ✅ 根据您的需求生成完整的 RD.md（包含可追溯性标记）
+3. ✅ 自动写入 `docs/RD.md` 文件
+4. ✅ 显示生成的文档内容
 
-**示例输出片段**:
+**生成的 RD.md 示例片段**：
 
 ```markdown
 # Requirements Document (RD)
@@ -129,69 +120,75 @@ Claude Code 将生成 RD.md 内容。将输出保存到 `docs/RD.md`。
 > **Version**: 1.0
 > **Created**: 2025-11-16
 
-## 1. User Authentication Requirements
-**[ID: RD-AUTH-001]**
+## 1. Task Management Requirements
+**[ID: RD-TASK-001]**
 
-本节定义所有身份验证和授权需求。
+本章节定义待办事项管理的核心需求。
 
-### 1.1 Email Registration
-**[ID: RD-REQ-001] [Decomposes: RD-AUTH-001]**
+### 1.1 Create Task
+**[ID: RD-REQ-001] [Decomposes: RD-TASK-001]**
 
-系统必须支持用户使用邮箱和密码注册账户。
+系统必须允许用户创建新的待办任务。
 
-**验收标准：**
-- ✅ 用户可以使用邮箱和密码注册
-- ✅ 邮箱必须唯一
-- ✅ 密码必须至少 8 个字符，包含大小写字母和数字
-- ✅ 注册成功后发送邮箱验证链接
+**验收标准**：
+- ✅ 用户可以输入任务标题（必填，最多 100 字符）
+- ✅ 用户可以输入任务描述（可选，最多 500 字符）
+- ✅ 任务创建后立即显示在任务列表中
+- ✅ 任务状态默认为 "active"（未完成）
 
-### 1.2 OAuth2 Login Support
-**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+### 1.2 Mark Task as Completed
+**[ID: RD-REQ-002] [Decomposes: RD-TASK-001]**
 
-系统必须支持通过 OAuth2 协议进行用户身份验证。
+系统必须允许用户标记任务为完成状态。
 
-**支持的提供商：**
-- Google OAuth2
-- GitHub OAuth2
-- Microsoft OAuth2
+**验收标准**：
+- ✅ 用户可以点击任务旁的复选框标记为完成
+- ✅ 已完成任务显示删除线样式
+- ✅ 完成状态持久化到 localStorage
 
-**验收标准：**
-- ✅ 用户可以使用任何支持的 OAuth2 提供商登录
-- ✅ 系统获取用户个人资料信息（姓名、邮箱、头像）
-- ✅ 系统优雅地处理登录失败
+...
 ```
 
-### 2.4 保存 RD 到文件
+### 1.3 验证生成结果
 
-```powershell
-# 将 Claude Code 输出保存到 docs/RD.md
-# 然后提交到 Git
-git add docs/RD.md
-git commit -m "Add user authentication requirements to RD.md"
+检查生成的文档：
+```bash
+# 查看 RD.md
+cat docs/RD.md
+
+# 验证文件已创建
+ls docs/
 ```
+
+您应该看到：
+- ✅ `docs/RD.md` 文件已创建
+- ✅ 包含所有需求（6 个用户故事 → 6-8 个需求）
+- ✅ 每个需求都有 `[ID: RD-XXX-XXX]` 标记
+- ✅ 使用 `[Decomposes: XXX]` 表示层级关系
 
 ---
 
-## 第3步: 审查需求文档
+## 第 2 步：审查需求文档
 
-### 3.1 在 Claude Code 中加载 RD Reviewer Prompt
+### 2.1 在 Claude Code 中审查 RD
+
+**复制粘贴以下内容到 Claude Code**：
 
 ```
-请加载 .specgov/prompts/rd-reviewer.md 文件的内容。
+/specgov-rd-review
 
 请审查以下 Requirements Document (RD)：
 
-[粘贴 docs/RD.md 完整内容]
+[粘贴 docs/RD.md 的完整内容]
 
-项目上下文：
-- 项目规模：小项目
+项目规模：小项目
 ```
 
-### 3.2 Claude Code 输出审查报告
+> **提示**：您可以使用 `cat docs/RD.md` 查看文档内容，然后复制粘贴到 Claude Code。
 
-Claude Code 将输出审查报告，标识问题（如果有）：
+### 2.2 Claude Code 输出审查报告
 
-**示例输出**:
+Claude Code 将输出审查报告，例如：
 
 ```markdown
 # RD Review Report
@@ -199,131 +196,167 @@ Claude Code 将输出审查报告，标识问题（如果有）：
 ## Summary
 - **Overall Quality**: Good
 - **Critical Issues**: 0
-- **Important Issues**: 2
-- **Suggestions**: 3
+- **Important Issues**: 1
+- **Suggestions**: 2
 
 ## Important Issues
 
 ### 1. [重要-可追溯性] 缺少分层标记
-- **位置**: RD-REQ-001
-- **问题**: 没有 [Decomposes: RD-AUTH-001] 标记
-- **建议**: 添加 [Decomposes: RD-AUTH-001]
+- **位置**: RD-REQ-006（编辑任务）
+- **问题**: 没有 [Decomposes: RD-TASK-001] 标记
+- **建议**: 添加 [Decomposes: RD-TASK-001]，因为它属于 Task Management Requirements
+
+## Suggestions
+
+### 1. [建议-完整性] 考虑添加性能需求
+- **建议**: 在 Non-functional Requirements 章节中，添加响应时间要求（< 200ms）
+
+...
 ```
 
-### 3.3 根据审查报告修改 RD
+### 2.3 根据审查反馈修改 RD（如需要）
 
-如果有问题，再次使用 RD Generator 修改文档：
+如果有问题，再次使用 `/specgov-rd-gen` 修改：
 
 ```
-请加载 .specgov/prompts/rd-generator.md
+/specgov-rd-gen
 
 请修改现有 Requirements Document (RD)。
 
 现有 RD.md 内容：
-[粘贴 docs/RD.md]
+[粘贴 docs/RD.md 内容]
 
 审查反馈：
-[粘贴审查报告中的关键问题和重要问题]
+- RD-REQ-006 缺少 [Decomposes: RD-TASK-001] 标记
 
 请根据审查反馈修改 RD.md。
 ```
 
 ---
 
-## 第4步: 运行 Helper Scripts
+## 第 3 步：运行 Helper Scripts
 
-### 4.1 解析可追溯性标记
+### 3.1 解析可追溯性标记
 
-```powershell
+```bash
 # 解析 RD.md 中的标记
 python .specgov/scripts/parse_tags.py
 ```
 
-**输出示例**:
+**输出示例**：
 ```
 Parsing docs/RD.md...
-Found 5 tags:
-- RD-AUTH-001
-- RD-REQ-001
-- RD-REQ-005
-...
+Found 9 tags:
+- RD-TASK-001 (section)
+- RD-REQ-001 (requirement, decomposes: RD-TASK-001)
+- RD-REQ-002 (requirement, decomposes: RD-TASK-001)
+- RD-REQ-003 (requirement, decomposes: RD-TASK-001)
+- RD-REQ-004 (requirement, decomposes: RD-TASK-001)
+- RD-REQ-005 (requirement, decomposes: RD-TASK-001)
+- RD-REQ-006 (requirement, decomposes: RD-TASK-001)
+- RD-NFR-001 (non-functional requirement)
+- RD-NFR-002 (non-functional requirement)
 
 Tags saved to .specgov/index/tags.json
 ```
 
-### 4.2 构建依赖图谱
+### 3.2 构建依赖图谱
 
-```powershell
+```bash
 # 构建依赖图谱
 python .specgov/scripts/build_graph.py
 ```
 
-**输出示例**:
+**输出示例**：
 ```
 Building dependency graph...
-Nodes: 5
-Edges: 4
+Nodes: 9
+Edges: 6
 
 Dependency graph saved to .specgov/index/dependency-graph.json
 ```
 
-### 4.3 查看依赖图谱
+### 3.3 查看依赖图谱
 
-```powershell
+```bash
 # 查看生成的图谱
-type .specgov/index/dependency-graph.json
+cat .specgov/index/dependency-graph.json
 ```
 
-**示例内容**:
+**示例内容**：
 ```json
 {
   "nodes": [
-    {"id": "RD-AUTH-001", "type": "RD", "label": "User Authentication Requirements"},
-    {"id": "RD-REQ-001", "type": "RD", "label": "Email Registration"},
-    {"id": "RD-REQ-005", "type": "RD", "label": "OAuth2 Login Support"}
+    {"id": "RD-TASK-001", "type": "section", "label": "Task Management Requirements", "location": "docs/RD.md:10"},
+    {"id": "RD-REQ-001", "type": "requirement", "label": "Create Task", "location": "docs/RD.md:15"},
+    {"id": "RD-REQ-002", "type": "requirement", "label": "Mark Task as Completed", "location": "docs/RD.md:25"}
   ],
   "edges": [
-    {"from": "RD-REQ-001", "to": "RD-AUTH-001", "type": "decomposes"},
-    {"from": "RD-REQ-005", "to": "RD-AUTH-001", "type": "decomposes"}
+    {"from": "RD-REQ-001", "to": "RD-TASK-001", "type": "decomposes"},
+    {"from": "RD-REQ-002", "to": "RD-TASK-001", "type": "decomposes"}
   ]
 }
 ```
 
 ---
 
-## 第5步: 更新任务状态
+## 第 4 步：继续 SDLC 流程（可选）
 
-### 5.1 标记 RD 任务完成
+您已经完成了 RD 生成！现在可以继续：
 
-编辑 `.specgov/tasks/rd-analyst.md`:
+### 4.1 生成 PRD（Product Requirements Document）
 
-```markdown
-## Completed Tasks
-- ✅ 生成 RD.md v1.0 - 定义用户身份验证需求（2025-11-16完成）
+```
+/specgov-prd-gen
+
+请基于以下 RD 生成 PRD。
+
+RD 内容：
+[粘贴 docs/RD.md 内容]
+
+项目信息：
+- 项目名称：To-Do List App
+- 目标用户：个人用户
+- 竞品分析：Todoist, Microsoft To Do（参考其简洁设计）
+
+请生成 PRD，包含功能优先级、UI/UX 设计要点。
 ```
 
-### 5.2 更新 Epic 进度
+### 4.2 生成 Design Document
 
-编辑 `.specgov/tasks/project-manager.md`:
+```
+/specgov-design-gen
 
-```markdown
-### Epic 1: 用户身份验证系统
-- **进度**：0% → 20%
-- **状态**：进行中
-- **子任务**：
-  - ✅ RD.md（需求分析）- 完成于 2025-11-16
-  - ⏳ PRD.md（产品规划）- 待开始
-  - ⬜ Design-Document.md（技术设计）
-  - ⬜ Test-Plan.md（测试规划）
-  - ⬜ 代码实现
+请基于以下 PRD 生成 Design Document。
+
+PRD 内容：
+[粘贴 docs/PRD.md 内容]
+
+技术选型：
+- 前端：React 18 + TypeScript + Vite
+- 状态管理：React Hooks
+- 存储：localStorage
+- 样式：Tailwind CSS
+
+请生成 Design Document，包含架构设计、数据模型、API 设计。
 ```
 
-### 5.3 提交更改
+### 4.3 生成 Test Plan
 
-```powershell
-# 提交所有更改
-git add .specgov/tasks/
-git commit -m "Update task status: RD generation completed"
+```
+/specgov-test-gen
+
+请基于以下 Design Document 生成 Test Plan。
+
+Design Document 内容：
+[粘贴 docs/Design-Document.md 内容]
+
+测试策略：
+- 单元测试：Jest + React Testing Library
+- E2E 测试：Playwright
+- 覆盖率目标：> 80%
+
+请生成 Test Plan，包含测试用例和验收标准。
 ```
 
 ---
@@ -334,34 +367,57 @@ git commit -m "Update task status: RD generation completed"
 
 ### 您已经学会了：
 
-- ✅ 创建和管理 Epic
-- ✅ 使用 Prompt 模板生成文档（RD）
+- ✅ 使用 Claude Code 斜杠命令（`/specgov-rd-gen`、`/specgov-rd-review`）
+- ✅ 生成带可追溯性标记的需求文档
 - ✅ 使用 Reviewer 审查文档质量
 - ✅ 运行 Helper Scripts 构建依赖图谱
-- ✅ 更新任务状态和 Epic 进度
+- ✅ 理解 SpecGovernor 的基本工作流
+
+### 完整的文件结构：
+
+```
+your-project/
+├── .specgov/
+│   ├── scripts/              # Helper Scripts
+│   ├── prompts/              # Prompt 模板
+│   ├── workflows/            # 工作流文档
+│   ├── tasks/                # 任务跟踪文件
+│   └── index/
+│       ├── tags.json         # ✅ 可追溯性标记索引
+│       └── dependency-graph.json  # ✅ 依赖图谱
+├── .claude/
+│   └── commands/             # 20 个斜杠命令
+├── docs/
+│   └── RD.md                 # ✅ 您生成的需求文档
+└── CLAUDE.md                 # 项目指南（请填写）
+```
 
 ---
 
 ## 📚 下一步
 
-### 继续 SDLC 流程
+### 继续完整的 SDLC 流程
 
 按照以下顺序继续：
 
 1. **生成 PRD（Product Requirements Document）**
-   - 查看: `.specgov/workflows/workflow-prd.md`
-   - 使用: `prd-generator.md` + `prd-reviewer.md`
+   - 使用: `/specgov-prd-gen`
+   - 审查: `/specgov-prd-review`
+   - 工作流: `.specgov/workflows/workflow-prd.md`
 
 2. **生成 Design Document**
-   - 查看: `.specgov/workflows/workflow-design.md`
-   - 使用: `design-generator.md` + `design-reviewer.md`
+   - 使用: `/specgov-design-gen`
+   - 审查: `/specgov-design-review`
+   - 工作流: `.specgov/workflows/workflow-design.md`
 
 3. **生成 Test Plan**
-   - 查看: `.specgov/workflows/workflow-test-plan.md`
-   - 使用: `test-plan-generator.md` + `test-plan-reviewer.md`
+   - 使用: `/specgov-test-gen`
+   - 审查: `/specgov-test-review`
+   - 工作流: `.specgov/workflows/workflow-test-plan.md`
 
 4. **生成代码**
-   - 使用: `code-generator.md` + `code-reviewer.md`
+   - 使用: `/specgov-code-gen`
+   - 审查: `/specgov-code-review`
 
 ### 深入学习
 
@@ -371,65 +427,85 @@ git commit -m "Update task status: RD generation completed"
 
 ### 使用 Helper Scripts
 
-- **影响分析**: 修改 RD 后运行 `python .specgov/scripts/impact_analysis.py --changed=docs/RD.md`
-- **一致性检查**: 运行 `python .specgov/scripts/check_consistency.py --scope=RD-REQ-005`
+```bash
+# 影响分析：修改 RD 后运行
+python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
+
+# 一致性检查：验证可追溯性链
+python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
+```
 
 ---
 
 ## 💡 提示和最佳实践
 
-1. **使用 Claude 斜杠命令**: 在 Claude Code 中使用 `/specgov-rd-gen` 等命令快速加载 prompt 模板，无需手动打开文件
-2. **定期运行 Helper Scripts**: 每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
-3. **使用 Git 追踪变更**: 所有文档和任务文件都应该提交到 Git
-4. **保持任务状态最新**: 及时更新 `.specgov/tasks/` 中的任务状态
-5. **遵循工作流**: 参考 `.specgov/workflows/` 中的工作流文档
-6. **双重质量保证**: 始终使用 Generator + Reviewer 模式
+1. **使用 Claude 斜杠命令**：在 Claude Code 中使用 `/specgov-xx-gen` 命令，无需手动打开 prompt 文件
+2. **一次性提供完整上下文**：将需求、约束、示例等信息一次性粘贴到 Claude Code，生成质量更好
+3. **定期运行 Helper Scripts**：每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
+4. **使用 Git 追踪变更**：所有文档都应该提交到 Git，便于团队协作和版本追溯
+5. **双重质量保证**：始终使用 Generator + Reviewer 模式（生成 + 审查）
+6. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
 
-**可用的 Claude 斜杠命令：**
+**可用的 Claude 斜杠命令**：
 - `/specgov-rd-gen` - 生成 RD
 - `/specgov-rd-review` - 审查 RD
 - `/specgov-prd-gen` - 生成 PRD
 - `/specgov-prd-review` - 审查 PRD
 - `/specgov-design-gen` - 生成 Design Document
+- `/specgov-design-review` - 审查 Design Document
 - `/specgov-test-gen` - 生成 Test Plan
+- `/specgov-test-review` - 审查 Test Plan
+- `/specgov-code-gen` - 生成代码
+- `/specgov-code-review` - 审查代码
+- `/specgov-consistency` - 检查一致性
+- `/specgov-impact` - 分析变更影响
 - 更多命令见 `.claude/commands/` 目录
 
 ---
 
 ## ❓ 常见问题
 
-### Q1: 我可以跳过某个阶段吗？
-
-**A**: 不推荐。完整的 SDLC 流程确保需求到代码的完整可追溯性。如果跳过某个阶段（如 PRD），后续阶段的文档将缺少上游链接。
-
-### Q2: 我可以同时进行多个 Epic 吗？
-
-**A**: 可以。但建议一次专注于一个 Epic，确保质量。在 `.specgov/tasks/project-manager.md` 中可以定义多个 Epic。
-
-### Q3: 如何处理大项目？
-
-**A**: 对于 ≥ 10 万行代码的大项目，使用大项目变体模板：
-- `rd-overview-generator.md` + `rd-module-generator.md`
-- `prd-overview-generator.md` + `prd-module-generator.md`
-- `design-overview-generator.md` + `design-module-generator.md`
-- `test-plan-overview-generator.md` + `test-plan-module-generator.md`
-
-详见 `.specgov/workflows/workflow-large-project.md`
-
-### Q4: Helper Scripts 运行失败怎么办？
+### Q1: 斜杠命令不工作怎么办？
 
 **A**: 检查以下几点：
+- `.claude/commands/` 目录是否存在
+- 是否运行了 `python .specgov/scripts/init_project.py`
+- Claude Code 是否已重启（有时需要重启加载新命令）
+
+### Q2: 生成的文档没有可追溯性标记怎么办？
+
+**A**: 检查：
+- 是否使用了正确的 prompt 模板（`/specgov-rd-gen`）
+- 是否在提示中明确要求包含标记
+- 使用 `/specgov-rd-review` 审查，它会检测缺失的标记
+
+### Q3: Helper Scripts 运行失败怎么办？
+
+**A**: 检查：
 - Python 版本是否 ≥ 3.8
+- 是否在项目根目录运行（包含 `.specgov/` 目录）
 - 文档中的标记格式是否正确（如 `[ID: RD-REQ-001]`）
-- `.specgov/index/` 目录是否存在
 - 查看错误消息，根据提示修复
+
+### Q4: 我可以跳过某个阶段吗？
+
+**A**: 不推荐。完整的 SDLC 流程确保需求到代码的完整可追溯性。如果跳过某个阶段（如 PRD），后续阶段的文档将缺少上游链接，可追溯性链会断裂。
+
+### Q5: 如何处理大项目？
+
+**A**: 对于 ≥ 10 万行代码的大项目，使用大项目变体命令：
+- `/specgov-rd-overview` - 生成 RD Overview
+- `/specgov-rd-module` - 生成 RD Module
+- `/specgov-prd-overview` - 生成 PRD Overview
+- `/specgov-prd-module` - 生成 PRD Module
+- 详见 `.specgov/workflows/workflow-large-project.md`
 
 ---
 
 ## 📞 获取帮助
 
 - **工作流文档**: 查看 `.specgov/workflows/` 中的相关文档
-- **GitHub Issues**: https://github.com/yourname/SpecGovernor/issues
+- **GitHub Issues**: https://github.com/yxzyzh08/SpecGovernor/issues
 - **完整文档**: [README.md](README.md), [INSTALLATION.md](INSTALLATION.md)
 
 ---
