@@ -5,8 +5,8 @@
 			"path": "."
 		},
 		{
-			"name": "TestProject-TodoApp",
-			"path": "../TestProject-TodoApp"
+			"name": "CVM_DEMO",
+			"path": "../CVM_DEMO"
 		}
 	],
 	"settings": {
