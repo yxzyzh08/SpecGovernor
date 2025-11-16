@@ -349,13 +349,12 @@ python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
         f.write(claude_content)
 
 
-def create_claude_commands():
+def create_claude_commands(project_size):
     """创建 Claude Code 斜杠命令。"""
     os.makedirs('.claude/commands', exist_ok=True)
 
-    # 定义所有 prompt 模板到命令的映射
-    prompt_commands = {
-        # 小项目模板 (Small Project Templates)
+    # 定义小项目模板（单层文档结构）
+    small_project_commands = {
         'rd-generator.md': ('specgov-rd-gen', 'Generate Requirements Document (RD)'),
         'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)'),
         'prd-generator.md': ('specgov-prd-gen', 'Generate Product Requirements Document (PRD)'),
@@ -368,17 +367,30 @@ def create_claude_commands():
         'code-reviewer.md': ('specgov-code-review', 'Review code implementation'),
         'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency'),
         'impact-analyzer.md': ('specgov-impact', 'Analyze change impact'),
+    }
 
-        # 大项目模板 (Large Project Templates)
+    # 定义大项目模板（双层文档结构：Overview + Module）
+    large_project_commands = {
         'rd-overview-generator.md': ('specgov-rd-overview', 'Generate RD Overview (large project)'),
         'rd-module-generator.md': ('specgov-rd-module', 'Generate RD Module (large project)'),
+        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)'),
         'prd-overview-generator.md': ('specgov-prd-overview', 'Generate PRD Overview (large project)'),
         'prd-module-generator.md': ('specgov-prd-module', 'Generate PRD Module (large project)'),
+        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)'),
         'design-overview-generator.md': ('specgov-design-overview', 'Generate Design Overview (large project)'),
         'design-module-generator.md': ('specgov-design-module', 'Generate Design Module (large project)'),
+        'design-reviewer.md': ('specgov-design-review', 'Review Design Document'),
         'test-plan-overview-generator.md': ('specgov-test-overview', 'Generate Test Plan Overview (large project)'),
         'test-plan-module-generator.md': ('specgov-test-module', 'Generate Test Plan Module (large project)'),
+        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan'),
+        'code-generator.md': ('specgov-code-gen', 'Generate code implementation'),
+        'code-reviewer.md': ('specgov-code-review', 'Review code implementation'),
+        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency'),
+        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact'),
     }
+
+    # 根据项目规模选择命令集
+    prompt_commands = small_project_commands if project_size == 'small' else large_project_commands
 
     command_count = 0
     for prompt_file, (command_name, description) in prompt_commands.items():
@@ -425,8 +437,8 @@ def main():
         # 创建 Claude Code 命令
         print()
         print("正在创建 Claude Code 斜杠命令...")
-        command_count = create_claude_commands()
-        print(f"✅ 已创建 {command_count} 个 Claude Code 命令！")
+        command_count = create_claude_commands(project_size)
+        print(f"✅ 已创建 {command_count} 个 Claude Code 命令（{project_size} 项目）！")
 
         # 创建项目的 CLAUDE.md
         print()
