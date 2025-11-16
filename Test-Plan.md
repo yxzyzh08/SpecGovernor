@@ -16,11 +16,14 @@
 - [Tests-for: DESIGN-TEMPLATE-PRD-GEN-001] PRD Generator Template
 - [Tests-for: DESIGN-TEMPLATE-DESIGN-GEN-001] Design Document Generator Template
 - [Tests-for: DESIGN-TEMPLATE-TEST-GEN-001] Test Plan Generator Template
+- [Tests-for: DESIGN-TEMPLATE-CODE-GEN-001] Code Generator Template
+- [Tests-for: DESIGN-TEMPLATE-CODE-REV-001] Code Reviewer Template
 - [Tests-for: DESIGN-WORKFLOW-OVERVIEW-001] Workflow Overview Document
 - [Tests-for: DESIGN-SCRIPT-INIT-001] Project Initialization Script
 - [Tests-for: DESIGN-SCRIPT-PARSER-001] Tag Parser Script
 - [Tests-for: DESIGN-SCRIPT-GRAPH-001] Dependency Graph Builder Script
 - [Tests-for: DESIGN-SCRIPT-IMPACT-001] Impact Analysis Script
+- [Tests-for: DESIGN-SCRIPT-CONSISTENCY-001] Consistency Check Script
 
 ---
 
@@ -132,6 +135,27 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 
 ---
 
+#### **Test Case: Generate RD for Large Project**
+
+**[ID: TEST-CASE-001-003]**
+
+**前置条件：**
+- 项目已初始化为大型项目（Two-Tier）
+- rd-overview-generator.md 和 rd-module-generator.md 可用
+
+**测试步骤：**
+1. 使用 rd-overview-generator.md 生成 RD-Overview.md
+2. 使用 rd-module-generator.md 生成 RD-User-Module.md
+3. 验证模块文档
+
+**预期结果：**
+- ✅ RD-Overview.md 包含高层概览
+- ✅ RD-User-Module.md 包含 **[Module: User]** 标记
+- ✅ 模块 ID 使用模块前缀：**[ID: RD-User-REQ-001]**
+- ✅ Overview 和 Module 文档相互引用
+
+---
+
 ### **2.2 RD Reviewer Template Tests**
 
 **[ID: TEST-CASE-002] [Tests-for: DESIGN-TEMPLATE-RD-GEN-001]**
@@ -219,6 +243,68 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 
 ---
 
+### **2.4 Code Template Tests**
+
+**[ID: TEST-CASE-CODE] [Tests-for: DESIGN-TEMPLATE-CODE-GEN-001, DESIGN-TEMPLATE-CODE-REV-001]**
+
+#### **Test Case: Generate Code from Design Document**
+**[ID: TEST-CASE-CODE-GEN-001]**
+
+**前置条件：**
+- Claude Code 已安装且可访问
+- code-generator.md 模板可用
+- Design-Document.md 已生成
+
+**测试步骤：**
+1. 打开 Claude Code
+2. 加载 `.specgov/prompts/code-generator.md`
+3. 提供示例 Design Document 片段（API 设计）
+4. 执行 prompt
+
+**预期结果：**
+- ✅ 生成的代码包含：
+  - **[ID: CODE-XXX]** 标记
+  - **[Implements: DESIGN-XXX]** 可追溯性标记
+  - 符合设计规范的代码结构
+  - 适当的注释和文档字符串
+  - 遵循语言编码规范（如 Python 的 PEP 8）
+
+**验证清单：**
+- [ ] 所有代码单元都有 [ID: CODE-XXX] 标记
+- [ ] 有 [Implements: DESIGN-XXX] 链接到设计
+- [ ] 代码可编译/运行
+- [ ] 符合编码规范
+
+---
+
+#### **Test Case: Review Code for Quality**
+**[ID: TEST-CASE-CODE-REV-001]**
+
+**测试步骤：**
+1. 使用 code-reviewer.md 审查一段高质量代码
+2. 验证审查报告给出正面评价
+
+**预期结果：**
+- ✅ 报告确认代码质量良好
+- ✅ 无重大问题
+
+---
+
+#### **Test Case: Review Code with Security Issues**
+**[ID: TEST-CASE-CODE-REV-002]**
+
+**测试步骤：**
+1. 准备包含安全漏洞的代码（如 SQL 注入、XSS）
+2. 使用 code-reviewer.md 审查
+3. 验证审查报告是否识别安全问题
+
+**预期结果：**
+- ✅ 报告标记安全漏洞（Critical）
+- ✅ 提供修复建议
+- ✅ 包含安全最佳实践引用
+
+---
+
 ## **三、Workflow Documentation Testing**
 
 ### **3.1 Workflow Documentation Review**
@@ -286,6 +372,50 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 - [ ] 没有断开的可追溯性引用
 - [ ] 术语在整个流程中一致
 - [ ] 任务文档在每个阶段更新
+
+---
+
+### **3.2 Task Management Workflow Tests**
+
+**[ID: TEST-CASE-TASK-MGMT] [Tests-for: DESIGN-WORKFLOW-TASK-001]**
+
+#### **Test Case: Create Epic as Project Manager**
+**[ID: TEST-CASE-TASK-MGMT-001]**
+
+**前置条件：**
+- workflow-task-mgmt.md 可用
+- .specgov/tasks/ 目录已创建
+
+**测试步骤：**
+1. 阅读 workflow-task-mgmt.md
+2. 作为 "Project Manager" 角色
+3. 在 .specgov/tasks/project-manager.md 中创建新 Epic
+4. 分解为 5 个子任务，分配给不同角色
+
+**预期结果：**
+- ✅ Epic 包含清晰的描述和目标
+- ✅ 所有子任务都有估计工时
+- ✅ 子任务分配到适当的角色
+- ✅ Markdown 格式正确
+
+---
+
+#### **Test Case: Execute Task and Update Progress**
+**[ID: TEST-CASE-TASK-MGMT-002]**
+
+**测试步骤：**
+1. 切换到 "Requirements Analyst" 角色
+2. 打开 .specgov/tasks/rd-analyst.md
+3. 完成一个子任务，记录工作日志
+4. 标记任务为完成
+5. 切换回 "Project Manager" 角色
+6. 更新 project-manager.md 中的 Epic 进度
+
+**预期结果：**
+- ✅ 角色特定任务文件包含详细工作日志
+- ✅ Project Manager 文件正确更新进度百分比
+- ✅ 两个文件保持同步
+- ✅ 流程顺畅，无混淆
 
 ---
 
@@ -708,6 +838,137 @@ def test_impact_analysis(tmp_path):
     import impact_analysis
     # ... test analysis output
 ```
+
+---
+
+### **4.5 Consistency Check Script Tests**
+
+**[ID: TEST-CASE-CONSISTENCY] [Tests-for: DESIGN-SCRIPT-CONSISTENCY-001]**
+
+#### **Test Case: Build Complete Dependency Chain**
+**[ID: TEST-CASE-CONSISTENCY-001]**
+
+**测试目标：** 验证 `check-consistency.py` 能够为给定的 scope ID 构建完整的上游和下游依赖链。
+
+**前置条件：**
+- dependency-graph.json 已生成
+- 测试项目包含完整的依赖链（RD -> PRD -> Design -> Test -> Code）
+
+**测试步骤：**
+```python
+def test_build_dependency_chain():
+    """测试构建完整依赖链"""
+    from scripts.check_consistency import build_dependency_chain
+
+    # 给定中间节点 PRD-FEAT-012
+    scope_id = "PRD-FEAT-012"
+
+    # 执行
+    chain = build_dependency_chain(scope_id, graph_file=".specgov/index/dependency-graph.json")
+
+    # 验证
+    assert "RD-REQ-005" in chain["upstream"]  # 上游需求
+    assert "DESIGN-API-008" in chain["downstream"]  # 下游设计
+    assert "TEST-CASE-015" in chain["downstream"]  # 下游测试
+    assert len(chain["upstream"]) >= 1
+    assert len(chain["downstream"]) >= 2
+```
+
+**预期结果：**
+- ✅ 返回包含上游和下游节点的字典
+- ✅ 上游包含所有依赖的 RD 需求
+- ✅ 下游包含所有相关的 Design、Test、Code
+- ✅ 依赖链完整，无断链
+
+---
+
+#### **Test Case: Generate Context File**
+**[ID: TEST-CASE-CONSISTENCY-002]**
+
+**测试步骤：**
+```python
+def test_generate_context_md():
+    """测试生成 context.md 文件"""
+    import os
+    from scripts.check_consistency import generate_context
+
+    scope_id = "PRD-FEAT-012"
+    output_file = ".specgov/context/PRD-FEAT-012-context.md"
+
+    # 执行
+    generate_context(scope_id, output_file)
+
+    # 验证文件存在
+    assert os.path.exists(output_file)
+
+    # 验证内容
+    with open(output_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # 必须包含 scope 节点本身
+    assert "PRD-FEAT-012" in content
+    # 必须包含上游需求
+    assert "RD-REQ-005" in content
+    # 必须包含下游设计
+    assert "DESIGN-API-008" in content
+    # 必须包含文件路径引用
+    assert "docs/RD.md" in content
+    assert "docs/PRD.md" in content
+```
+
+**预期结果：**
+- ✅ 生成 context.md 文件
+- ✅ 文件包含依赖链上所有节点的内容片段
+- ✅ 每个片段包含文件路径和行号
+- ✅ 格式清晰，便于 Claude Code 理解
+
+---
+
+#### **Test Case: Handle Missing Scope ID**
+**[ID: TEST-CASE-CONSISTENCY-003]**
+
+**测试步骤：**
+```python
+def test_handle_missing_scope():
+    """测试不存在的 scope ID"""
+    from scripts.check_consistency import build_dependency_chain
+    import pytest
+
+    # 不存在的 ID
+    scope_id = "NONEXISTENT-ID-999"
+
+    # 应该抛出明确的异常
+    with pytest.raises(ValueError, match="Scope ID .* not found"):
+        build_dependency_chain(scope_id)
+```
+
+**预期结果：**
+- ✅ 抛出 ValueError 异常
+- ✅ 错误消息清晰："Scope ID 'NONEXISTENT-ID-999' not found in dependency graph"
+
+---
+
+#### **Test Case: Warn on Large Context**
+**[ID: TEST-CASE-CONSISTENCY-004]**
+
+**测试步骤：**
+```python
+def test_warn_large_context():
+    """测试超大上下文警告"""
+    from scripts.check_consistency import generate_context
+    import logging
+
+    # 假设有一个超长依赖链（> 5K tokens）
+    scope_id = "DESIGN-LARGE-MODULE-001"
+
+    with pytest.warns(UserWarning, match="Context size exceeds"):
+        generate_context(scope_id, max_tokens=5000)
+```
+
+**预期结果：**
+- ✅ 输出警告信息
+- ✅ 警告包含当前 token 数和建议
+- ✅ 仍然生成完整的 context.md
 
 ---
 
