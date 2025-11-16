@@ -18,7 +18,8 @@
       "WebFetch(domain:github.blog)",
       "Bash(git add:*)",
       "Bash(git rm:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
