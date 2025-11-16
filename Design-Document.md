@@ -1481,6 +1481,344 @@ if __name__ == '__main__':
 
 ---
 
+### **4.5 Consistency Check Script**
+
+**[ID: DESIGN-SCRIPT-CONSISTENCY-001] [Designs-for: PRD-US-003.4]**
+
+**文件**: `scripts/check-consistency.py`
+
+**用途**：为指定需求收集完整依赖链上下文，输出 context.md 供 Claude Code 使用
+
+**算法：**
+
+```python
+#!/usr/bin/env python3
+"""
+为指定需求收集完整依赖链上下文。
+"""
+import json
+import argparse
+import re
+from pathlib import Path
+
+def load_graph():
+    """加载依赖图谱。"""
+    with open('.specgov/index/dependency-graph.json', 'r') as f:
+        return json.load(f)
+
+def find_dependency_chain(graph, scope_id):
+    """找到指定 ID 的完整依赖链（上游和下游）。"""
+    chain = {'upstream': [], 'downstream': []}
+
+    # 构建邻接表
+    downstream_adj = {}  # id -> [依赖它的节点]
+    upstream_adj = {}    # id -> [它依赖的节点]
+
+    for edge in graph['edges']:
+        source = edge['from']
+        target = edge['to']
+        relation = edge['relation']
+
+        # 下游：source 依赖 target，所以 target 的下游包含 source
+        if target not in downstream_adj:
+            downstream_adj[target] = []
+        downstream_adj[target].append((source, relation))
+
+        # 上游：source 依赖 target，所以 source 的上游包含 target
+        if source not in upstream_adj:
+            upstream_adj[source] = []
+        upstream_adj[source].append((target, relation))
+
+    # BFS 查找上游（scope_id 实现了哪些节点）
+    visited_up = set()
+    queue_up = [scope_id]
+    while queue_up:
+        node_id = queue_up.pop(0)
+        if node_id in visited_up:
+            continue
+        visited_up.add(node_id)
+
+        if node_id in upstream_adj:
+            for target, relation in upstream_adj[node_id]:
+                if target not in visited_up:
+                    chain['upstream'].append((target, relation))
+                    queue_up.append(target)
+
+    # BFS 查找下游（哪些节点实现了 scope_id）
+    visited_down = set()
+    queue_down = [scope_id]
+    while queue_down:
+        node_id = queue_down.pop(0)
+        if node_id in visited_down:
+            continue
+        visited_down.add(node_id)
+
+        if node_id in downstream_adj:
+            for source, relation in downstream_adj[node_id]:
+                if source not in visited_down:
+                    chain['downstream'].append((source, relation))
+                    queue_down.append(source)
+
+    return chain
+
+def get_node_info(graph, node_id):
+    """获取节点信息。"""
+    for node in graph['nodes']:
+        if node['id'] == node_id:
+            return node
+    return None
+
+def extract_content(filepath, line_num, context_lines=20):
+    """从文件中提取内容，以 line_num 为中心。"""
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        # 查找包含标记的区域（向前向后扩展）
+        start = max(0, line_num - context_lines)
+        end = min(len(lines), line_num + context_lines)
+
+        # 尝试找到章节边界（以 ## 开头）
+        for i in range(line_num - 1, max(0, line_num - 50), -1):
+            if lines[i].startswith('##'):
+                start = i
+                break
+
+        for i in range(line_num, min(len(lines), line_num + 50)):
+            if lines[i].startswith('##') and i > line_num:
+                end = i
+                break
+
+        content = ''.join(lines[start:end])
+        return content.strip()
+
+    except Exception as e:
+        return f"Error reading file: {e}"
+
+def build_context(graph, scope_id, chain):
+    """构建上下文文件内容。"""
+    context = []
+
+    context.append("━" * 50)
+    context.append(f"# Consistency Check Context for {scope_id}")
+    context.append("━" * 50)
+    context.append("")
+
+    # 添加上游节点（scope_id 实现了什么）
+    if chain['upstream']:
+        context.append("## Upstream Dependencies (What this implements)")
+        context.append("")
+        for i, (node_id, relation) in enumerate(chain['upstream'], 1):
+            node = get_node_info(graph, node_id)
+            if node:
+                context.append(f"### {i}. {node_id} ({node['type']})")
+                context.append(f"**Source**: {node['location']}")
+                context.append(f"**Relation**: {scope_id} {relation} {node_id}")
+                context.append("")
+
+                # 提取内容
+                file_path, line_str = node['location'].split('#L')
+                line_num = int(line_str)
+                content = extract_content(file_path, line_num)
+                context.append(content)
+                context.append("")
+                context.append("---")
+                context.append("")
+
+    # 添加当前节点
+    current_node = get_node_info(graph, scope_id)
+    if current_node:
+        context.append(f"## Current Node: {scope_id} ({current_node['type']})")
+        context.append(f"**Source**: {current_node['location']}")
+        context.append("")
+
+        file_path, line_str = current_node['location'].split('#L')
+        line_num = int(line_str)
+        content = extract_content(file_path, line_num)
+        context.append(content)
+        context.append("")
+        context.append("---")
+        context.append("")
+
+    # 添加下游节点（谁实现了 scope_id）
+    if chain['downstream']:
+        context.append("## Downstream Dependencies (What implements this)")
+        context.append("")
+        for i, (node_id, relation) in enumerate(chain['downstream'], 1):
+            node = get_node_info(graph, node_id)
+            if node:
+                context.append(f"### {i}. {node_id} ({node['type']})")
+                context.append(f"**Source**: {node['location']}")
+                context.append(f"**Relation**: {node_id} {relation} {scope_id}")
+                context.append("")
+
+                # 提取内容
+                file_path, line_str = node['location'].split('#L')
+                line_num = int(line_str)
+                content = extract_content(file_path, line_num)
+                context.append(content)
+                context.append("")
+                context.append("---")
+                context.append("")
+
+    context.append("━" * 50)
+
+    return '\n'.join(context)
+
+def estimate_tokens(text):
+    """粗略估计 token 数（1 token ≈ 4 字符）。"""
+    return len(text) // 4
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='为指定需求收集完整依赖链上下文'
+    )
+    parser.add_argument('--scope', required=True, help='要检查的需求 ID（如 RD-REQ-005）')
+    parser.add_argument('--output', default='context.md', help='输出文件路径')
+    args = parser.parse_args()
+
+    print(f"🔍 收集 {args.scope} 的依赖链上下文...")
+
+    # 加载图谱
+    graph = load_graph()
+
+    # 验证 scope_id 存在
+    node = get_node_info(graph, args.scope)
+    if not node:
+        print(f"❌ 错误：找不到 {args.scope}")
+        return
+
+    # 查找依赖链
+    chain = find_dependency_chain(graph, args.scope)
+
+    # 构建上下文
+    context_content = build_context(graph, args.scope, chain)
+
+    # 估计 tokens
+    token_count = estimate_tokens(context_content)
+
+    # 检查 token 限制
+    if token_count > 5000:
+        print(f"⚠️  警告：上下文过大（约 {token_count} tokens），超过 5K 限制")
+        print("   考虑使用更具体的 scope 或减少 context_lines")
+
+    # 保存到文件
+    with open(args.output, 'w', encoding='utf-8') as f:
+        f.write(context_content)
+
+    # 统计信息
+    print(f"✓ 收集了 {args.scope} 的依赖链")
+    print(f"✓ 找到 {len(chain['upstream'])} 个上游依赖")
+    print(f"✓ 找到 {len(chain['downstream'])} 个下游依赖")
+    print(f"✓ 生成上下文文件：{args.output}（约 {token_count} tokens）")
+    print(f"✓ 保存到 {args.output}")
+    print()
+    print("📚 下一步：")
+    print("  1. 打开 Claude Code")
+    print("  2. 加载 .specgov/prompts/consistency-checker.md")
+    print(f"  3. 提供 {args.output} 内容")
+    print("  4. Claude Code 将检查一致性并输出报告")
+    print()
+    print("⏱️  时间：< 5 秒")
+    print("💰 成本：$0（本地上下文构建）")
+
+if __name__ == '__main__':
+    main()
+```
+
+**设计要点：**
+
+1. **依赖链查找**：
+   - 双向 BFS：既查找上游（scope_id 实现了什么），也查找下游（谁实现了 scope_id）
+   - 构建邻接表以提高查询效率
+
+2. **内容提取**：
+   - 从文件中提取标记周围的上下文（默认 20 行）
+   - 智能查找章节边界（以 `##` 开头的 Markdown 标题）
+   - 确保提取的内容有意义且完整
+
+3. **Token 控制**：
+   - 估计 tokens（1 token ≈ 4 字符）
+   - 警告如果超过 5K tokens
+   - 可通过 `context_lines` 参数调整
+
+4. **输出格式**：
+   - 清晰的 Markdown 格式
+   - 分为上游、当前节点、下游三部分
+   - 每个节点包含：ID、类型、位置、关系、内容
+
+5. **用户体验**：
+   - 详细的控制台输出
+   - 明确的下一步指导
+   - 性能和成本信息
+
+---
+
+## **五、Environment Requirements**
+
+### **5.1 Operating Environment**
+
+**[ID: DESIGN-ENV-001] [Designs-for: PRD-NFR-001]**
+
+**支持的环境：**
+
+| 组件 | 要求 | 说明 |
+|------|------|------|
+| **操作系统** | Windows 10/11 | 工具包专为 Windows 环境设计 |
+| **Shell 环境** | PowerShell 5.1+ | 所有命令行操作使用 PowerShell |
+| **Python 版本** | Python 3.8+ | 用于运行 helper scripts |
+| **AI 助手** | Claude Code | 必须安装并配置 Claude Code CLI |
+| **版本控制** | Git 2.x+ | 用于 impact_analysis.py 的 git diff 功能 |
+
+**环境验证：**
+
+用户可以运行以下命令验证环境：
+
+```powershell
+# 验证 Python 版本
+python --version
+# 应输出：Python 3.8.x 或更高
+
+# 验证 Git 版本
+git --version
+# 应输出：git version 2.x.x 或更高
+
+# 验证 PowerShell 版本
+$PSVersionTable.PSVersion
+# 应输出：5.1.x 或更高
+
+# 验证 Claude Code 是否可用
+claude --version
+# 或者检查 Claude Code 是否已安装
+```
+
+**不支持的环境：**
+- ❌ macOS / Linux（当前版本不支持，未来可能扩展）
+- ❌ Windows PowerShell 5.0 或更早版本
+- ❌ Python 2.x 或 Python 3.7 及更早版本
+- ❌ 其他 AI 助手（如 GitHub Copilot、GPT-4 API）
+
+**Windows-specific 设计决策：**
+
+1. **路径处理**：
+   - 使用 `pathlib.Path` 处理路径（跨平台兼容）
+   - 但优化为 Windows 路径分隔符 `\`
+
+2. **命令执行**：
+   - 使用 `subprocess.run()` 调用 Git
+   - 在 PowerShell 环境中执行
+
+3. **文件编码**：
+   - 所有文件使用 UTF-8 编码
+   - 明确指定 `encoding='utf-8'` 避免 Windows 默认编码问题
+
+4. **Claude Code 集成**：
+   - 假设 Claude Code 已通过 CLI 安装
+   - 用户手动在 Claude Code 中加载 prompt templates
+   - 未来版本可能支持自动化调用
+
+---
+
 ## **五、Non-Functional Requirements**
 
 ### **5.1 Performance**
