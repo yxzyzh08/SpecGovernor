@@ -77,16 +77,18 @@ powershell -ExecutionPolicy Bypass -File install-specgov.ps1
 
 **安装脚本会：**
 - ✅ 从 GitHub 下载 SpecGovernor 最新版本
-- ✅ 复制 `scripts/` 目录到项目
-- ✅ 复制 `templates/` 目录到项目
-- ✅ 创建 `.specgov/` 基础结构
+- ✅ 下载 Helper Scripts 到 `.specgov/scripts/`
+- ✅ 下载 Prompt 模板到 `.specgov/prompts/`
+- ✅ 下载 Workflow 文档到 `.specgov/workflows/`
+- ✅ 创建 `.specgov/` 完整结构
+- ✅ 创建 `.claude/commands/` 目录（运行 init_project.py 后）
 - ✅ 创建 `QUICK-START.md` 和 `CLAUDE.md`
 
 #### Step 3: 初始化项目结构
 
 ```powershell
 # 运行初始化脚本
-python scripts/init_project.py
+python .specgov/scripts/init_project.py
 ```
 
 #### Step 4: 验证安装
@@ -119,8 +121,13 @@ rm install-specgov.sh   # Linux/Mac
 ```
 your-project/                   # 您的项目根目录
 │
-├── .specgov/                   # ✨ SpecGovernor 配置和数据
-│   ├── config.json             # 项目配置
+├── .specgov/                   # ✨ SpecGovernor 所有文件
+│   ├── scripts/                # Helper Scripts（5 个）
+│   │   ├── init_project.py         # 项目初始化
+│   │   ├── parse_tags.py           # 解析标记
+│   │   ├── build_graph.py          # 构建图谱
+│   │   ├── check_consistency.py    # 一致性检查
+│   │   └── impact_analysis.py      # 影响分析
 │   ├── prompts/                # Prompt 模板（20 个）
 │   │   ├── rd-generator.md
 │   │   ├── rd-reviewer.md
@@ -150,27 +157,24 @@ your-project/                   # 您的项目根目录
 │   │   ├── workflow-test-plan.md
 │   │   ├── workflow-task-mgmt.md
 │   │   └── workflow-large-project.md
-│   ├── tasks/                  # 任务跟踪文件
+│   ├── tasks/                  # 任务跟踪文件（6 个）
 │   │   ├── project-manager.md
 │   │   ├── rd-analyst.md
 │   │   ├── product-manager.md
 │   │   ├── architect.md
 │   │   ├── test-manager.md
 │   │   └── developer.md
-│   └── index/                  # 索引数据（由脚本生成）
-│       ├── tags.json           # 可追溯性标记索引
-│       └── dependency-graph.json   # 依赖图谱
+│   ├── index/                  # 索引数据（由脚本生成）
+│   │   ├── tags.json           # 可追溯性标记索引
+│   │   └── dependency-graph.json   # 依赖图谱
+│   └── project-config.json     # 项目配置
 │
-├── templates/                  # ✨ SpecGovernor 模板文件（源文件）
-│   ├── prompts/                # （与 .specgov/prompts/ 相同）
-│   └── workflows/              # （与 .specgov/workflows/ 相同）
-│
-├── scripts/                    # ✨ SpecGovernor Helper Scripts
-│   ├── init_project.py         # 项目初始化
-│   ├── parse_tags.py           # 解析标记
-│   ├── build_graph.py          # 构建图谱
-│   ├── check_consistency.py    # 一致性检查
-│   └── impact_analysis.py      # 影响分析
+├── .claude/                    # ✨ Claude Code 命令集成
+│   └── commands/               # 斜杠命令（20 个）
+│       ├── specgov-rd-gen.md
+│       ├── specgov-rd-review.md
+│       ├── specgov-prd-gen.md
+│       └── ...                 # 其他 17 个命令
 │
 ├── docs/                       # ✨ 您的项目文档目录
 │   ├── RD.md                   # 您的 Requirements Document
@@ -189,7 +193,8 @@ your-project/                   # 您的项目根目录
 ```
 
 **说明：**
-- `.specgov/`, `templates/`, `scripts/` 由安装脚本自动创建
+- `.specgov/` 和 `.claude/` 目录由安装脚本自动创建
+- 所有 SpecGovernor 文件都在 `.specgov/` 目录中，保持项目根目录整洁
 - `docs/` 目录会被创建，但文档内容由您使用 SpecGovernor 工具生成
 - `src/`, `tests/`, `README.md` 等是您项目原有的文件，不受影响
 
@@ -252,7 +257,7 @@ ls .specgov/
 
 ```powershell
 # 检查脚本目录
-ls scripts/
+ls .specgov/scripts/
 
 # 应该看到：
 # - init_project.py
@@ -266,13 +271,13 @@ ls scripts/
 
 ```powershell
 # 测试 parse_tags.py（应该正常运行，即使没有标记）
-python scripts/parse_tags.py
+python .specgov/scripts/parse_tags.py
 
 # 应该看到：
 # Parsed 0 tags from 0 files
 
 # 测试 build_graph.py
-python scripts/build_graph.py
+python .specgov/scripts/build_graph.py
 
 # 应该看到：
 # Dependency graph saved to .specgov/index/dependency-graph.json
@@ -400,7 +405,7 @@ curl -O https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-spe
 powershell -ExecutionPolicy Bypass -File install-specgov.ps1
 
 # 3. 重新初始化
-python scripts/init_project.py
+python .specgov/scripts/init_project.py
 ```
 
 ---

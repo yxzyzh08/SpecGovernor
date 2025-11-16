@@ -132,6 +132,55 @@ def create_placeholder(filepath, doc_type):
         f.write(content)
 
 
+def create_claude_commands():
+    """创建 Claude Code 斜杠命令。"""
+    os.makedirs('.claude/commands', exist_ok=True)
+
+    # 定义所有 prompt 模板到命令的映射
+    prompt_commands = {
+        # 小项目模板 (Small Project Templates)
+        'rd-generator.md': ('specgov-rd-gen', 'Generate Requirements Document (RD)'),
+        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)'),
+        'prd-generator.md': ('specgov-prd-gen', 'Generate Product Requirements Document (PRD)'),
+        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)'),
+        'design-generator.md': ('specgov-design-gen', 'Generate Design Document'),
+        'design-reviewer.md': ('specgov-design-review', 'Review Design Document'),
+        'test-plan-generator.md': ('specgov-test-gen', 'Generate Test Plan'),
+        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan'),
+        'code-generator.md': ('specgov-code-gen', 'Generate code implementation'),
+        'code-reviewer.md': ('specgov-code-review', 'Review code implementation'),
+        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency'),
+        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact'),
+
+        # 大项目模板 (Large Project Templates)
+        'rd-overview-generator.md': ('specgov-rd-overview', 'Generate RD Overview (large project)'),
+        'rd-module-generator.md': ('specgov-rd-module', 'Generate RD Module (large project)'),
+        'prd-overview-generator.md': ('specgov-prd-overview', 'Generate PRD Overview (large project)'),
+        'prd-module-generator.md': ('specgov-prd-module', 'Generate PRD Module (large project)'),
+        'design-overview-generator.md': ('specgov-design-overview', 'Generate Design Overview (large project)'),
+        'design-module-generator.md': ('specgov-design-module', 'Generate Design Module (large project)'),
+        'test-plan-overview-generator.md': ('specgov-test-overview', 'Generate Test Plan Overview (large project)'),
+        'test-plan-module-generator.md': ('specgov-test-module', 'Generate Test Plan Module (large project)'),
+    }
+
+    command_count = 0
+    for prompt_file, (command_name, description) in prompt_commands.items():
+        command_content = f"""---
+description: {description}
+---
+
+Please load and use the SpecGovernor prompt template: `.specgov/prompts/{prompt_file}`
+
+Follow the instructions in the template to generate or review the document.
+"""
+        command_path = f'.claude/commands/{command_name}.md'
+        with open(command_path, 'w', encoding='utf-8') as f:
+            f.write(command_content)
+        command_count += 1
+
+    return command_count
+
+
 def main():
     """主函数。"""
     print("=" * 60)
@@ -155,17 +204,27 @@ def main():
     try:
         create_directory_structure(project_size)
 
+        # 创建 Claude Code 命令
+        print()
+        print("正在创建 Claude Code 斜杠命令...")
+        command_count = create_claude_commands()
+        print(f"✅ 已创建 {command_count} 个 Claude Code 命令！")
+
+        print()
         print("✅ SpecGovernor 项目结构创建完成！")
         print()
         print("=" * 60)
         print("📁 已创建的目录和文件：")
         print("=" * 60)
         print("  .specgov/")
+        print("    ├── scripts/      (5 个 helper scripts)")
         print("    ├── prompts/      (20 个 prompt 模板)")
         print("    ├── workflows/    (7 个工作流文档)")
         print("    ├── tasks/        (6 个任务文件)")
         print("    ├── index/        (索引目录)")
         print("    └── project-config.json")
+        print("  .claude/")
+        print("    └── commands/     (20 个斜杠命令)")
         print("  docs/             (项目文档目录)")
         print()
         print("=" * 60)
@@ -187,10 +246,16 @@ def main():
             print("  - 大项目流程：.specgov/workflows/workflow-large-project.md")
         print()
         print("🛠️  Helper Scripts：")
-        print("  - 解析标记：  python scripts/parse_tags.py")
-        print("  - 构建图谱：  python scripts/build_graph.py")
-        print("  - 一致性检查：python scripts/check_consistency.py")
-        print("  - 影响分析：  python scripts/impact_analysis.py --changed=docs/RD.md")
+        print("  - 解析标记：  python .specgov/scripts/parse_tags.py")
+        print("  - 构建图谱：  python .specgov/scripts/build_graph.py")
+        print("  - 一致性检查：python .specgov/scripts/check_consistency.py")
+        print("  - 影响分析：  python .specgov/scripts/impact_analysis.py --changed=docs/RD.md")
+        print()
+        print("💬 Claude Code 斜杠命令：")
+        print("  - 生成 RD：   /specgov-rd-gen")
+        print("  - 审查 RD：   /specgov-rd-review")
+        print("  - 生成 PRD：  /specgov-prd-gen")
+        print("  - 查看全部：  .claude/commands/ 目录")
         print()
         print(f"📋 项目配置：")
         print(f"  - 配置文件：.specgov/project-config.json")

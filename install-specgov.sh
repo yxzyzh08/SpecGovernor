@@ -64,9 +64,7 @@ echo "[2/6] Creating directory structure..."
 
 # Create directories
 directories=(
-    "scripts"
-    "templates/prompts"
-    "templates/workflows"
+    ".specgov/scripts"
     ".specgov/prompts"
     ".specgov/workflows"
     ".specgov/tasks"
@@ -96,8 +94,8 @@ scripts=(
 )
 
 for script in "${scripts[@]}"; do
-    url="$RAW_URL/scripts/$script"
-    output="scripts/$script"
+    url="$RAW_URL/.specgov/scripts/$script"
+    output=".specgov/scripts/$script"
 
     echo "  Downloading $script..."
     if curl -sSL "$url" -o "$output" --max-time 30; then
@@ -137,8 +135,8 @@ prompts=(
 prompt_count=0
 prompt_total=${#prompts[@]}
 for prompt in "${prompts[@]}"; do
-    url="$RAW_URL/templates/prompts/$prompt"
-    output="templates/prompts/$prompt"
+    url="$RAW_URL/.specgov/prompts/$prompt"
+    output=".specgov/prompts/$prompt"
 
     echo -n "  [$((prompt_count+1))/$prompt_total] Downloading $prompt... "
     if curl -sSL "$url" -o "$output" --max-time 30 2>/dev/null; then
@@ -167,8 +165,8 @@ workflows=(
 workflow_count=0
 workflow_total=${#workflows[@]}
 for workflow in "${workflows[@]}"; do
-    url="$RAW_URL/templates/workflows/$workflow"
-    output="templates/workflows/$workflow"
+    url="$RAW_URL/.specgov/workflows/$workflow"
+    output=".specgov/workflows/$workflow"
 
     echo -n "  [$((workflow_count+1))/$workflow_total] Downloading $workflow... "
     if curl -sSL "$url" -o "$output" --max-time 30 2>/dev/null; then
@@ -213,7 +211,7 @@ echo "========================================"
 echo
 
 echo "Next steps:"
-echo "  1. Run: $PYTHON_CMD scripts/init_project.py"
+echo "  1. Run: $PYTHON_CMD .specgov/scripts/init_project.py"
 echo "  2. Read: cat QUICK-START.md"
 echo "  3. Start: code .specgov/tasks/project-manager.md"
 echo
@@ -222,13 +220,13 @@ echo "For help, visit: $REPO_URL"
 echo
 
 # Ask if user wants to run init_project.py
-read -p "Do you want to run '$PYTHON_CMD scripts/init_project.py' now? (y/n) " -n 1 -r
+read -p "Do you want to run '$PYTHON_CMD .specgov/scripts/init_project.py' now? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo
     echo "Running init_project.py..."
     echo
-    $PYTHON_CMD scripts/init_project.py
+    $PYTHON_CMD .specgov/scripts/init_project.py
 fi
 
 echo

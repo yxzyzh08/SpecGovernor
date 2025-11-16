@@ -51,9 +51,7 @@ Write-Host "`n[2/6] Creating directory structure..." -ForegroundColor Green
 
 # Create directories
 $directories = @(
-    "scripts",
-    "templates/prompts",
-    "templates/workflows",
+    ".specgov/scripts",
     ".specgov/prompts",
     ".specgov/workflows",
     ".specgov/tasks",
@@ -82,8 +80,8 @@ $scripts = @(
 )
 
 foreach ($script in $scripts) {
-    $url = "$RAW_URL/scripts/$script"
-    $output = "scripts/$script"
+    $url = "$RAW_URL/.specgov/scripts/$script"
+    $output = ".specgov/scripts/$script"
 
     try {
         Write-Host "  Downloading $script..." -ForegroundColor Gray
@@ -124,8 +122,8 @@ $prompts = @(
 $promptCount = 0
 $promptTotal = $prompts.Count
 foreach ($prompt in $prompts) {
-    $url = "$RAW_URL/templates/prompts/$prompt"
-    $output = "templates/prompts/$prompt"
+    $url = "$RAW_URL/.specgov/prompts/$prompt"
+    $output = ".specgov/prompts/$prompt"
 
     try {
         Write-Host "  [$($promptCount+1)/$promptTotal] Downloading $prompt..." -ForegroundColor Gray -NoNewline
@@ -155,8 +153,8 @@ $workflows = @(
 $workflowCount = 0
 $workflowTotal = $workflows.Count
 foreach ($workflow in $workflows) {
-    $url = "$RAW_URL/templates/workflows/$workflow"
-    $output = "templates/workflows/$workflow"
+    $url = "$RAW_URL/.specgov/workflows/$workflow"
+    $output = ".specgov/workflows/$workflow"
 
     try {
         Write-Host "  [$($workflowCount+1)/$workflowTotal] Downloading $workflow..." -ForegroundColor Gray -NoNewline
@@ -202,17 +200,17 @@ Write-Host "  Installation Complete!" -ForegroundColor Green
 Write-Host "========================================`n" -ForegroundColor Cyan
 
 Write-Host "Next steps:" -ForegroundColor Yellow
-Write-Host "  1. Run: python scripts/init_project.py" -ForegroundColor White
+Write-Host "  1. Run: python .specgov/scripts/init_project.py" -ForegroundColor White
 Write-Host "  2. Read: type QUICK-START.md" -ForegroundColor White
 Write-Host "  3. Start: code .specgov/tasks/project-manager.md`n" -ForegroundColor White
 
 Write-Host "For help, visit: $REPO_URL`n" -ForegroundColor Gray
 
 # Ask if user wants to run init_project.py
-$runInit = Read-Host "Do you want to run 'python scripts/init_project.py' now? (y/n)"
+$runInit = Read-Host "Do you want to run 'python .specgov/scripts/init_project.py' now? (y/n)"
 if ($runInit -eq "y") {
     Write-Host "`nRunning init_project.py...`n" -ForegroundColor Green
-    python scripts/init_project.py
+    python .specgov/scripts/init_project.py
 }
 
 Write-Host "`nSpecGovernor installation completed successfully!`n" -ForegroundColor Green

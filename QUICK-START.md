@@ -236,7 +236,7 @@ Claude Code 将输出审查报告，标识问题（如果有）：
 
 ```powershell
 # 解析 RD.md 中的标记
-python scripts/parse_tags.py
+python .specgov/scripts/parse_tags.py
 ```
 
 **输出示例**:
@@ -255,7 +255,7 @@ Tags saved to .specgov/index/tags.json
 
 ```powershell
 # 构建依赖图谱
-python scripts/build_graph.py
+python .specgov/scripts/build_graph.py
 ```
 
 **输出示例**:
@@ -371,18 +371,28 @@ git commit -m "Update task status: RD generation completed"
 
 ### 使用 Helper Scripts
 
-- **影响分析**: 修改 RD 后运行 `python scripts/impact_analysis.py --changed=docs/RD.md`
-- **一致性检查**: 运行 `python scripts/check_consistency.py --scope=RD-REQ-005`
+- **影响分析**: 修改 RD 后运行 `python .specgov/scripts/impact_analysis.py --changed=docs/RD.md`
+- **一致性检查**: 运行 `python .specgov/scripts/check_consistency.py --scope=RD-REQ-005`
 
 ---
 
 ## 💡 提示和最佳实践
 
-1. **定期运行 Helper Scripts**: 每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
-2. **使用 Git 追踪变更**: 所有文档和任务文件都应该提交到 Git
-3. **保持任务状态最新**: 及时更新 `.specgov/tasks/` 中的任务状态
-4. **遵循工作流**: 参考 `.specgov/workflows/` 中的工作流文档
-5. **双重质量保证**: 始终使用 Generator + Reviewer 模式
+1. **使用 Claude 斜杠命令**: 在 Claude Code 中使用 `/specgov-rd-gen` 等命令快速加载 prompt 模板，无需手动打开文件
+2. **定期运行 Helper Scripts**: 每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
+3. **使用 Git 追踪变更**: 所有文档和任务文件都应该提交到 Git
+4. **保持任务状态最新**: 及时更新 `.specgov/tasks/` 中的任务状态
+5. **遵循工作流**: 参考 `.specgov/workflows/` 中的工作流文档
+6. **双重质量保证**: 始终使用 Generator + Reviewer 模式
+
+**可用的 Claude 斜杠命令：**
+- `/specgov-rd-gen` - 生成 RD
+- `/specgov-rd-review` - 审查 RD
+- `/specgov-prd-gen` - 生成 PRD
+- `/specgov-prd-review` - 审查 PRD
+- `/specgov-design-gen` - 生成 Design Document
+- `/specgov-test-gen` - 生成 Test Plan
+- 更多命令见 `.claude/commands/` 目录
 
 ---
 
