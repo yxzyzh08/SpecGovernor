@@ -1,1158 +1,1036 @@
-# **📦 SpecGovernor 产品需求文档 (PRD)**
+# **📦 Product Requirements Document (PRD) - SpecGovernor**
 
-> **版本**: v1.0-gemini
-> **基于**: requirement_gemini.md (v-gemini)
-> **创建日期**: 2025-11-16
-> **产品定位**: AI 增强型研发流程治理工具 - 基于显式可追溯性标记
-
----
-
-## **可追溯性声明**
-
-本文档实现以下需求文档的功能需求：
-- [Implements: RD-FR-1.1] 生成-评审对模式
-- [Implements: RD-FR-2.1] 项目索引构建
-- [Implements: RD-FR-3.1] 影响分析
-- [Implements: RD-FR-3.3] 一致性检查
-- [Implements: RD-FR-4.1] 主动触发检查
+> **Version**: v2.0
+> **Based on**: RD.md (v2.0)
+> **Created**: 2025-11-16
+> **Updated**: 2025-11-16
+> **Product Type**: Toolkit (Prompt Templates + Workflow Documentation + Helper Scripts)
 
 ---
 
-## **一、产品概述**
+## **Traceability Declaration**
 
-### **1.1 产品愿景**
-
-**[ID: PRD-VISION-001]**
-
-SpecGovernor 是一个专为**超级个体**设计的 CLI 工具，通过**显式可追溯性标记**和 **AI Agent 协作**，实现文档-代码全链路一致性管理，让一人团队也能高效管理复杂项目。
-
-**核心价值主张：**
-- 🎯 **100% 可靠追溯**：基于显式标记，无需依赖 AI 推断
-- 🔄 **双重质量保证**：Generator-Reviewer 对模式
-
+This document implements the following requirements from RD.md:
+- [Implements: RD-GOAL-001] 提供标准化提示词模板
+- [Implements: RD-GOAL-002] 定义规范化开发流程
+- [Implements: RD-GOAL-003] 实现可追溯性
+- [Implements: RD-GOAL-004] 提供辅助工具
+- [Implements: RD-USER-001] 服务超级个体用户
 
 ---
 
-### **1.2 目标用户画像**
+## **一、Product Overview**
 
-**[ID: PRD-USER-001] [Implements: RD-2.1]**
+### **1.1 Product Vision**
 
-| 用户类型 | 典型场景 | 痛点 |
+**[ID: PRD-VISION-001] [Implements: RD-GOAL-001]**
+
+SpecGovernor is a **comprehensive toolkit** designed for **Super Individuals** (超级个体), providing:
+
+- **Prompt templates** for generating standardized RD/PRD/Design Document/Test Plan/Code with Claude Code
+- **Workflow documentation** guiding humans through structured development processes
+- **Helper scripts** for parsing traceability tags, building dependency graphs, and impact analysis
+
+**Core Value Proposition:**
+- 🎯 **Explicit Traceability**: 100% reliable tracking through embedded tags, no AI inference needed
+- 🔄 **Dual Quality Assurance**: Generator-Reviewer template pairs for each stage
+- 📦 **Zero Installation**: Simple file templates you use directly with Claude Code
+- 💰 **Cost-Effective**: No software license, just templates and scripts
+
+---
+
+### **1.2 Target User Profile**
+
+**[ID: PRD-USER-001] [Implements: RD-USER-001]**
+
+| User Type | Typical Scenario | Pain Point |
 |---------|---------|------|
-| **独立开发者** | 开发 SaaS 产品 | 文档与代码不一致，需求变更难追踪 |
-| **技术创业者** | MVP 快速迭代 | 一人身兼多职，文档成本高 |
-| **小团队 Tech Lead** | 管理 5-10 人团队 | 需要规范流程但没有专职 PM/QA |
+| **Independent Developer** | Building SaaS products | Documents out of sync with code, hard to track requirements changes |
+| **Tech Entrepreneur** | MVP rapid iteration | Wearing multiple hats, high documentation cost |
+| **Small Team Tech Lead** | Managing 5-10 person team | Need process but no dedicated PM/QA |
 
 ---
 
-### **1.3 产品架构**
+### **1.3 Product Structure**
 
-**[ID: PRD-ARCH-001]**
+**[ID: PRD-STRUCTURE-001]**
 
 ```
-SpecGovernor CLI
-├── 项目初始化 (specgov init)
-├── 五阶段文档工作流
-│   ├── RD (需求文档)
-│   ├── PRD (产品文档)
-│   ├── DD (设计文档)
-│   ├── TD (测试文档)
-│   └── Code (代码)
-├── 核心引擎
-│   ├── 标记解析器
-│   ├── 依赖图构建
-│   ├── 影响分析引擎
-│   └── 一致性检查引擎
-└── AI Agent 集成
-    ├── Generator Agents (生成器)
-    └── Reviewer Agents (评审器)
+SpecGovernor Toolkit
+├── Prompt Templates (提示词模板)
+│   ├── rd-generator.md          # Generate/modify Requirements Document
+│   ├── rd-reviewer.md           # Review Requirements Document
+│   ├── prd-generator.md         # Generate/modify Product Requirements Document
+│   ├── prd-reviewer.md          # Review Product Requirements Document
+│   ├── design-generator.md      # Generate/modify Design Document
+│   ├── design-reviewer.md       # Review Design Document
+│   ├── test-plan-generator.md   # Generate/modify Test Plan
+│   ├── test-plan-reviewer.md    # Review Test Plan
+│   └── code-generator.md        # Generate/modify Code
+│
+├── Workflow Documentation (流程文档)
+│   ├── workflow-overview.md     # Overall SDLC workflow
+│   ├── workflow-rd.md           # RD generation workflow
+│   ├── workflow-prd.md          # PRD generation workflow
+│   ├── workflow-design.md       # Design Document workflow
+│   ├── workflow-test-plan.md    # Test Plan workflow
+│   └── workflow-task-mgmt.md    # Task management workflow
+│
+└── Helper Scripts (辅助脚本)
+    ├── parse_tags.py            # Parse traceability tags from files
+    ├── build_graph.py           # Build dependency graph
+    ├── impact_analysis.py       # Analyze impact of changes
+    └── init_project.py          # Initialize project structure
 ```
 
 ---
 
-## **二、用户故事 (User Stories)**
+## **二、User Stories**
 
-### **2.1 Epic 1：项目初始化**
+### **2.1 Epic 1: Project Initialization**
 
-**[ID: PRD-EPIC-001] [Implements: RD-FR-4.2]**
+**[ID: PRD-EPIC-001] [Implements: RD-INIT-001]**
 
-> **作为** 超级个体开发者
-> **我希望** 能够快速初始化 SpecGovernor 项目
-> **以便** 开始使用文档-代码一致性管理
+> **As** a Super Individual developer
+> **I want** to quickly set up SpecGovernor toolkit structure
+> **So that** I can start using standardized development workflows
 
-**子故事：**
+---
 
-#### **US-001.1：初始化项目结构**
+#### **US-001.1: Initialize Project Structure**
+
 **[ID: PRD-US-001.1]**
 
-```bash
-# 用户输入
-$ specgov init my-ecommerce --ai claude-code
+**User Flow:**
+```
+1. Developer downloads SpecGovernor toolkit repository
+2. Runs: python scripts/init_project.py
+3. Script prompts:
+   请选择项目规模：
+   1. 小项目（< 10 万行代码，单层文档结构）
+   2. 大项目（≥ 10 万行代码，双层文档结构）
+   您的选择：_
 
-# 系统输出
-✓ 项目初始化完成
-✓ AI 后端：claude-code
-✓ 目录结构：
+4. Script creates directory structure:
+
+For Small Project:
   .specgov/
-    ├── config.yml
-    ├── state.json
-    ├── index/
-    │   ├── modules.json
-    │   └── dependency-graph.json
-    └── artifacts/
-        ├── rd.md
-        ├── prd.md
-        ├── dd.md
-        └── td.md
+    ├── prompts/              # All prompt templates
+    ├── workflows/            # All workflow docs
+    ├── tasks/               # Task tracking files
+    │   ├── project-manager.md
+    │   ├── rd-analyst.md
+    │   ├── product-manager.md
+    │   ├── architect.md
+    │   └── test-manager.md
+    └── project-config.json   # Project configuration
 
-📚 下一步：
-  1. 编辑 .specgov/index/modules.json 定义模块
-  2. 运行 specgov rd:generate 开始生成需求文档
+  docs/
+    ├── RD.md
+    ├── PRD.md
+    ├── Design-Document.md
+    └── Test-Plan.md
+
+For Large Project:
+  .specgov/
+    └── (same as small project)
+
+  docs/
+    ├── RD/
+    │   ├── RD-Overview.md
+    │   └── (module-specific RD files)
+    ├── PRD/
+    │   ├── PRD-Overview.md
+    │   └── (module-specific PRD files)
+    ├── Design-Document/
+    │   ├── Design-Overview.md
+    │   └── (module-specific design files)
+    └── Test-Plan/
+        ├── Test-Overview.md
+        └── (module-specific test files)
+
+5. Script outputs:
+   ✓ SpecGovernor 项目结构创建完成
+
+   📚 下一步：
+     1. Review .specgov/workflows/workflow-overview.md
+     2. As Project Manager, create your first Epic in .specgov/tasks/project-manager.md
+     3. Switch to Requirements Analyst role, load .specgov/prompts/rd-generator.md in Claude Code
 ```
 
-**验收标准：**
-- ✅ 创建 `.specgov/` 目录及所有子目录
-- ✅ 生成默认配置文件
-- ✅ 支持 `--ai` 参数选择后端（claude-code, gemini-cli 等）
-- ✅ 初始化 Git 仓库（如果不存在）
-- ✅ 输出友好的下一步指引
+**Acceptance Criteria:**
+- ✅ Creates `.specgov/` directory with all templates and workflows
+- ✅ Creates appropriate document structure based on project size selection
+- ✅ Generates `project-config.json` with project metadata
+- ✅ Outputs clear next-step guidance
 
 ---
 
-### **2.2 Epic 2：文档生成-评审-修订循环**
+### **2.2 Epic 2: Using Prompt Templates with Claude Code**
 
-**[ID: PRD-EPIC-002] [Implements: RD-FR-1.1, RD-FR-1.2, RD-FR-1.3]**
+**[ID: PRD-EPIC-002] [Implements: RD-GOAL-001, RD-GOAL-002]**
 
-> **作为** 超级个体开发者
-> **我希望** 通过 AI Agent 自动生成高质量文档
-> **并且** 通过独立的 Reviewer Agent 进行评审
-> **以便** 避免自我审查偏差，提高文档质量
+> **As** a Super Individual developer
+> **I want** to use prompt templates with Claude Code to generate standardized documents
+> **So that** I maintain consistency and traceability across all artifacts
 
 ---
 
-#### **US-002.1：生成需求文档 (RD)**
+#### **US-002.1: Generate Requirements Document (RD)**
+
 **[ID: PRD-US-002.1]**
 
-```bash
-# 用户输入
-$ specgov rd:generate --input=user-stories/oauth2-login.md
+**User Flow:**
+```
+1. Developer switches to "Requirements Analyst" role perspective
 
-# 系统输出
-🤖 RD Generator Agent 正在工作...
+2. Opens .specgov/tasks/rd-analyst.md to check assigned tasks
 
-  读取输入：user-stories/oauth2-login.md
-  调用 AI：claude-code (claude-sonnet-4)
-  生成中...
+3. Opens Claude Code
 
-✓ 生成完成：.specgov/artifacts/rd.md
+4. Loads prompt template .specgov/prompts/rd-generator.md
 
-📄 预览：
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# 需求文档 (RD)
+5. Provides context:
+   - Business requirements
+   - User stories
+   - Existing documents (if modifying)
 
-## 1. 用户认证需求
-[ID: RD-AUTH-001]
+6. Claude Code (using the prompt template):
+   - Generates RD.md with proper structure
+   - Embeds traceability tags: [ID: RD-REQ-XXX]
+   - Uses [Decomposes: XXX] for hierarchical requirements
+   - Follows markdown formatting standards
 
-### 1.1 OAuth2 登录
-[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]
+7. Output saved to docs/RD.md
 
-系统必须支持用户通过 OAuth2 进行登录，支持的
-提供商包括 Google、GitHub、Microsoft...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. Developer updates .specgov/tasks/rd-analyst.md:
+   - Marks task as complete
+   - Adds notes
 
-📊 统计：
-  - 生成的需求数量：3
-  - 可追溯性标记：5 个 [ID: XXX]
-  - 依赖关系标记：2 个 [Decomposes: XXX]
-  - 生成时间：45 秒
-  - 成本：$0.15
+9. Developer switches to "Project Manager" role
 
-📚 下一步：
-  运行 specgov rd:review 进行评审
+10. Updates .specgov/tasks/project-manager.md:
+    - Updates Epic progress (e.g., 20% -> 40%)
+    - Notes completion of RD generation subtask
 ```
 
-**验收标准：**
-- ✅ 支持 `--input` 参数加载用户输入
-- ✅ 调用 Generator Agent 生成 Markdown 文档
-- ✅ **自动嵌入可追溯性标记**（[ID: XXX]）
-- ✅ 支持层次化需求（[Decomposes: XXX]）
-- ✅ 输出统计信息（标记数量、成本、时间）
-- ✅ 保存到 `.specgov/artifacts/rd.md`
+**Example Generated RD Section:**
+```markdown
+## 1. User Authentication Requirements
+**[ID: RD-AUTH-001]**
+
+This section defines all authentication-related requirements.
+
+### 1.1 OAuth2 Login
+**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+
+The system must support user login via OAuth2 protocol, including:
+- Google OAuth2
+- GitHub OAuth2
+- Microsoft OAuth2
+
+...
+```
+
+**Acceptance Criteria:**
+- ✅ Prompt template (rd-generator.md) guides Claude Code to generate proper RD structure
+- ✅ Generated RD contains embedded traceability tags
+- ✅ Template handles both creation and modification scenarios
+- ✅ Follows naming conventions from RD.md
+- ✅ User updates both task documents (role-specific and project manager)
 
 ---
 
-#### **US-002.2：评审需求文档 (RD)**
+#### **US-002.2: Review Requirements Document (RD)**
+
 **[ID: PRD-US-002.2]**
 
-```bash
-# 用户输入（使用不同的 AI 后端）
-$ specgov rd:review --ai gemini-cli
+**User Flow:**
+```
+1. Developer stays in "Requirements Analyst" role or switches to a different perspective for independent review
 
-# 系统输出
-🔍 RD Reviewer Agent 正在评审...
+2. Opens Claude Code
 
-  读取文档：.specgov/artifacts/rd.md
-  调用 AI：gemini-cli (gemini-1.5-pro)
-  评审中...
+3. Loads review prompt template .specgov/prompts/rd-reviewer.md
 
-✓ 评审完成：.specgov/reviews/rd-review.json
+4. Provides the generated docs/RD.md for review
 
-📋 评审报告：
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-总结：
-  ✓ 整体质量：良好
-  ⚠️  发现 2 个建议，0 个严重问题
+5. Claude Code (using the reviewer template):
+   - Checks for completeness
+   - Validates traceability tags (all requirements have [ID: XXX])
+   - Checks [Decomposes: XXX] references are valid
+   - Identifies missing requirements
+   - Suggests improvements
 
-问题清单：
-  1. [建议] RD-REQ-005 (OAuth2 登录)
-     - 位置：第 1.1 节
-     - 问题：缺少具体的错误处理要求
-     - 建议：补充登录失败、token 过期等场景
+6. Outputs structured review report (JSON or Markdown)
 
-  2. [建议] 可追溯性标记
-     - 位置：第 2.3 节
-     - 问题：缺少 [ID: XXX] 标记
-     - 建议：为"数据安全需求"添加标记
-
-可追溯性检查：
-  ✓ 所有主要需求都有 [ID: XXX] 标记
-  ✓ [Decomposes: XXX] 引用的父 ID 都存在
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📚 下一步：
-  运行 specgov rd:revise 根据评审意见修订
+7. Developer addresses review feedback using rd-generator.md again (modification mode)
 ```
 
-**验收标准：**
-- ✅ 调用 Reviewer Agent（可指定不同 AI 后端）
-- ✅ 输出结构化评审报告（JSON 格式）
-- ✅ **检查可追溯性标记的完整性和正确性**
-- ✅ 区分问题等级（严重/警告/建议）
-- ✅ 提供具体的修改建议
-- ✅ 保存到 `.specgov/reviews/rd-review.json`
+**Example Review Report:**
+```markdown
+# RD Review Report
+
+## Summary
+✓ Overall quality: Good
+⚠️  Found 2 suggestions, 0 critical issues
+
+## Issues
+
+### 1. [Suggestion] RD-REQ-005 (OAuth2 Login)
+- Location: Section 1.1
+- Issue: Missing error handling requirements
+- Recommendation: Add requirements for login failure, token expiration scenarios
+
+### 2. [Suggestion] Traceability Tags
+- Location: Section 2.3
+- Issue: Missing [ID: XXX] tag
+- Recommendation: Add tag for "Data Security Requirements"
+
+## Traceability Check
+✓ All major requirements have [ID: XXX] tags
+✓ All [Decomposes: XXX] references point to existing parent IDs
+```
+
+**Acceptance Criteria:**
+- ✅ Reviewer template (rd-reviewer.md) guides Claude Code to check completeness
+- ✅ Validates traceability tag correctness
+- ✅ Outputs structured feedback
+- ✅ Distinguishes issue severity (critical/warning/suggestion)
 
 ---
 
-#### **US-002.3：修订需求文档 (RD)**
+#### **US-002.3: Generate Product Requirements Document (PRD)**
+
 **[ID: PRD-US-002.3]**
 
-```bash
-# 用户输入
-$ specgov rd:revise
+**User Flow:**
+```
+1. Developer switches to "Product Manager" role
 
-# 系统输出
-🔧 RD Generator Agent 正在修订...
+2. Opens .specgov/tasks/product-manager.md to check assigned tasks
 
-  读取原文档：.specgov/artifacts/rd.md
-  读取评审报告：.specgov/reviews/rd-review.json
-  调用 AI：claude-code
-  修订中...
+3. Opens Claude Code
 
-✓ 修订完成：.specgov/artifacts/rd.md (v2)
+4. Loads prompt template .specgov/prompts/prd-generator.md
 
-📝 变更摘要：
-  - 修复问题 1：补充了 OAuth2 错误处理场景
-  - 修复问题 2：为第 2.3 节添加了 [ID: RD-SEC-001]
+5. Provides context:
+   - docs/RD.md (generated in previous step)
+   - Product vision
+   - User personas
 
-📚 下一步：
-  运行 specgov index:update 更新索引
+6. Claude Code generates PRD.md with:
+   - Product features: [ID: PRD-FEAT-XXX]
+   - User stories: [ID: PRD-US-XXX]
+   - Traceability to RD: [Implements: RD-REQ-XXX]
+
+7. Output saved to docs/PRD.md
+
+8. Updates both .specgov/tasks/product-manager.md and project-manager.md
 ```
 
-**验收标准：**
-- ✅ 基于评审报告自动修订
-- ✅ 保留原文档的可追溯性标记
-- ✅ 输出变更摘要
-- ✅ 版本号递增（v1 → v2）
+**Example Generated PRD Section:**
+```markdown
+## 2. User Authentication Features
+
+### 2.1 OAuth2 Login Feature
+**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+
+#### User Story
+> **As** a user
+> **I want** to log in using my Google/GitHub/Microsoft account
+> **So that** I don't need to create a new password
+
+#### Acceptance Criteria
+- ✅ Support Google OAuth2 login
+- ✅ Support GitHub OAuth2 login
+- ✅ Support Microsoft OAuth2 login
+- ✅ Handle login failures gracefully
+- ✅ Handle token expiration
+```
+
+**Acceptance Criteria:**
+- ✅ PRD generator template creates proper product features
+- ✅ Embeds [Implements: RD-XXX] tags linking to requirements
+- ✅ Follows product document best practices
+- ✅ Template can both create and modify PRD
 
 ---
 
-### **2.3 Epic 3：索引构建与依赖图管理**
+#### **US-002.4: Generate Design Document**
 
-**[ID: PRD-EPIC-003] [Implements: RD-FR-2.1, RD-FR-2.2, RD-FR-2.3]**
+**[ID: PRD-US-002.4]**
 
-> **作为** 超级个体开发者
-> **我希望** 系统能够自动解析文档中的可追溯性标记
-> **并构建** 高精度的依赖关系图
-> **以便** 快速进行影响分析和一致性检查
+**User Flow:**
+```
+1. Developer switches to "Architect" role
 
----
+2. Loads .specgov/prompts/design-generator.md in Claude Code
 
-#### **US-003.1：构建项目索引**
-**[ID: PRD-US-003.1]**
+3. Provides:
+   - docs/RD.md
+   - docs/PRD.md
+   - Technical constraints
 
-```bash
-# 用户输入
-$ specgov index:build
+4. Claude Code generates Design-Document.md with:
+   - Architecture design: [ID: DESIGN-ARCH-XXX]
+   - API design: [ID: DESIGN-API-XXX]
+   - Database design: [ID: DESIGN-DB-XXX]
+   - Traceability: [Designs-for: PRD-FEAT-XXX]
 
-# 系统输出
-🔨 构建项目索引...
+5. Output saved to docs/Design-Document.md
 
-  扫描项目文件...
-    ✓ docs/rd.md
-    ✓ docs/prd.md
-    ✓ docs/dd.md
-    ✓ src/auth/auth.controller.ts
-    ✓ src/user/user.service.ts
-    (扫描 125 个文件)
-
-  解析可追溯性标记...
-    ✓ 发现 45 个 [ID: XXX] 标记
-    ✓ 发现 38 个 [Implements: XXX] 标记
-    ✓ 发现 12 个 [Decomposes: XXX] 标记
-
-  构建依赖图...
-    ✓ 创建 45 个节点
-    ✓ 创建 50 条边
-    ✓ 检测到 0 个循环依赖
-
-✓ 索引构建完成：.specgov/index/dependency-graph.json
-
-📊 统计：
-  - 需求 (RD): 15 个
-  - 功能 (PRD): 12 个
-  - 设计 (DD): 10 个
-  - 测试 (TD): 5 个
-  - 代码 (Code): 3 个
-
-⏱️  耗时：8 秒（100 万行代码项目）
-💰 成本：$0（本地解析，无 AI 调用）
-
-📚 下一步：
-  运行 specgov analyze:impact 进行影响分析
+6. Updates task documents
 ```
 
-**验收标准：**
-- ✅ 扫描所有 Markdown 和代码文件
-- ✅ 正则表达式解析所有标记类型
-- ✅ 构建节点和边的数据结构
-- ✅ 检测循环依赖并警告
-- ✅ 保存到 `.specgov/index/dependency-graph.json`
-- ✅ **性能：100 万行代码 < 1 分钟**
-- ✅ **成本：$0（本地计算）**
+**Example Generated Design Section:**
+```markdown
+## 3. API Design
 
----
+### 3.1 OAuth2 Callback API
+**[ID: DESIGN-API-008] [Designs-for: PRD-FEAT-012]**
 
-#### **US-003.2：增量更新索引**
-**[ID: PRD-US-003.2]**
+**Endpoint**: POST /auth/oauth2/callback
 
-```bash
-# 用户修改文档后
-$ specgov index:update --scope=rd
-
-# 系统输出
-🔄 增量更新索引...
-
-  检测变更（Git diff）：
-    M docs/rd.md
-
-  重新解析变更文件...
-    ✓ docs/rd.md (新增 2 个标记，删除 1 个标记)
-
-  更新依赖图...
-    + 新增节点：RD-REQ-008
-    + 新增边：RD-REQ-008 → PRD-FEAT-015
-    - 删除节点：RD-REQ-006
-
-✓ 索引更新完成
-
-⏱️  耗时：2 秒
-💰 成本：$0
-```
-
-**验收标准：**
-- ✅ 基于 Git diff 检测变更文件
-- ✅ 只重新解析变更文件
-- ✅ 增量更新依赖图（添加/删除节点和边）
-- ✅ **性能：单文件更新 < 5 秒**
-
----
-
-### **2.4 Epic 4：影响分析**
-
-**[ID: PRD-EPIC-004] [Implements: RD-FR-3.1, RD-FR-3.2]**
-
-> **作为** 超级个体开发者
-> **我希望** 修改文档后能立即知道影响范围
-> **以便** 决定哪些下游文档和代码需要更新
-
----
-
-#### **US-004.1：分析单个文件变更的影响**
-**[ID: PRD-US-004.1]**
-
-```bash
-# 用户修改 RD 后
-$ specgov analyze:impact --changed=docs/rd.md
-
-# 系统输出
-🔍 分析影响范围...
-
-  识别变更的节点（基于 Git diff + 标记解析）：
-    - RD-REQ-005 (OAuth2 登录需求)
-    - RD-REQ-007 (数据加密需求)
-
-  查询依赖图（下游节点）...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 影响分析报告
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-变更节点 (2):
-  • RD-REQ-005 (requirement) at docs/rd.md#L42
-  • RD-REQ-007 (requirement) at docs/rd.md#L85
-
-受影响的文档 (5):
-  ⚠️  PRD-FEAT-012 (feature) at docs/prd.md#L128
-      原因：实现了 RD-REQ-005
-
-  ⚠️  DD-API-008 (api_design) at docs/dd.md#L234
-      原因：设计了 PRD-FEAT-012
-
-  ⚠️  TD-CASE-015 (test) at docs/td.md#L56
-      原因：测试了 DD-API-008
-
-  ⚠️  PRD-FEAT-020 (feature) at docs/prd.md#L256
-      原因：实现了 RD-REQ-007
-
-  ⚠️  DD-DB-003 (database) at docs/dd.md#L89
-      原因：设计了 PRD-FEAT-020
-
-受影响的代码 (3):
-  ⚠️  CODE-API-008 (api_impl) at src/auth/auth.controller.ts#L89
-      原因：实现了 DD-API-008
-
-  ⚠️  CODE-SERVICE-005 (service) at src/user/user.service.ts#L45
-      原因：实现了 DD-API-008
-
-  ⚠️  CODE-CRYPTO-001 (crypto) at src/utils/crypto.ts#L12
-      原因：实现了 DD-DB-003
-
-建议的后续操作：
-  1. 重新生成受影响的 PRD 部分
-     $ specgov prd:regenerate --scope=PRD-FEAT-012
-
-  2. 评审并更新 DD
-     $ specgov dd:review --scope=DD-API-008
-
-  3. 检查代码一致性
-     $ specgov check:consistency --scope=CODE-API-008
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ 报告已保存：.specgov/reports/impact-2025-11-16-14-30.json
-
-⏱️  耗时：6 秒
-💰 成本：$0（纯图查询，无 AI 调用）
-```
-
-**验收标准：**
-- ✅ 基于 Git diff 识别变更的标记
-- ✅ 查询依赖图的下游节点
-- ✅ 输出清晰的影响范围（文档 + 代码）
-- ✅ 提供具体的后续操作建议
-- ✅ 保存 JSON 格式的报告
-- ✅ **性能：< 10 秒**
-- ✅ **成本：$0**
-
----
-
-### **2.5 Epic 5：一致性检查**
-
-**[ID: PRD-EPIC-005] [Implements: RD-FR-3.3, RD-FR-3.4, RD-FR-3.5]**
-
-> **作为** 超级个体开发者
-> **我希望** 提交代码前能检查文档-代码的一致性
-> **以便** 避免需求遗漏或实现偏差
-
----
-
-#### **US-005.1：检查单个需求的全链路一致性**
-**[ID: PRD-US-005.1]**
-
-```bash
-# 用户输入
-$ specgov check:consistency --scope=RD-REQ-005
-
-# 系统输出
-🔍 检查一致性...
-
-  定位依赖链（基于依赖图）：
-    RD-REQ-005 → PRD-FEAT-012 → DD-API-008 → CODE-API-008
-
-  加载相关内容...
-    ✓ docs/rd.md#L42-L45 (4 行)
-    ✓ docs/prd.md#L128-L156 (29 行)
-    ✓ docs/dd.md#L234-L256 (23 行)
-    ✓ src/auth/auth.controller.ts#L89-L112 (24 行)
-    (总计 80 行，约 2K tokens)
-
-  调用一致性 Agent 深度分析...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 一致性检查报告 (RD-REQ-005)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ RD ↔ PRD：一致
-  PRD-FEAT-012 完整实现了 RD-REQ-005 的需求
-
-✓ PRD ↔ DD：一致
-  DD-API-008 的 API 设计满足 PRD-FEAT-012 的功能要求
-
-✗ DD ↔ Code：发现 1 处不一致
-
-  问题 #1 [严重]
-  ────────────────────────────────────
-  位置：src/auth/auth.controller.ts#L95
-
-  期望（DD-API-008）：
-    API 路径：POST /auth/oauth2/callback
-
-  实际（CODE-API-008）：
-    代码实现：GET /auth/oauth2/callback
-
-  影响：HTTP 方法不匹配，可能导致安全问题
-
-  建议：修改代码为 POST 方法
-  ────────────────────────────────────
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-总结：发现 1 处严重不一致，需修复后重新检查
-
-✓ 报告已保存：.specgov/reports/consistency-RD-REQ-005.json
-
-⏱️  耗时：1 分 35 秒
-💰 成本：$0.03（上下文 2K tokens）
-```
-
-**验收标准：**
-- ✅ 基于依赖图定位全链路（RD → PRD → DD → Code）
-- ✅ 只加载相关内容（< 5K tokens）
-- ✅ 调用 AI Agent 进行深度语义分析
-- ✅ 输出结构化的差异报告
-- ✅ 区分严重程度（严重/警告/建议）
-- ✅ **性能：< 2 分钟**
-- ✅ **成本：< $0.05**
-
----
-
-#### **US-005.2：检查单个模块的一致性**
-**[ID: PRD-US-005.2]**
-
-```bash
-# 用户输入
-$ specgov check:consistency --scope=AuthModule
-
-# 系统输出（类似 US-005.1，但检查整个模块）
-🔍 检查模块一致性...
-
-  定位模块相关节点（基于 modules.json）：
-    - RD-REQ-005 (OAuth2 登录)
-    - RD-REQ-006 (密码登录)
-    - RD-REQ-007 (数据加密)
-    (共 8 个需求)
-
-  加载相关内容（约 15K tokens）...
-  调用一致性 Agent...
-
-✓ 检查完成：发现 2 处不一致
-
-⏱️  耗时：1 分 58 秒
-💰 成本：$0.08
-```
-
-**验收标准：**
-- ✅ 基于 `modules.json` 定位模块
-- ✅ 加载模块相关的所有文档和代码
-- ✅ **性能：< 2 分钟**
-- ✅ **成本：< $0.10**
-
----
-
-#### **US-005.3：全项目一致性检查（并行）**
-**[ID: PRD-US-005.3]**
-
-```bash
-# 用户输入
-$ specgov check:consistency --scope=full
-
-# 系统输出
-🔍 检测到 10 个模块，建议并行检查
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-并行检查指南
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-请在多个终端/AI 客户端中并行执行以下命令：
-
-  终端 1: specgov check:consistency --scope=UserModule
-  终端 2: specgov check:consistency --scope=AuthModule
-  终端 3: specgov check:consistency --scope=OrderModule
-  终端 4: specgov check:consistency --scope=PaymentModule
-  终端 5: specgov check:consistency --scope=InventoryModule
-  ...（共 10 个模块）
-
-完成后运行：
-  $ specgov check:merge
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-提示：如果顺序执行，预计耗时 20 分钟
-      并行执行，预计耗时 5 分钟
-```
-
-**合并报告：**
-
-```bash
-$ specgov check:merge
-
-# 系统输出
-🔄 合并一致性检查报告...
-
-  读取报告：
-    ✓ .specgov/reports/consistency-UserModule.json
-    ✓ .specgov/reports/consistency-AuthModule.json
-    ✓ .specgov/reports/consistency-OrderModule.json
-    (共 10 个模块)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 全项目一致性检查报告
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-总结：
-  ✓ 通过：8 个模块
-  ⚠️  警告：1 个模块 (InventoryModule - 2 处警告)
-  ✗ 失败：1 个模块 (PaymentModule - 3 处严重问题)
-
-详细问题列表：
-  [严重] PaymentModule - DD ↔ Code 不一致
-    位置：src/payment/payment.service.ts#L45
-    问题：DD 设计使用整数（分），代码使用浮点（元）
-
-  [严重] PaymentModule - PRD ↔ DD 不一致
-    位置：docs/dd.md#L234
-    问题：PRD 要求分页，DD 未设计分页参数
-
-  ... (共 5 处问题)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ 合并报告已保存：.specgov/reports/consistency-full-2025-11-16.json
-
-总耗时：5 分 12 秒（10 个模块并行）
-总成本：$0.80
-```
-
-**验收标准：**
-- ✅ 检测模块数量，输出并行任务清单
-- ✅ 提供合并命令
-- ✅ 汇总所有模块的检查结果
-- ✅ **性能：< 10 分钟（并行）**
-- ✅ **成本：< $2**
-
----
-
-## **三、功能列表与命令设计**
-
-### **3.1 CLI 命令架构**
-
-**[ID: PRD-FEAT-CLI-001]**
-
-```
-specgov
-├── init                    # 项目初始化
-├── rd:*                    # RD 阶段命令
-│   ├── generate
-│   ├── review
-│   └── revise
-├── prd:*                   # PRD 阶段命令
-│   ├── generate
-│   ├── review
-│   └── revise
-├── dd:*                    # DD 阶段命令
-├── td:*                    # TD 阶段命令
-├── index:*                 # 索引管理
-│   ├── build
-│   └── update
-├── analyze:*               # 分析命令
-│   └── impact
-├── check:*                 # 检查命令
-│   ├── consistency
-│   └── merge
-└── config:*                # 配置管理
-    ├── show
-    └── set
-```
-
----
-
-### **3.2 核心命令详细设计**
-
-#### **命令：specgov init**
-**[ID: PRD-CMD-001]**
-
-**语法：**
-```bash
-specgov init <project-name> [options]
-```
-
-**参数：**
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `<project-name>` | string | ✅ | - | 项目名称 |
-| `--ai` | string | ❌ | claude-code | AI 后端（claude-code, gemini-cli 等） |
-| `--no-git` | boolean | ❌ | false | 不初始化 Git 仓库 |
-
-**输出：**
-- 创建 `.specgov/` 目录结构
-- 生成 `config.yml`、`state.json`、`modules.json`
-- 输出下一步指引
-
----
-
-#### **命令：specgov rd:generate**
-**[ID: PRD-CMD-002] [Implements: RD-FR-1.2]**
-
-**语法：**
-```bash
-specgov rd:generate [options]
-```
-
-**参数：**
-| 参数 | 类型 | 必需 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| `--input` | string | ❌ | - | 输入文件路径（用户故事、业务需求等） |
-| `--ai` | string | ❌ | 默认 AI | AI 后端 |
-| `--output` | string | ❌ | .specgov/artifacts/rd.md | 输出路径 |
-
-**核心功能：**
-1. 读取输入文件（如果提供）
-2. 调用 RD Generator Agent
-3. **Agent 必须在输出中嵌入可追溯性标记**
-4. 保存到 `.specgov/artifacts/rd.md`
-5. 输出统计信息
-
-**Agent 提示词要点：**
-```
-你是一位需求分析师。请生成需求文档。
-
-【重要要求】
-1. 为每个需求分配唯一 ID：[ID: RD-REQ-XXX]
-2. 如果需求有层次结构，使用 [Decomposes: PARENT-ID]
-3. 输出 Markdown 格式
-
-【输出示例】
-## 1. 用户认证需求
-[ID: RD-AUTH-001]
-
-### 1.1 OAuth2 登录
-[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]
-
-系统必须支持...
-```
-
----
-
-#### **命令：specgov index:build**
-**[ID: PRD-CMD-006] [Implements: RD-FR-2.1]**
-
-**语法：**
-```bash
-specgov index:build [options]
-```
-
-**参数：**
-| 参数 | 类型 | 必需 | 说明 |
-|------|------|------|------|
-| `--force` | boolean | ❌ | 强制重建（忽略缓存） |
-
-**核心功能：**
-1. 扫描项目文件（Markdown + 代码）
-2. 正则表达式解析所有标记
-3. 构建依赖图（节点 + 边）
-4. 检测循环依赖
-5. 保存到 `.specgov/index/dependency-graph.json`
-
-**性能要求：**
-- ✅ 100 万行代码 < 1 分钟
-- ✅ 纯本地计算，$0 成本
-
----
-
-#### **命令：specgov analyze:impact**
-**[ID: PRD-CMD-008] [Implements: RD-FR-3.1]**
-
-**语法：**
-```bash
-specgov analyze:impact --changed=<file>
-```
-
-**核心功能：**
-1. Git diff 识别变更内容
-2. 解析变更文件中的标记
-3. 查询依赖图的下游节点
-4. 输出影响范围（文档 + 代码）
-5. 提供后续操作建议
-
-**性能要求：**
-- ✅ < 10 秒
-- ✅ $0 成本（纯图查询）
-
----
-
-#### **命令：specgov check:consistency**
-**[ID: PRD-CMD-010] [Implements: RD-FR-3.3, RD-FR-3.4]**
-
-**语法：**
-```bash
-specgov check:consistency --scope=<scope>
-```
-
-**参数：**
-| 参数 | 类型 | 说明 | 示例 |
-|------|------|------|------|
-| `--scope` | string | 检查范围 | `RD-REQ-005`（单个需求）<br>`AuthModule`（单个模块）<br>`full`（全项目） |
-
-**核心功能：**
-1. 基于依赖图定位依赖链
-2. 加载相关文档和代码（< 20K tokens）
-3. 调用一致性 Agent
-4. 输出差异报告
-
-**性能要求：**
-- ✅ 单需求：< 2 分钟
-- ✅ 单模块：< 2 分钟
-- ✅ 全项目（并行）：< 10 分钟
-
----
-
-## **四、交互设计规范**
-
-### **4.1 CLI 输出格式标准**
-
-**[ID: PRD-UI-001]**
-
-#### **成功消息**
-```
-✓ 操作成功
-```
-
-#### **错误消息**
-```
-✗ 操作失败：<原因>
-```
-
-#### **进度指示**
-```
-🔨 正在构建索引...
-  ✓ 步骤 1 完成
-  ⏳ 步骤 2 进行中...
-```
-
-#### **分隔线**
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-标题
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-#### **统计信息**
-```
-📊 统计：
-  - 项目 1：值 1
-  - 项目 2：值 2
-```
-
-#### **性能和成本**
-```
-⏱️  耗时：X 秒
-💰 成本：$X
-```
-
----
-
-### **4.2 JSON 输出格式**
-
-**[ID: PRD-UI-002]**
-
-所有报告（影响分析、一致性检查、评审报告）都必须输出 JSON 格式，便于程序化处理。
-
-**示例：影响分析报告**
+**Request:**
 ```json
 {
-  "version": "1.0",
-  "timestamp": "2025-11-16T14:30:00Z",
-  "changed_file": "docs/rd.md",
-  "changed_nodes": [
-    {
-      "id": "RD-REQ-005",
-      "type": "requirement",
-      "location": "docs/rd.md#L42"
-    }
-  ],
-  "affected_nodes": [
-    {
-      "id": "PRD-FEAT-012",
-      "type": "feature",
-      "location": "docs/prd.md#L128",
-      "reason": "Implements RD-REQ-005"
-    }
-  ],
-  "recommendations": [
-    "运行 specgov prd:regenerate --scope=PRD-FEAT-012"
-  ]
+  "provider": "google",
+  "code": "auth_code_from_provider",
+  "redirect_uri": "https://app.example.com/callback"
 }
 ```
 
----
+**Response:**
+```json
+{
+  "access_token": "...",
+  "refresh_token": "...",
+  "expires_in": 3600
+}
+```
+```
 
-## **五、功能优先级与迭代计划**
-
-### **5.1 MVP（最小可行产品）- 优先级 P0**
-
-**[ID: PRD-PRIORITY-MVP]**
-
-**目标：10-14 周完成，验证核心价值**
-
-| 功能 | PRD ID | 优先级 |
-|------|--------|--------|
-| 项目初始化 | PRD-US-001.1 | P0 |
-| RD 生成-评审-修订 | PRD-US-002.1-002.3 | P0 |
-| 标记解析器 | PRD-CMD-006 | P0 |
-| 依赖图构建 | PRD-CMD-006 | P0 |
-| 影响分析 | PRD-CMD-008 | P0 |
-| 单需求一致性检查 | PRD-CMD-010 | P0 |
-
-**不包含在 MVP：**
-- PRD/DD/TD 阶段（只实现 RD）
-- 全项目一致性检查
-- 增量索引更新
+**Acceptance Criteria:**
+- ✅ Design generator template creates technical specifications
+- ✅ Embeds [Designs-for: PRD-XXX] tags
+- ✅ Uses "Design Document" terminology (not "DD")
+- ✅ Handles both creation and modification
 
 ---
 
-### **5.2 V1.0（第一个完整版本）- 优先级 P1**
+#### **US-002.5: Generate Test Plan**
 
-**[ID: PRD-PRIORITY-V1]**
+**[ID: PRD-US-002.5]**
 
-**目标：MVP + 6-8 周**
+**User Flow:**
+```
+1. Developer switches to "Test Manager" role
 
-| 功能 | PRD ID | 优先级 |
-|------|--------|--------|
-| PRD/DD/TD 阶段 | PRD-EPIC-002 | P1 |
-| 增量索引更新 | PRD-US-003.2 | P1 |
-| 模块级一致性检查 | PRD-US-005.2 | P1 |
-| 全项目并行检查 | PRD-US-005.3 | P1 |
+2. Loads .specgov/prompts/test-plan-generator.md in Claude Code
 
----
+3. Provides:
+   - docs/Design-Document.md
+   - docs/PRD.md
 
-### **5.3 V2.0（生产级）- 优先级 P2**
+4. Claude Code generates Test-Plan.md with:
+   - Test cases: [ID: TEST-CASE-XXX]
+   - Traceability: [Tests-for: DESIGN-API-XXX]
+   - Test strategy, coverage goals
 
-**[ID: PRD-PRIORITY-V2]**
+5. Output saved to docs/Test-Plan.md
 
-**目标：V1.0 + 4-6 周**
+6. Updates task documents
+```
 
-| 功能 | 优先级 |
-|------|--------|
-| Git Hooks 集成 | P2 |
-| 性能优化（缓存、并行） | P2 |
-| Web UI（可选） | P2 |
-| 多项目支持 | P2 |
+**Example Generated Test Plan Section:**
+```markdown
+## 5. API Test Cases
 
----
+### 5.1 OAuth2 Callback API Tests
+**[ID: TEST-CASE-015] [Tests-for: DESIGN-API-008]**
 
-## **六、验收标准 (Acceptance Criteria)**
+#### Test Case: Successful Google OAuth2 Login
+**[ID: TEST-CASE-015-001]**
 
-### **6.1 功能验收**
+**Preconditions:**
+- User has valid Google account
+- Application registered with Google OAuth2
 
-**[ID: PRD-AC-001]**
+**Steps:**
+1. Send POST /auth/oauth2/callback with valid Google auth code
+2. Verify response status is 200
+3. Verify access_token is present
+4. Verify refresh_token is present
 
-| 功能 | 验收标准 |
-|------|---------|
-| **标记解析** | ✅ 准确率 > 95%<br>✅ 支持所有标记类型<br>✅ 处理边界情况（多标记、嵌套） |
-| **依赖图构建** | ✅ 检测循环依赖<br>✅ 100 万行代码 < 1 分钟<br>✅ 零 AI 成本 |
-| **影响分析** | ✅ < 10 秒响应<br>✅ $0 成本<br>✅ 准确识别下游节点 |
-| **一致性检查** | ✅ 不一致检测准确率 > 85%<br>✅ 单需求 < 2 分钟<br>✅ 成本 < $0.05 |
+**Expected:**
+- ✅ Status: 200 OK
+- ✅ access_token: valid JWT
+- ✅ expires_in: 3600 seconds
+```
 
----
-
-### **6.2 性能验收**
-
-**[ID: PRD-AC-002]**
-
-| 场景 | 目标 | 验收标准 |
-|------|------|---------|
-| 索引构建 | < 1 分钟 | ✅ 100 万行代码项目 |
-| 影响分析 | < 10 秒 | ✅ 任意规模项目 |
-| 单需求检查 | < 2 分钟 | ✅ 上下文 < 5K tokens |
-| 模块检查 | < 2 分钟 | ✅ 上下文 < 20K tokens |
-| 全项目检查 | < 10 分钟 | ✅ 10 模块并行 |
-
----
-
-### **6.3 成本验收**
-
-**[ID: PRD-AC-003]**
-
-| 场景 | 目标 | 验收标准 |
-|------|------|---------|
-| 索引构建 | $0 | ✅ 本地解析 |
-| 影响分析 | $0 | ✅ 纯图查询 |
-| 单需求检查 | < $0.05 | ✅ 小上下文 |
-| 全项目检查 | < $2 | ✅ 10 模块 |
-| 月度总成本 | < $2 | ✅ 日常使用 |
+**Acceptance Criteria:**
+- ✅ Test Plan generator template creates comprehensive test cases
+- ✅ Embeds [Tests-for: DESIGN-XXX] tags
+- ✅ Uses "Test Plan" terminology (not "TD")
+- ✅ Handles both creation and modification
 
 ---
 
-## **七、技术约束与依赖**
+### **2.3 Epic 3: Using Helper Scripts**
 
-### **7.1 技术栈**
+**[ID: PRD-EPIC-003] [Implements: RD-GOAL-004]**
 
-**[ID: PRD-TECH-001]**
-
-| 组件 | 技术选型 | 理由 |
-|------|---------|------|
-| CLI 框架 | Python (Click) | 复用 spec-kit |
-| 标记解析 | 正则表达式 | 高性能，零依赖 |
-| 依赖图 | 内存图数据结构 + JSON | 简单高效 |
-| AI 集成 | spec-kit 的抽象层 | 支持多后端 |
+> **As** a Super Individual developer
+> **I want** to use helper scripts to parse tags, build graphs, and analyze impacts
+> **So that** I can maintain traceability without manual tracking
 
 ---
 
-### **7.2 外部依赖**
+#### **US-003.1: Parse Traceability Tags**
 
-**[ID: PRD-TECH-002]**
+**[ID: PRD-US-003.1]**
 
-| 依赖 | 必需性 | 说明 |
-|------|--------|------|
-| Git | ✅ 必需 | 变更检测、版本控制 |
-| AI CLI 工具 | ✅ 必需 | Claude Code / Gemini CLI 等 |
-| Python 3.8+ | ✅ 必需 | 运行环境 |
-| spec-kit | ✅ 必需 | 基础框架 |
+**User Flow:**
+```
+1. Developer runs:
+   python scripts/parse_tags.py
+
+2. Script scans all files in docs/ and src/ directories
+
+3. Finds all traceability tags:
+   - [ID: XXX]
+   - [Implements: XXX]
+   - [Decomposes: XXX]
+   - [Designs-for: XXX]
+   - [Tests-for: XXX]
+
+4. Outputs parsed tags to:
+   .specgov/index/tags.json
+
+5. Example output:
+{
+  "tags": [
+    {
+      "id": "RD-REQ-005",
+      "type": "requirement",
+      "file": "docs/RD.md",
+      "line": 42,
+      "decomposes": "RD-AUTH-001"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "file": "docs/PRD.md",
+      "line": 128,
+      "implements": "RD-REQ-005"
+    },
+    ...
+  ]
+}
+
+6. Console output:
+   ✓ Scanned 125 files
+   ✓ Found 45 [ID: XXX] tags
+   ✓ Found 38 [Implements: XXX] tags
+   ✓ Found 12 [Decomposes: XXX] tags
+   ✓ Saved to .specgov/index/tags.json
+
+   ⏱️  Time: 8 seconds
+   💰 Cost: $0 (local parsing)
+```
+
+**Acceptance Criteria:**
+- ✅ Scans all Markdown and code files
+- ✅ Uses regex to parse all tag types
+- ✅ Outputs structured JSON
+- ✅ Performance: < 1 minute for 100K+ lines of code
+- ✅ Zero AI cost (local computation)
 
 ---
 
-## **八、非功能需求**
+#### **US-003.2: Build Dependency Graph**
 
-### **8.1 可用性**
+**[ID: PRD-US-003.2]**
+
+**User Flow:**
+```
+1. Developer runs:
+   python scripts/build_graph.py
+
+2. Script reads .specgov/index/tags.json
+
+3. Constructs dependency graph:
+   - Nodes: All [ID: XXX] tags
+   - Edges: [Implements: XXX], [Decomposes: XXX], etc.
+
+4. Detects circular dependencies
+
+5. Outputs graph to:
+   .specgov/index/dependency-graph.json
+
+6. Example output:
+{
+  "nodes": [
+    {"id": "RD-REQ-005", "type": "requirement", "location": "docs/RD.md#L42"},
+    {"id": "PRD-FEAT-012", "type": "feature", "location": "docs/PRD.md#L128"},
+    {"id": "DESIGN-API-008", "type": "api_design", "location": "docs/Design-Document.md#L234"}
+  ],
+  "edges": [
+    {"from": "PRD-FEAT-012", "to": "RD-REQ-005", "relation": "implements"},
+    {"from": "DESIGN-API-008", "to": "PRD-FEAT-012", "relation": "designs-for"}
+  ]
+}
+
+7. Console output:
+   ✓ Created 45 nodes
+   ✓ Created 50 edges
+   ✓ Detected 0 circular dependencies
+   ✓ Saved to .specgov/index/dependency-graph.json
+
+   📊 Statistics:
+     - Requirements (RD): 15
+     - Features (PRD): 12
+     - Designs (Design Document): 10
+     - Tests (Test Plan): 5
+     - Code: 3
+```
+
+**Acceptance Criteria:**
+- ✅ Builds graph from parsed tags
+- ✅ Detects circular dependencies
+- ✅ Outputs JSON format
+- ✅ Zero AI cost
+
+---
+
+#### **US-003.3: Analyze Impact of Changes**
+
+**[ID: PRD-US-003.3]**
+
+**User Flow:**
+```
+1. Developer modifies docs/RD.md
+
+2. Runs:
+   python scripts/impact_analysis.py --changed=docs/RD.md
+
+3. Script:
+   - Uses git diff to identify changed lines
+   - Parses tags in changed sections
+   - Queries dependency graph for downstream nodes
+
+4. Outputs impact report:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Impact Analysis Report
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Changed Nodes (2):
+  • RD-REQ-005 (requirement) at docs/RD.md#L42
+  • RD-REQ-007 (requirement) at docs/RD.md#L85
+
+Affected Documents (5):
+  ⚠️  PRD-FEAT-012 (feature) at docs/PRD.md#L128
+      Reason: Implements RD-REQ-005
+
+  ⚠️  DESIGN-API-008 (api_design) at docs/Design-Document.md#L234
+      Reason: Designs for PRD-FEAT-012
+
+  ⚠️  TEST-CASE-015 (test) at docs/Test-Plan.md#L56
+      Reason: Tests DESIGN-API-008
+
+  ...
+
+Affected Code (3):
+  ⚠️  CODE-API-008 at src/auth/auth.controller.ts#L89
+      Reason: Implements DESIGN-API-008
+
+  ...
+
+Recommended Actions:
+  1. Review and update PRD section for PRD-FEAT-012
+  2. Review and update Design Document for DESIGN-API-008
+  3. Update test cases in Test Plan
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Report saved to .specgov/reports/impact-2025-11-16.json
+
+⏱️  Time: 6 seconds
+💰 Cost: $0 (graph query only)
+```
+
+**Acceptance Criteria:**
+- ✅ Uses git diff to detect changes
+- ✅ Queries dependency graph efficiently
+- ✅ Outputs clear impact report
+- ✅ Performance: < 10 seconds
+- ✅ Zero AI cost
+
+---
+
+### **2.4 Epic 4: Task Management Workflow**
+
+**[ID: PRD-EPIC-004] [Implements: RD-USER-001]**
+
+> **As** a Super Individual
+> **I want** to manage high-level Epics and low-level Tasks
+> **So that** I can track overall progress and specific work items
+
+---
+
+#### **US-004.1: Create Epic as Project Manager**
+
+**[ID: PRD-US-004.1]**
+
+**User Flow:**
+```
+1. Developer switches to "Project Manager" role
+
+2. Opens .specgov/tasks/project-manager.md
+
+3. Creates new Epic:
+
+## Epic 1: OAuth2 Authentication Feature
+**Status**: In Progress
+**Progress**: 0% (0/5 subtasks)
+**Owner**: Self (wearing different hats)
+
+### Subtasks:
+- [ ] 1.1 Requirements Analysis - Requirements Analyst (估计 1 天)
+- [ ] 1.2 Product Design - Product Manager (估计 1 天)
+- [ ] 1.3 Technical Design - Architect (估计 2 天)
+- [ ] 1.4 Test Planning - Test Manager (估计 1 天)
+- [ ] 1.5 Implementation - Developer (估计 3 天)
+
+**总估计**: 8 天
+
+4. Commits change to Git
+```
+
+**Acceptance Criteria:**
+- ✅ Project Manager creates Epic with clear subtasks
+- ✅ Assigns subtasks to different role perspectives
+- ✅ Tracks progress percentage
+- ✅ Simple Markdown format
+
+---
+
+#### **US-004.2: Execute Task as Role**
+
+**[ID: PRD-US-004.2]**
+
+**User Flow:**
+```
+1. Developer switches to "Requirements Analyst" role
+
+2. Opens .specgov/tasks/rd-analyst.md
+
+3. Sees task assigned from Epic 1:
+## Task: Epic 1.1 - OAuth2 Authentication Requirements
+**Assigned by**: Project Manager
+**Deadline**: Day 1
+**Status**: In Progress
+
+### Work Log:
+- [2025-11-16 09:00] Started task
+- [2025-11-16 10:30] Loaded rd-generator.md prompt in Claude Code
+- [2025-11-16 11:45] Generated initial RD.md section for OAuth2
+- [2025-11-16 14:00] Reviewed with rd-reviewer.md
+- [2025-11-16 15:30] Incorporated feedback, finalized RD section
+
+**Status**: ✅ Completed
+
+4. Saves .specgov/tasks/rd-analyst.md
+
+5. Switches to "Project Manager" role
+
+6. Updates .specgov/tasks/project-manager.md:
+## Epic 1: OAuth2 Authentication Feature
+**Status**: In Progress
+**Progress**: 20% (1/5 subtasks)
+
+### Subtasks:
+- [✅] 1.1 Requirements Analysis - Completed 2025-11-16
+- [ ] 1.2 Product Design - Product Manager (估计 1 天)
+- ...
+
+7. Commits both files to Git
+```
+
+**Acceptance Criteria:**
+- ✅ Role-specific task file tracks detailed work
+- ✅ Project Manager file tracks Epic progress
+- ✅ Updating both files keeps views in sync
+- ✅ Git history provides audit trail
+
+---
+
+## **三、Deliverables (Product Features)**
+
+### **3.1 Prompt Templates**
+
+**[ID: PRD-FEAT-TEMPLATES-001] [Implements: RD-GOAL-001]**
+
+| Template File | Purpose | Input | Output |
+|--------------|---------|-------|--------|
+| **rd-generator.md** | Generate or modify Requirements Document | User stories, business requirements, (existing RD.md) | RD.md with [ID: RD-XXX] tags |
+| **rd-reviewer.md** | Review Requirements Document | RD.md | Review report |
+| **prd-generator.md** | Generate or modify Product Requirements Document | RD.md, product vision | PRD.md with [ID: PRD-XXX], [Implements: RD-XXX] |
+| **prd-reviewer.md** | Review Product Requirements Document | PRD.md | Review report |
+| **design-generator.md** | Generate or modify Design Document | PRD.md, technical constraints | Design-Document.md with [ID: DESIGN-XXX], [Designs-for: PRD-XXX] |
+| **design-reviewer.md** | Review Design Document | Design-Document.md | Review report |
+| **test-plan-generator.md** | Generate or modify Test Plan | Design-Document.md, PRD.md | Test-Plan.md with [ID: TEST-XXX], [Tests-for: DESIGN-XXX] |
+| **test-plan-reviewer.md** | Review Test Plan | Test-Plan.md | Review report |
+| **code-generator.md** | Generate or modify Code | Design-Document.md | Code files with [ID: CODE-XXX], [Implements: DESIGN-XXX] |
+
+**Notes:**
+- All generator templates handle both creation AND modification (no separate reviser templates)
+- When existing document is provided to generator template, it modifies rather than creates
+- All templates embed traceability tags automatically
+- Templates use proper terminology: "Design Document" and "Test Plan" (not DD/TD)
+
+---
+
+### **3.2 Workflow Documentation**
+
+**[ID: PRD-FEAT-WORKFLOWS-001] [Implements: RD-GOAL-002]**
+
+| Workflow File | Content | Purpose |
+|--------------|---------|---------|
+| **workflow-overview.md** | Overall SDLC process overview | Guide developers through complete lifecycle |
+| **workflow-rd.md** | Step-by-step RD generation process | How to use rd-generator.md and rd-reviewer.md |
+| **workflow-prd.md** | Step-by-step PRD generation process | How to use prd-generator.md and prd-reviewer.md |
+| **workflow-design.md** | Step-by-step Design Document process | How to use design-generator.md and design-reviewer.md |
+| **workflow-test-plan.md** | Step-by-step Test Plan process | How to use test-plan-generator.md and test-plan-reviewer.md |
+| **workflow-task-mgmt.md** | Task management process | How to manage Epics and Tasks across role perspectives |
+| **workflow-large-project.md** | Large project workflow | How to use two-tier documentation for large projects |
+
+---
+
+### **3.3 Helper Scripts**
+
+**[ID: PRD-FEAT-SCRIPTS-001] [Implements: RD-GOAL-004]**
+
+| Script | Functionality | Performance Target | Cost Target |
+|--------|--------------|-------------------|-------------|
+| **init_project.py** | Initialize project structure, prompt for size selection, create directories | < 5 seconds | $0 |
+| **parse_tags.py** | Scan files, parse traceability tags, output JSON | < 1 minute for 100K LOC | $0 |
+| **build_graph.py** | Build dependency graph from tags, detect circular deps | < 1 minute for 100K LOC | $0 |
+| **impact_analysis.py** | Analyze impact of file changes using git diff and graph | < 10 seconds | $0 |
+
+**Technology:**
+- Python 3.8+
+- Standard library only (no external dependencies for core functionality)
+- Git integration via subprocess
+- JSON for data storage
+
+---
+
+## **四、Project Size Support**
+
+### **4.1 Small Project Support**
+
+**[ID: PRD-FEAT-SMALL-001] [Implements: RD-STRUCTURE-SMALL-001]**
+
+**Characteristics:**
+- Code: < 100K lines
+- Modules: 1-3
+- Document structure: Single-tier
+
+**Deliverables:**
+- Single RD.md for all requirements
+- Single PRD.md for all features
+- Single Design-Document.md for all designs
+- Single Test-Plan.md for all tests
+
+**Prompt Templates:**
+- Standard templates work as-is
+- Claude Code can handle entire document in one context
+
+---
+
+### **4.2 Large Project Support**
+
+**[ID: PRD-FEAT-LARGE-001] [Implements: RD-STRUCTURE-LARGE-001]**
+
+**Characteristics:**
+- Code: ≥ 100K lines
+- Modules: 4+
+- Document structure: Two-tier (Overview + Modules)
+
+**Deliverables:**
+- RD-Overview.md + RD-{Module}.md for each module
+- PRD-Overview.md + PRD-{Module}.md for each module
+- Design-Overview.md + Design-{Module}.md for each module
+- Test-Overview.md + Test-{Module}.md for each module
+
+**Special Templates:**
+- rd-overview-generator.md (generates high-level overview)
+- rd-module-generator.md (generates module-specific details)
+- Similar for PRD, Design Document, Test Plan
+
+**Extended Tags:**
+- **[Module: XXX]** - Indicates module affiliation
+- Module-prefixed IDs: **RD-User-REQ-001**, **RD-Order-REQ-001**
+
+**Example:**
+```markdown
+## User Login Requirements
+**[ID: RD-User-REQ-001] [Module: User]**
+
+...
+```
+
+---
+
+## **五、Non-Functional Requirements**
+
+### **5.1 Usability**
 
 **[ID: PRD-NFR-001]**
 
-- ✅ 用户无需学习复杂配置，`specgov init` 即可开始
-- ✅ 所有命令提供 `--help` 文档
-- ✅ 错误消息清晰，提供修复建议
+- ✅ Zero installation: Just download templates and scripts
+- ✅ Clear workflow documentation for each stage
+- ✅ Prompt templates guide Claude Code with detailed instructions
+- ✅ Helper scripts provide friendly console output
 
 ---
 
-### **8.2 可扩展性**
+### **5.2 Performance**
 
 **[ID: PRD-NFR-002]**
 
-- ✅ 支持任意规模项目（通过模块化检查）
-- ✅ 支持自定义标记类型（配置文件）
-- ✅ 支持多种 AI 后端（插件机制）
+- ✅ Tag parsing: < 1 minute for 100K+ lines of code
+- ✅ Graph building: < 1 minute for 100K+ lines of code
+- ✅ Impact analysis: < 10 seconds
+- ✅ Project initialization: < 5 seconds
 
 ---
 
-### **8.3 可维护性**
+### **5.3 Cost**
 
 **[ID: PRD-NFR-003]**
 
-- ✅ 代码模块化，职责清晰
-- ✅ 单元测试覆盖率 > 80%
-- ✅ 详细的开发者文档
+- ✅ Helper scripts: $0 (local computation)
+- ✅ Using prompt templates: Only pay for Claude Code API usage (user's existing cost)
+- ✅ No software license fees
+- ✅ No subscription costs
 
 ---
 
-## **九、风险与限制**
+### **5.4 Maintainability**
 
-### **9.1 风险**
+**[ID: PRD-NFR-004]**
+
+- ✅ All templates are plain Markdown files (easy to edit)
+- ✅ All scripts are simple Python (easy to understand and modify)
+- ✅ Git-trackable: All changes versioned
+- ✅ Extensible: Users can create custom templates
+
+---
+
+## **六、Success Metrics**
+
+### **6.1 Adoption Metrics**
+
+**[ID: PRD-METRICS-001]**
+
+- Number of projects initialized with SpecGovernor
+- Number of documents generated using prompt templates
+- GitHub stars/forks (if open-sourced)
+
+---
+
+### **6.2 Quality Metrics**
+
+**[ID: PRD-METRICS-002]**
+
+- Traceability tag coverage: % of requirements/features/designs with tags
+- Circular dependency detection rate
+- User-reported issues with templates
+
+---
+
+### **6.3 Efficiency Metrics**
+
+**[ID: PRD-METRICS-003]**
+
+- Time to generate RD/PRD/Design Document/Test Plan using templates
+- Time saved vs. manual document creation
+- Cost savings (vs. paid tools)
+
+---
+
+## **七、Risks and Limitations**
+
+### **7.1 Risks**
 
 **[ID: PRD-RISK-001]**
 
-| 风险 | 影响 | 缓解措施 |
-|------|------|---------|
-| AI 生成的标记不准确 | 依赖图不完整 | 1. Reviewer Agent 检查标记<br>2. 提供手动修复工具 |
-| 用户忘记更新索引 | 影响分析不准确 | 1. Git Hooks 自动触发<br>2. 检测索引过期并警告 |
-| 大型项目性能问题 | 索引构建慢 | 1. 增量更新<br>2. 并行解析 |
+| Risk | Impact | Mitigation |
+|------|--------|-----------|
+| Users forget to embed traceability tags | Dependency graph incomplete | Reviewer templates check for tag presence |
+| Claude Code generates inconsistent tags | Graph parsing errors | Reviewer templates validate tag format |
+| Helper scripts too slow for very large projects | Poor user experience | Optimize with incremental parsing, caching |
 
 ---
 
-### **9.2 限制**
+### **7.2 Limitations**
 
 **[ID: PRD-LIMIT-001]**
 
-| 限制 | 说明 |
-|------|------|
-| 依赖显式标记 | 如果用户不嵌入标记，依赖图不完整 |
-| 纯文本分析 | 无法理解复杂的代码逻辑（依赖 AI 补偿） |
-| CLI only | MVP 阶段不提供 Web UI |
+| Limitation | Explanation |
+|-----------|-------------|
+| Depends on Claude Code | Users must have Claude Code access |
+| Requires manual role-switching | Super Individual must consciously change perspectives |
+| Python required for scripts | Users need Python 3.8+ installed |
+| Git required for impact analysis | Project must be git-initialized |
 
 ---
 
-## **十、总结**
+## **八、Summary**
 
-### **10.1 核心价值**
+### **8.1 Core Value**
 
 **[ID: PRD-SUMMARY-001]**
 
-SpecGovernor 通过以下方式为超级个体创造价值：
+SpecGovernor provides value through:
 
-1. ✅ **极速影响分析**：< 10 秒，$0 成本（vs 传统方案 2 分钟，$0.05）
-2. ✅ **100% 可靠追溯**：基于显式标记，避免 AI 推断错误
-3. ✅ **双重质量保证**：Generator-Reviewer 对，避免自我审查偏差
-4. ✅ **成本极低**：< $2/月（vs 传统方案 $20+/月）
+1. ✅ **Ready-to-use Prompt Templates**: Immediately usable with Claude Code, no setup
+2. ✅ **Explicit Traceability**: 100% reliable through embedded tags, no AI guesswork
+3. ✅ **Dual Quality Assurance**: Generator-Reviewer pairs for each stage
+4. ✅ **Zero Cost Infrastructure**: Just templates and scripts, no software licenses
 
 ---
 
-### **10.2 与竞品对比**
+### **8.2 Comparison with Alternatives**
 
 **[ID: PRD-SUMMARY-002]**
 
-| 维度 | SpecGovernor | 传统文档管理 | AI 编码助手 |
-|------|-------------|-------------|-----------|
-| 影响分析 | < 10s, $0 | 手动，数小时 | 不支持 |
-| 一致性检查 | 自动化 | 人工 Code Review | 无结构化检查 |
-| 可追溯性 | 显式标记，100% | 依赖人工维护 | 隐式，不可靠 |
-| 成本 | < $2/月 | 人力成本高 | $20+/月 |
+| Dimension | SpecGovernor | Traditional Doc Management | AI Coding Assistants |
+|-----------|-------------|--------------------------|---------------------|
+| **Setup** | Download templates | Complex software install | Subscription required |
+| **Traceability** | Explicit tags, 100% reliable | Manual maintenance | Implicit, unreliable |
+| **Cost** | $0 (+ Claude API usage) | High license fees | $20+/month |
+| **Learning Curve** | Read workflow docs | Steep | Medium |
+| **Flexibility** | High (edit templates) | Low (vendor lock-in) | Medium |
 
 ---
 
-### **10.3 下一步**
+### **8.3 Next Steps**
 
 **[ID: PRD-NEXT-001]**
 
-基于本 PRD，下一步工作：
+Based on this PRD, the next steps are:
 
-1. ✅ **编写 DD（设计文档）**：spec-kit 改造的技术设计
-2. ✅ **编写 TD（测试文档）**：测试策略和用例
-3. ✅ **开始实现**：Fork spec-kit，开始改造
-
----
-
-## **附录 A：可追溯性标记规范**
-
-**[ID: PRD-APPENDIX-A]**
-
-### **标记类型**
-
-| 标记 | 格式 | 说明 | 示例 |
-|------|------|------|------|
-| **ID** | `[ID: PREFIX-XXX]` | 定义当前内容的唯一标识 | `[ID: RD-REQ-005]` |
-| **Implements** | `[Implements: ID]` | 声明实现了上游需求 | `[Implements: RD-REQ-005]` |
-| **Decomposes** | `[Decomposes: ID]` | 声明是上级需求的分解 | `[Decomposes: HL-AUTH-001]` |
-| **Designs-for** | `[Designs-for: ID]` | 声明是某功能的设计 | `[Designs-for: PRD-FEAT-012]` |
-| **Tests-for** | `[Tests-for: ID]` | 声明是某设计的测试 | `[Tests-for: DD-API-008]` |
-
-### **ID 前缀规范**
-
-| 阶段 | 前缀 | 示例 |
-|------|------|------|
-| RD | `RD-REQ-` | RD-REQ-001, RD-AUTH-001 |
-| PRD | `PRD-FEAT-`, `PRD-US-` | PRD-FEAT-012, PRD-US-001.1 |
-| DD | `DD-API-`, `DD-DB-` | DD-API-008, DD-DB-003 |
-| TD | `TD-CASE-` | TD-CASE-015 |
-| Code | `CODE-API-`, `CODE-SERVICE-` | CODE-API-008 |
+1. ✅ **Write Design Document**: Detailed design for prompt templates and scripts
+2. ✅ **Write Test Plan**: Test strategy for validating templates and scripts
+3. ✅ **Implement Templates**: Create all prompt template .md files
+4. ✅ **Implement Scripts**: Develop Python helper scripts
+5. ✅ **Write Workflow Docs**: Document step-by-step processes
 
 ---
 
-**PRD 文档结束**
+**PRD Document Complete**
