@@ -23,8 +23,8 @@ if (-not (Test-Path ".git")) {
 }
 
 # Configuration
-$REPO_URL = "https://github.com/yourname/SpecGovernor"
-$RAW_URL = "https://raw.githubusercontent.com/yourname/SpecGovernor/$Version"
+$REPO_URL = "https://github.com/yxzyzh08/SpecGovernor"
+$RAW_URL = "https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/$Version"
 $TEMP_DIR = ".specgov-temp"
 
 Write-Host "[1/6] Checking prerequisites..." -ForegroundColor Green

@@ -25,8 +25,8 @@ if [ ! -d ".git" ]; then
 fi
 
 # Configuration
-REPO_URL="https://github.com/yourname/SpecGovernor"
-RAW_URL="https://raw.githubusercontent.com/yourname/SpecGovernor/$VERSION"
+REPO_URL="https://github.com/yxzyzh08/SpecGovernor"
+RAW_URL="https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/$VERSION"
 
 echo "[1/6] Checking prerequisites..."
 
