@@ -1,2410 +1,1565 @@
-# **🏗️ SpecGovernor 设计文档 (DD)**
+# **🏗️ Design Document - SpecGovernor**
 
-> **版本**: v1.0
-> **基于**: PRD.md (v1.0) + 需求补充-任务管理.md (v1.1)
-> **创建日期**: 2025-11-16
-> **设计目标**: 基于 spec-kit 框架构建 AI 增强型研发流程治理工具
-
----
-
-## **可追溯性声明**
-
-本文档设计以下 PRD 功能：
-- [Designs-for: PRD-EPIC-001] 项目初始化
-- [Designs-for: PRD-EPIC-002] 文档生成-评审-修订循环
-- [Designs-for: PRD-EPIC-003] 索引构建与依赖图管理
-- [Designs-for: PRD-EPIC-004] 影响分析
-- [Designs-for: PRD-EPIC-005] 一致性检查
-- [Designs-for: RD-TASK-LAYER-001] 两层任务管理
-- [Designs-for: RD-TASK-STATE-001] 无状态角色设计
+> **Version**: v2.0
+> **Based on**: PRD.md (v2.0) + RD.md (v2.0)
+> **Created**: 2025-11-16
+> **Updated**: 2025-11-16
+> **Design Goal**: Detailed design for toolkit components (prompt templates, workflows, helper scripts)
 
 ---
 
-## **一、系统架构**
+## **Traceability Declaration**
 
-### **1.1 整体架构**
+This document designs the following PRD features:
+- [Designs-for: PRD-FEAT-TEMPLATES-001] Prompt Templates
+- [Designs-for: PRD-FEAT-WORKFLOWS-001] Workflow Documentation
+- [Designs-for: PRD-FEAT-SCRIPTS-001] Helper Scripts
+- [Designs-for: PRD-FEAT-SMALL-001] Small Project Support
+- [Designs-for: PRD-FEAT-LARGE-001] Large Project Support
 
-**[ID: DD-ARCH-001]**
+---
+
+## **一、Toolkit Architecture**
+
+### **1.1 Overall Structure**
+
+**[ID: DESIGN-ARCH-001] [Designs-for: PRD-STRUCTURE-001]**
 
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│                       SpecGovernor CLI                           │
-│                     (基于 spec-kit 改造)                          │
-│                                                                  │
-│  用户输入：specgov rd:generate --input=user-stories.md          │
-└──────────────────────────────────────────────────────────────────┘
-                                ↓
-┌──────────────────────────────────────────────────────────────────┐
-│                      CLI Commands Layer                          │
-│                      (命令层 - 业务逻辑)                          │
-├──────────────────────────────────────────────────────────────────┤
-│  rd:generate  │  rd:review  │  prd:generate  │  index:build  │  │
-│  check:consistency  │  analyze:impact  │  tasks:next  │  ...    │
-│                                                                  │
-│  职责：解析命令参数、协调各模块、控制执行流程                      │
-└──────────────────────────────────────────────────────────────────┘
-          │              │              │              │
-          │              │              │              │
-    ┌─────▼──────┐  ┌───▼────┐  ┌─────▼─────┐  ┌────▼──────┐
-    │  Context   │  │ State  │  │   Core    │  │   Task    │
-    │  Builder   │  │ Manager│  │  Engine   │  │   Mgmt    │
-    ├────────────┤  ├────────┤  ├───────────┤  ├───────────┤
-    │ • 加载背景  │  │ • 读取  │  │ • Tag     │  │ • Epic    │
-    │ • 裁剪文档  │  │   状态  │  │   Parser  │  │   Tracker │
-    │ • 构建     │  │ • 更新  │  │ • Graph   │  │ • Role    │
-    │   提示词    │  │   进度  │  │   Builder │  │   Tasks   │
-    │ • 控制     │  │ • 记录  │  │ • Impact  │  │ • Compl-  │
-    │   大小     │  │   成本  │  │   Analyzer│  │   exity   │
-    │   <5K      │  │        │  │ • Consist │  │   Check   │
-    └────────────┘  └────────┘  │   Checker │  └───────────┘
-                                └───────────┘
-          │              │              │
-          └──────────────┼──────────────┘
-                         ▼
-        ┌────────────────────────────────────┐
-        │        Shared Services             │
-        ├────────────────┬───────────────────┤
-        │   AI Layer     │   Storage Layer   │
-        ├────────────────┼───────────────────┤
-        │ • Generator    │ • File I/O        │
-        │ • Reviewer     │ • Git Ops         │
-        │ • AI Backend   │ • JSON/MD         │
-        │   (Claude Code)│   Serializer      │
-        └────────────────┴───────────────────┘
-```
-
-**架构说明**：
-
-1. **CLI Commands Layer（命令层）**
-   - 每个命令独立实现业务逻辑
-   - 负责协调各个模块完成任务
-   - 无需独立的"流程编排器"
-   - 直接调用下层服务
-
-2. **Context Builder（上下文构建器）**
-   - 加载项目背景（project-brief.md）
-   - 从依赖图定位相关节点
-   - 裁剪文档片段
-   - 构建 AI 提示词（< 5K tokens）
-
-3. **State Manager（状态管理器）**
-   - 读写 `.specgov/state.json`
-   - 记录任务进度、成本、时间
-   - 管理文档版本状态
-
-4. **Core Engine（核心引擎）**
-   - Tag Parser: 解析可追溯性标记
-   - Graph Builder: 构建依赖图
-   - Impact Analyzer: 影响分析
-   - Consistency Checker: 一致性检查
-
-5. **Task Management（任务管理）**
-   - Epic Tracker: 跟踪高层任务
-   - Role Tasks: 管理角色任务
-   - Complexity Check: 任务复杂度检查
-
----
-
-### **1.2 与 spec-kit 的关系**
-
-**[ID: DD-ARCH-002]**
-
-| spec-kit 组件 | 复用策略 | 改造内容 |
-|--------------|---------|---------|
-| **CLI 框架** (Click) | ✅ 100% 复用 | 无 |
-| **AI 抽象层** | ✅ 80% 复用 | 新增 Generator-Reviewer 对模式 |
-| **文件操作** | ✅ 90% 复用 | 新增标记解析逻辑 |
-| **配置管理** | ✅ 70% 复用 | 扩展配置项（任务管理、AI 后端） |
-| **Git 集成** | ✅ 100% 复用 | 无 |
-
-**新增模块（spec-kit 没有）：**
-- 标记解析器 (Tag Parser)
-- 依赖图引擎 (Dependency Graph)
-- 影响分析引擎 (Impact Analyzer)
-- 一致性检查引擎 (Consistency Checker)
-- 任务管理系统 (Task Management)
-
----
-
-### **1.3 目录结构设计**
-
-**[ID: DD-ARCH-003]**
-
-```
-specgov/                           # 项目根目录
-├── src/
-│   ├── cli/                       # CLI 层（复用 spec-kit）
-│   │   ├── __init__.py
-│   │   ├── main.py                # 主入口
-│   │   ├── commands/              # 命令实现
-│   │   │   ├── init.py
-│   │   │   ├── rd.py
-│   │   │   ├── prd.py
-│   │   │   ├── dd.py
-│   │   │   ├── td.py
-│   │   │   ├── index.py
-│   │   │   ├── analyze.py
-│   │   │   ├── check.py
-│   │   │   ├── tasks.py           # 新增：任务管理命令
-│   │   │   └── role.py            # 新增：角色切换命令
-│   │   └── ui/
-│   │       ├── formatter.py       # 输出格式化
-│   │       └── progress.py        # 进度显示
-│   │
-│   ├── core/                      # 核心引擎（新增）
-│   │   ├── parser/
-│   │   │   ├── __init__.py
-│   │   │   ├── tag_parser.py      # 标记解析器
-│   │   │   └── tag_types.py       # 标记类型定义
-│   │   ├── graph/
-│   │   │   ├── __init__.py
-│   │   │   ├── node.py            # 节点数据结构
-│   │   │   ├── edge.py            # 边数据结构
-│   │   │   ├── graph.py           # 依赖图
-│   │   │   └── builder.py         # 图构建器
-│   │   ├── analyzer/
-│   │   │   ├── __init__.py
-│   │   │   ├── impact.py          # 影响分析
-│   │   │   └── consistency.py     # 一致性检查
-│   │   └── index/
-│   │       ├── __init__.py
-│   │       ├── indexer.py         # 索引构建
-│   │       └── scanner.py         # 文件扫描
-│   │
-│   ├── context/                   # 上下文构建器（新增）
-│   │   ├── __init__.py
-│   │   ├── builder.py             # Context Builder 主逻辑
-│   │   ├── loader.py              # 文档加载器
-│   │   └── slicer.py              # 文档裁剪器
-│   │
-│   ├── state/                     # 状态管理器（新增）
-│   │   ├── __init__.py
-│   │   ├── manager.py             # State Manager 主逻辑
-│   │   └── state_types.py         # 状态数据结构
-│   │
-│   ├── tasks/                     # 任务管理系统（新增）
-│   │   ├── __init__.py
-│   │   ├── epic.py                # Epic 数据结构
-│   │   ├── task.py                # Task 数据结构
-│   │   ├── role.py                # Role 定义
-│   │   ├── complexity.py          # 任务复杂度检查
-│   │   └── decomposer.py          # 任务分解器
-│   │
-│   ├── ai/                        # AI 层（复用 + 扩展 spec-kit）
-│   │   ├── __init__.py
-│   │   ├── backend.py             # AI 后端抽象
-│   │   ├── claude_code.py         # Claude Code 适配器
-│   │   ├── generator.py           # Generator Agent
-│   │   ├── reviewer.py            # Reviewer Agent
-│   │   └── prompts/               # 提示词模板
-│   │       ├── rd_generator.txt
-│   │       ├── rd_reviewer.txt
-│   │       ├── prd_generator.txt
-│   │       └── ...
-│   │
-│   ├── storage/                   # 存储层（复用 spec-kit）
-│   │   ├── __init__.py
-│   │   ├── file_ops.py            # 文件操作
-│   │   ├── git_ops.py             # Git 操作
-│   │   └── serializer.py          # JSON/Markdown 序列化
-│   │
-│   ├── config/                    # 配置管理（复用 + 扩展）
-│   │   ├── __init__.py
-│   │   ├── config.py              # 配置加载
-│   │   └── defaults.py            # 默认配置
-│   │
-│   └── utils/                     # 工具函数（复用 spec-kit）
-│       ├── __init__.py
-│       ├── logger.py
-│       └── validators.py
+SpecGovernor Repository/
+├── .specgov/                     # Generated during init (not in repo)
+│   ├── prompts/                  # Copied from templates/
+│   ├── workflows/                # Copied from templates/
+│   ├── tasks/                    # Generated task files
+│   ├── index/                    # Generated by scripts
+│   │   ├── tags.json
+│   │   └── dependency-graph.json
+│   └── project-config.json       # Generated configuration
 │
-├── templates/                     # 模板文件
-│   ├── config.yml.template
-│   ├── modules.json.template
-│   ├── rd-review-checklist.md
-│   └── ...
+├── templates/                    # Source templates (in repo)
+│   ├── prompts/                  # All prompt template .md files
+│   │   ├── rd-generator.md
+│   │   ├── rd-reviewer.md
+│   │   ├── prd-generator.md
+│   │   ├── prd-reviewer.md
+│   │   ├── design-generator.md
+│   │   ├── design-reviewer.md
+│   │   ├── test-plan-generator.md
+│   │   ├── test-plan-reviewer.md
+│   │   ├── code-generator.md
+│   │   ├── rd-overview-generator.md      # For large projects
+│   │   ├── rd-module-generator.md        # For large projects
+│   │   └── ... (similar for other stages)
+│   │
+│   └── workflows/                # All workflow documentation
+│       ├── workflow-overview.md
+│       ├── workflow-rd.md
+│       ├── workflow-prd.md
+│       ├── workflow-design.md
+│       ├── workflow-test-plan.md
+│       ├── workflow-task-mgmt.md
+│       └── workflow-large-project.md
 │
-├── tests/                         # 测试（复用 spec-kit 框架）
-│   ├── unit/
-│   ├── integration/
-│   └── fixtures/
+├── scripts/                      # Helper Python scripts
+│   ├── init_project.py
+│   ├── parse_tags.py
+│   ├── build_graph.py
+│   └── impact_analysis.py
 │
-├── pyproject.toml                 # 项目配置
-├── README.md
-└── LICENSE
+├── docs/                         # Generated documentation (user's project)
+│   ├── RD.md                     # (or RD/ for large projects)
+│   ├── PRD.md                    # (or PRD/ for large projects)
+│   ├── Design-Document.md        # (or Design-Document/ for large)
+│   └── Test-Plan.md              # (or Test-Plan/ for large)
+│
+└── README.md                     # SpecGovernor toolkit documentation
+```
+
+**Key Principles:**
+- **Templates are source** - Stored in `templates/` directory in repo
+- **`.specgov/` is generated** - Created during project initialization
+- **No software to install** - Just download repo and run scripts
+- **Git-trackable** - All changes to templates, workflows, scripts versioned
+
+---
+
+### **1.2 Component Design**
+
+**[ID: DESIGN-COMP-001]**
+
+| Component Type | Format | Storage Location | Purpose |
+|---------------|--------|-----------------|---------|
+| **Prompt Templates** | Markdown (.md) | `templates/prompts/` | Guide Claude Code to generate/review documents |
+| **Workflow Docs** | Markdown (.md) | `templates/workflows/` | Step-by-step guides for humans |
+| **Helper Scripts** | Python (.py) | `scripts/` | Automate tag parsing, graph building, impact analysis |
+| **Task Files** | Markdown (.md) | `.specgov/tasks/` | Track Epics and Tasks (generated, user-edited) |
+| **Index Files** | JSON (.json) | `.specgov/index/` | Store parsed tags and dependency graph (generated) |
+
+---
+
+## **二、Prompt Template Design**
+
+### **2.1 General Template Structure**
+
+**[ID: DESIGN-TEMPLATE-STRUCT-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
+
+All prompt templates follow this structure:
+
+```markdown
+# [Document Type] Generator / Reviewer
+
+## Role
+You are a [role name] (e.g., Requirements Analyst, Architect, Test Manager).
+
+## Task
+[Generate/Review] [document type] based on provided inputs.
+
+## Critical Requirements
+
+### 1. Traceability Tags
+- MUST embed tags in every section:
+  - [ID: XXX] - Unique identifier
+  - [Implements: XXX] / [Designs-for: XXX] / [Tests-for: XXX] - Link to upstream
+
+### 2. Document Structure
+[Specific structure for this document type]
+
+### 3. Naming Conventions
+- Use proper terminology: "Design Document" (not "DD"), "Test Plan" (not "TD")
+- ID prefixes: RD-XXX, PRD-XXX, DESIGN-XXX, TEST-XXX, CODE-XXX
+
+## Input Format
+[What inputs the user should provide]
+
+## Output Format
+[Detailed structure, with examples]
+
+## Examples
+[Concrete examples showing proper tag usage]
+
+## Validation Checklist
+- [ ] All major sections have [ID: XXX] tags
+- [ ] All references to upstream documents use proper tags
+- [ ] Proper terminology used throughout
+- [ ] ... (specific to document type)
 ```
 
 ---
 
-## **二、新增架构模块设计**
+### **2.2 RD Generator Template**
 
-### **2.1 CLI Commands Layer（命令层）**
+**[ID: DESIGN-TEMPLATE-RD-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**[ID: DD-MOD-CLI-001]**
+**File**: `templates/prompts/rd-generator.md`
 
-#### **2.1.1 设计原则**
+**Key Sections:**
 
-CLI Commands Layer 是用户与系统交互的入口，每个命令实现独立的业务逻辑，无需依赖"流程编排器"。
+```markdown
+# Requirements Document (RD) Generator
 
-**职责**：
-1. 解析命令行参数
-2. 协调各模块完成任务
-3. 控制执行流程
-4. 输出结果给用户
+## Role
+You are an experienced Requirements Analyst.
 
-**示例：rd:generate 命令实现**
+## Task
+Generate or modify a Requirements Document (RD) based on user stories, business requirements, or existing RD.md.
 
-```python
-# src/cli/commands/rd.py
+## Critical Requirements
 
-import click
-from ...context.builder import ContextBuilder
-from ...state.manager import StateManager
-from ...ai.generator import GeneratorAgent
-from ...ai.claude_code import ClaudeCodeBackend
+### 1. Traceability Tags
+- Every requirement MUST have: **[ID: RD-REQ-XXX]** or **[ID: RD-{CATEGORY}-XXX]**
+- Hierarchical requirements use: **[Decomposes: PARENT-ID]**
 
-@click.group()
-def rd():
-    """RD 阶段命令"""
-    pass
+### 2. Document Structure
+# Requirements Document (RD)
 
-@rd.command()
-@click.option('--input', type=click.Path(exists=True), help='输入文件')
-@click.option('--ai', default='claude-code', help='AI 后端')
-@click.option('--output', default='docs/RD.md', help='输出路径')
-def generate(input: str, ai: str, output: str):
-    """生成需求文档 (RD)
+> **Version**: X.X
+> **Created**: YYYY-MM-DD
+> **Updated**: YYYY-MM-DD
 
-    执行流程：
-    1. CLI Command 读取输入文件
-    2. 调用 Context Builder 构建 AI 提示词
-    3. 调用 Generator Agent 生成文档
-    4. 保存结果
-    5. 调用 State Manager 更新状态
-    """
-    click.echo("🤖 RD Generator Agent 正在工作...")
+## 1. [Category] Requirements
+**[ID: RD-CATEGORY-001]**
 
-    # 1. 读取输入（CLI Command 的职责）
-    input_content = ""
-    if input:
-        click.echo(f"  读取输入：{input}")
-        with open(input, 'r', encoding='utf-8') as f:
-            input_content = f.read()
+### 1.1 [Specific Requirement]
+**[ID: RD-REQ-001] [Decomposes: RD-CATEGORY-001]**
 
-    # 2. 构建上下文（调用 Context Builder）
-    click.echo("  构建 AI 上下文...")
-    context_builder = ContextBuilder(project_dir='.')
-    prompt = context_builder.build_for_rd_generation(input_content)
+[Requirement description with clear acceptance criteria]
 
-    # 3. 调用 AI（调用 Generator Agent）
-    click.echo(f"  调用 AI：{ai} (claude-sonnet-4)")
-    backend = ClaudeCodeBackend()
-    generator = GeneratorAgent(backend, stage='rd')
-    result = generator.generate(prompt)
+### 3. Large Project Support
+- For large projects (≥ 100K LOC), use module-specific IDs:
+  - **[ID: RD-User-REQ-001] [Module: User]**
+  - **[ID: RD-Order-REQ-001] [Module: Order]**
 
-    # 4. 保存结果（CLI Command 的职责）
-    click.echo("  保存文档...")
-    output_path = Path(output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(result.content, encoding='utf-8')
+## Input Format
+1. If CREATING new RD:
+   - User stories
+   - Business requirements
+   - Project context
 
-    # 5. 更新状态（调用 State Manager）
-    state_mgr = StateManager(project_dir='.')
-    state_mgr.update({
-        'rd_generated': True,
-        'rd_version': 1,
-        'last_generation_time': datetime.now(),
-        'tokens_used': result.tokens_input + result.tokens_output,
-        'cost': result.cost
-    })
+2. If MODIFYING existing RD:
+   - Existing RD.md content
+   - Change requests
+   - Feedback from review
 
-    # 6. 输出统计信息
-    click.echo(f"✓ 生成完成：{output}")
-    click.echo(f"\n📊 统计：")
-    click.echo(f"  - 生成时间：{result.generation_time}秒")
-    click.echo(f"  - 成本：${result.cost:.2f}")
-    click.echo(f"\n📚 下一步：")
-    click.echo("  运行 specgov rd:review 进行评审")
-```
+## Output Format
+Markdown file with:
+- Clear hierarchical structure
+- Every requirement tagged with [ID: XXX]
+- Decomposition tags where appropriate
+- Acceptance criteria for each requirement
 
-**关键点**：
-- ✅ 命令自己负责业务逻辑
-- ✅ 调用其他模块作为服务
-- ✅ 无需独立的"编排器"
-- ✅ 清晰的职责划分
+## Examples
 
----
+### Example 1: User Authentication Requirement
 
-### **2.2 Context Builder（上下文构建器）**
+## 1. User Authentication Requirements
+**[ID: RD-AUTH-001]**
 
-**[ID: DD-MOD-CONTEXT-001]**
+This section defines all authentication and authorization requirements.
 
-#### **2.2.1 设计目标**
+### 1.1 OAuth2 Login Support
+**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
 
-Context Builder 负责为 AI Agent 构建精准的上下文，确保：
-1. 上下文大小 < 5K tokens
-2. 包含所有必要信息
-3. 裁剪无关内容
+The system must support user authentication via OAuth2 protocol.
 
-#### **2.2.2 核心实现**
+**Supported Providers:**
+- Google OAuth2
+- GitHub OAuth2
+- Microsoft OAuth2
 
-```python
-# src/context/builder.py
+**Acceptance Criteria:**
+- ✅ User can log in using any supported OAuth2 provider
+- ✅ System retrieves user profile information (name, email, avatar)
+- ✅ System handles login failures gracefully
+- ✅ System handles token expiration and refreshes tokens
 
-from pathlib import Path
-from typing import Dict, List
-from ..core.graph.graph import DependencyGraph
-
-class ContextBuilder:
-    """上下文构建器
-
-    负责：
-    1. 加载项目背景
-    2. 从依赖图定位相关节点
-    3. 裁剪文档片段
-    4. 构建 AI 提示词
-    5. 控制上下文大小 < 5K tokens
-    """
-
-    # Token 估算（粗略）
-    CHARS_PER_TOKEN = 4
-    MAX_CONTEXT_TOKENS = 5000
-
-    def __init__(self, project_dir: str | Path):
-        self.project_dir = Path(project_dir)
-        self.context_dir = self.project_dir / '.specgov' / 'context'
-
-    def build_for_rd_generation(self, input_content: str) -> str:
-        """为 RD 生成构建上下文"""
-
-        # 1. 加载项目简介（永久背景）
-        project_brief = self._load_project_brief()
-
-        # 2. 加载 RD Generator 提示词模板
-        template = self._load_prompt_template('rd_generator')
-
-        # 3. 构建完整提示词
-        prompt = template.format(
-            project_brief=project_brief,
-            input_content=input_content
-        )
-
-        # 4. 检查并裁剪（如果超出）
-        prompt = self._ensure_token_limit(prompt)
-
-        return prompt
-
-    def build_for_prd_generation(self, rd_content: str) -> str:
-        """为 PRD 生成构建上下文
-
-        需要加载：
-        1. 项目简介
-        2. RD 文档（裁剪）
-        3. PRD Generator 提示词模板
-        """
-
-        # 1. 加载项目简介
-        project_brief = self._load_project_brief()
-
-        # 2. 裁剪 RD 文档（智能提取相关部分）
-        rd_excerpt = self._extract_relevant_sections(
-            rd_content,
-            max_tokens=2000  # RD 最多占 2K tokens
-        )
-
-        # 3. 加载提示词模板
-        template = self._load_prompt_template('prd_generator')
-
-        # 4. 构建提示词
-        prompt = template.format(
-            project_brief=project_brief,
-            rd_content=rd_excerpt
-        )
-
-        # 5. 检查并裁剪
-        prompt = self._ensure_token_limit(prompt)
-
-        return prompt
-
-    def build_for_consistency_check(
-        self,
-        scope_id: str,
-        dependency_graph: DependencyGraph
-    ) -> str:
-        """为一致性检查构建上下文
-
-        步骤：
-        1. 从依赖图定位依赖链
-        2. 加载依赖链涉及的文档和代码
-        3. 智能裁剪（< 20K tokens for consistency check）
-        """
-
-        # 1. 获取依赖链
-        chain = self._get_dependency_chain(scope_id, dependency_graph)
-
-        # 2. 加载每个节点的内容
-        context_parts = []
-        for node in chain:
-            content = self._load_node_content(node)
-            context_parts.append(f"## {node.id} ({node.type})\n{content}")
-
-        # 3. 合并并裁剪
-        full_context = "\n\n".join(context_parts)
-        full_context = self._ensure_token_limit(
-            full_context,
-            max_tokens=20000  # 一致性检查允许更多上下文
-        )
-
-        return full_context
-
-    def _load_project_brief(self) -> str:
-        """加载项目简介"""
-        brief_file = self.context_dir / 'project-brief.md'
-        if brief_file.exists():
-            return brief_file.read_text(encoding='utf-8')
-        return ""
-
-    def _load_prompt_template(self, template_name: str) -> str:
-        """加载提示词模板"""
-        template_file = Path(__file__).parent.parent / 'ai' / 'prompts' / f'{template_name}.txt'
-        return template_file.read_text(encoding='utf-8')
-
-    def _extract_relevant_sections(self, content: str, max_tokens: int) -> str:
-        """智能提取相关章节
-
-        策略：
-        1. 保留标题和第一段
-        2. 保留所有可追溯性标记
-        3. 裁剪详细描述
-        """
-        # 简化实现：直接截断
-        max_chars = max_tokens * self.CHARS_PER_TOKEN
-        if len(content) > max_chars:
-            return content[:max_chars] + "\n\n[... 内容已裁剪 ...]"
-        return content
-
-    def _ensure_token_limit(self, text: str, max_tokens: int = None) -> str:
-        """确保文本不超过 token 限制"""
-        if max_tokens is None:
-            max_tokens = self.MAX_CONTEXT_TOKENS
-
-        max_chars = max_tokens * self.CHARS_PER_TOKEN
-        if len(text) > max_chars:
-            return text[:max_chars] + "\n\n[... 上下文已自动裁剪以适应 AI 窗口 ...]"
-        return text
-
-    def _get_dependency_chain(
-        self,
-        scope_id: str,
-        graph: DependencyGraph
-    ) -> List:
-        """从依赖图获取依赖链"""
-        # 使用依赖图的方法获取上游和下游节点
-        upstream = graph.get_upstream_nodes(scope_id)
-        downstream = graph.get_downstream_nodes(scope_id)
-        current = [graph.nodes[scope_id]]
-        return list(upstream) + current + list(downstream)
-```
-
-**关键点**：
-- ✅ 独立的服务模块
-- ✅ 负责所有上下文裁剪逻辑
-- ✅ 确保 AI 调用的上下文大小在限制内
-- ✅ 可被任何 CLI Command 调用
-
----
-
-### **2.3 State Manager（状态管理器）**
-
-**[ID: DD-MOD-STATE-001]**
-
-#### **2.3.1 设计目标**
-
-State Manager 负责管理系统的所有状态，包括：
-1. 流程状态（RD 是否已生成）
-2. 文档版本
-3. 任务进度
-4. 成本和时间统计
-
-#### **2.3.2 核心实现**
-
-```python
-# src/state/manager.py
-
-import json
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, Any, Optional
-
-class StateManager:
-    """状态管理器
-
-    负责：
-    1. 读写 .specgov/state.json
-    2. 记录任务进度
-    3. 记录成本和时间
-    4. 管理文档版本状态
-    """
-
-    def __init__(self, project_dir: str | Path):
-        self.project_dir = Path(project_dir)
-        self.state_file = self.project_dir / '.specgov' / 'state.json'
-        self.state_file.parent.mkdir(parents=True, exist_ok=True)
-
-    def get_state(self) -> Dict[str, Any]:
-        """读取当前状态"""
-        if not self.state_file.exists():
-            return self._default_state()
-
-        try:
-            with open(self.state_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"Warning: Could not load state: {e}")
-            return self._default_state()
-
-    def update(self, updates: Dict[str, Any]):
-        """更新状态"""
-        state = self.get_state()
-        state.update(updates)
-        state['last_update'] = datetime.now().isoformat()
-
-        with open(self.state_file, 'w', encoding='utf-8') as f:
-            json.dump(state, f, indent=2, ensure_ascii=False)
-
-    def can_generate_prd(self) -> bool:
-        """检查是否可以生成 PRD（RD 必须已生成）"""
-        state = self.get_state()
-        return state.get('rd_generated', False)
-
-    def can_generate_dd(self) -> bool:
-        """检查是否可以生成 DD（PRD 必须已生成）"""
-        state = self.get_state()
-        return state.get('prd_generated', False)
-
-    def record_generation(
-        self,
-        stage: str,
-        cost: float,
-        tokens: int,
-        time_seconds: float
-    ):
-        """记录生成操作的统计信息"""
-        state = self.get_state()
-
-        # 更新阶段状态
-        state[f'{stage}_generated'] = True
-        state[f'{stage}_version'] = state.get(f'{stage}_version', 0) + 1
-        state[f'{stage}_last_generation'] = datetime.now().isoformat()
-
-        # 累计统计
-        state['total_cost'] = state.get('total_cost', 0) + cost
-        state['total_tokens'] = state.get('total_tokens', 0) + tokens
-        state['total_time_seconds'] = state.get('total_time_seconds', 0) + time_seconds
-
-        self.update(state)
-
-    def _default_state(self) -> Dict[str, Any]:
-        """默认状态"""
-        return {
-            'version': '1.0',
-            'created_at': datetime.now().isoformat(),
-            'rd_generated': False,
-            'prd_generated': False,
-            'dd_generated': False,
-            'td_generated': False,
-            'total_cost': 0.0,
-            'total_tokens': 0,
-            'total_time_seconds': 0.0
-        }
-```
-
-**关键点**：
-- ✅ 简单的文件读写
-- ✅ 提供状态查询和更新接口
-- ✅ 可被任何 CLI Command 调用
-- ✅ 支持流程验证（如 PRD 生成前必须先有 RD）
-
----
-
-## **三、核心引擎模块设计**
-
-### **3.1 标记解析器 (Tag Parser)**
-
-**[ID: DD-MOD-PARSER-001] [Designs-for: PRD-CMD-006]**
-
-#### **3.1.1 数据结构**
-
-```python
-# src/core/parser/tag_types.py
-
-from enum import Enum
-from dataclasses import dataclass
-from typing import Optional
-
-class TagType(Enum):
-    """标记类型枚举"""
-    ID = "ID"
-    IMPLEMENTS = "Implements"
-    DECOMPOSES = "Decomposes"
-    DESIGNS_FOR = "Designs-for"
-    TESTS_FOR = "Tests-for"
-
-@dataclass
-class Tag:
-    """标记数据结构"""
-    tag_type: TagType
-    target_id: str
-    file_path: str
-    line_number: int
-    context: Optional[str] = None  # 标记所在的上下文（如章节标题）
-
-    def __str__(self):
-        return f"[{self.tag_type.value}: {self.target_id}] at {self.file_path}#{self.line_number}"
-
-@dataclass
-class ParseResult:
-    """解析结果"""
-    tags: list[Tag]
-    errors: list[str]
-    warnings: list[str]
-    file_path: str
-    parse_time_ms: float
-```
-
-#### **2.1.2 核心实现**
-
-```python
-# src/core/parser/tag_parser.py
-
-import re
-from pathlib import Path
-from typing import List, Optional
-from .tag_types import Tag, TagType, ParseResult
-
-class TagParser:
-    """标记解析器
-
-    负责从 Markdown 和代码文件中解析可追溯性标记
-    """
-
-    # 正则表达式：匹配 [TagType: ID]
-    TAG_REGEX = re.compile(
-        r'\[(ID|Implements|Decomposes|Designs-for|Tests-for):\s*([\w\-\.]+)\]',
-        re.IGNORECASE
-    )
-
-    # 支持的文件扩展名
-    SUPPORTED_EXTENSIONS = {
-        '.md', '.markdown',           # Markdown
-        '.py', '.js', '.ts', '.tsx',  # 代码
-        '.java', '.go', '.rs',
-        '.cpp', '.c', '.h'
-    }
-
-    def __init__(self):
-        self.current_context = None
-
-    def parse_file(self, file_path: str | Path) -> ParseResult:
-        """解析单个文件
-
-        Args:
-            file_path: 文件路径
-
-        Returns:
-            ParseResult: 解析结果
-        """
-        import time
-        start = time.time()
-
-        file_path = Path(file_path)
-        tags = []
-        errors = []
-        warnings = []
-
-        try:
-            # 检查文件扩展名
-            if file_path.suffix not in self.SUPPORTED_EXTENSIONS:
-                warnings.append(f"Unsupported file type: {file_path.suffix}")
-                return ParseResult([], errors, warnings, str(file_path), 0)
-
-            # 读取文件
-            with open(file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-
-            # 逐行解析
-            for line_num, line in enumerate(lines, start=1):
-                # 更新上下文（Markdown 标题）
-                if file_path.suffix in {'.md', '.markdown'}:
-                    if line.startswith('#'):
-                        self.current_context = line.strip()
-
-                # 查找标记
-                for match in self.TAG_REGEX.finditer(line):
-                    tag_type_str, target_id = match.groups()
-
-                    try:
-                        tag_type = TagType(tag_type_str)
-                        tag = Tag(
-                            tag_type=tag_type,
-                            target_id=target_id.strip(),
-                            file_path=str(file_path),
-                            line_number=line_num,
-                            context=self.current_context
-                        )
-                        tags.append(tag)
-                    except ValueError:
-                        errors.append(f"Invalid tag type '{tag_type_str}' at line {line_num}")
-
-        except FileNotFoundError:
-            errors.append(f"File not found: {file_path}")
-        except UnicodeDecodeError:
-            errors.append(f"File encoding error: {file_path}")
-        except Exception as e:
-            errors.append(f"Unexpected error: {str(e)}")
-
-        parse_time = (time.time() - start) * 1000
-        return ParseResult(tags, errors, warnings, str(file_path), parse_time)
-
-    def parse_directory(self, dir_path: str | Path, exclude_dirs: Optional[List[str]] = None) -> List[ParseResult]:
-        """递归解析目录
-
-        Args:
-            dir_path: 目录路径
-            exclude_dirs: 排除的目录（如 node_modules, .git）
-
-        Returns:
-            List[ParseResult]: 所有文件的解析结果
-        """
-        if exclude_dirs is None:
-            exclude_dirs = {'node_modules', '.git', '__pycache__', 'venv', '.venv', 'dist', 'build'}
-
-        dir_path = Path(dir_path)
-        results = []
-
-        for file_path in dir_path.rglob('*'):
-            # 跳过目录
-            if file_path.is_dir():
-                continue
-
-            # 跳过排除目录中的文件
-            if any(excluded in file_path.parts for excluded in exclude_dirs):
-                continue
-
-            # 解析文件
-            if file_path.suffix in self.SUPPORTED_EXTENSIONS:
-                result = self.parse_file(file_path)
-                results.append(result)
-
-        return results
-
-    def validate_tag_id(self, tag_id: str) -> tuple[bool, Optional[str]]:
-        """验证标记 ID 的格式
-
-        Args:
-            tag_id: 标记 ID
-
-        Returns:
-            (is_valid, error_message)
-        """
-        # ID 格式：PREFIX-CATEGORY-NUMBER
-        # 例如：RD-REQ-005, PRD-FEAT-012
-        pattern = r'^[A-Z]+-[A-Z]+-\d+$'
-
-        if re.match(pattern, tag_id):
-            return True, None
-        else:
-            return False, f"Invalid ID format: {tag_id}. Expected: PREFIX-CATEGORY-NUMBER"
+## Validation Checklist
+Before outputting, verify:
+- [ ] Every major requirement has [ID: RD-XXX]
+- [ ] Hierarchical requirements use [Decomposes: XXX]
+- [ ] Acceptance criteria clearly defined
+- [ ] No placeholders or TODOs left
+- [ ] For large projects, [Module: XXX] tags present
 ```
 
 ---
 
-### **2.2 依赖图引擎 (Dependency Graph)**
-
-**[ID: DD-MOD-GRAPH-001] [Designs-for: PRD-US-003.1]**
-
-#### **2.2.1 数据结构**
-
-```python
-# src/core/graph/node.py
-
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Optional
-
-class NodeType(Enum):
-    """节点类型"""
-    REQUIREMENT = "requirement"      # RD
-    FEATURE = "feature"              # PRD
-    API_DESIGN = "api_design"        # DD
-    DATABASE = "database"            # DD
-    TEST = "test"                    # TD
-    CODE = "code"                    # Code
-
-@dataclass
-class Node:
-    """依赖图节点"""
-    id: str                          # 节点 ID（如 RD-REQ-005）
-    type: NodeType                   # 节点类型
-    file_path: str                   # 所在文件路径
-    line_number: int                 # 行号
-    context: Optional[str] = None    # 上下文（章节标题）
-    metadata: dict = field(default_factory=dict)  # 额外元数据
-
-    def __hash__(self):
-        return hash(self.id)
-
-    def __eq__(self, other):
-        if isinstance(other, Node):
-            return self.id == other.id
-        return False
-```
-
-```python
-# src/core/graph/edge.py
-
-from dataclasses import dataclass
-from enum import Enum
-
-class EdgeType(Enum):
-    """边类型（对应标记类型）"""
-    IMPLEMENTS = "implements"        # A implements B
-    DECOMPOSES = "decomposes"        # A decomposes B
-    DESIGNS_FOR = "designs_for"      # A designs for B
-    TESTS_FOR = "tests_for"          # A tests for B
-
-@dataclass
-class Edge:
-    """依赖图边"""
-    source_id: str                   # 源节点 ID
-    target_id: str                   # 目标节点 ID
-    edge_type: EdgeType              # 边类型
-    file_path: str                   # 边定义所在文件
-    line_number: int                 # 行号
-
-    def __str__(self):
-        return f"{self.source_id} --[{self.edge_type.value}]--> {self.target_id}"
-```
-
-```python
-# src/core/graph/graph.py
-
-from typing import Dict, List, Set, Optional
-from .node import Node
-from .edge import Edge, EdgeType
-
-class DependencyGraph:
-    """依赖关系图
-
-    使用邻接表表示的有向图
-    """
-
-    def __init__(self):
-        self.nodes: Dict[str, Node] = {}           # id -> Node
-        self.outgoing_edges: Dict[str, List[Edge]] = {}  # source_id -> [Edge]
-        self.incoming_edges: Dict[str, List[Edge]] = {}  # target_id -> [Edge]
-
-    def add_node(self, node: Node):
-        """添加节点"""
-        if node.id in self.nodes:
-            # 更新已存在的节点
-            self.nodes[node.id] = node
-        else:
-            self.nodes[node.id] = node
-            self.outgoing_edges[node.id] = []
-            self.incoming_edges[node.id] = []
-
-    def add_edge(self, edge: Edge):
-        """添加边"""
-        # 确保节点存在
-        if edge.source_id not in self.nodes:
-            raise ValueError(f"Source node not found: {edge.source_id}")
-        if edge.target_id not in self.nodes:
-            raise ValueError(f"Target node not found: {edge.target_id}")
+### **2.3 PRD Generator Template**
 
-        # 添加边
-        self.outgoing_edges[edge.source_id].append(edge)
-        self.incoming_edges[edge.target_id].append(edge)
+**[ID: DESIGN-TEMPLATE-PRD-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-    def get_downstream_nodes(self, node_id: str, max_depth: Optional[int] = None) -> Set[Node]:
-        """获取下游节点（依赖此节点的所有节点）
+**File**: `templates/prompts/prd-generator.md`
 
-        Args:
-            node_id: 节点 ID
-            max_depth: 最大深度（None 表示无限）
-
-        Returns:
-            下游节点集合
-        """
-        visited = set()
-        queue = [(node_id, 0)]
-
-        while queue:
-            current_id, depth = queue.pop(0)
-
-            if current_id in visited:
-                continue
-
-            if max_depth is not None and depth > max_depth:
-                continue
-
-            visited.add(current_id)
-
-            # 添加下游节点
-            for edge in self.incoming_edges.get(current_id, []):
-                queue.append((edge.source_id, depth + 1))
-
-        # 移除起始节点
-        visited.discard(node_id)
-
-        return {self.nodes[nid] for nid in visited if nid in self.nodes}
-
-    def get_upstream_nodes(self, node_id: str, max_depth: Optional[int] = None) -> Set[Node]:
-        """获取上游节点（此节点依赖的所有节点）"""
-        visited = set()
-        queue = [(node_id, 0)]
-
-        while queue:
-            current_id, depth = queue.pop(0)
-
-            if current_id in visited:
-                continue
-
-            if max_depth is not None and depth > max_depth:
-                continue
-
-            visited.add(current_id)
-
-            # 添加上游节点
-            for edge in self.outgoing_edges.get(current_id, []):
-                queue.append((edge.target_id, depth + 1))
-
-        visited.discard(node_id)
-        return {self.nodes[nid] for nid in visited if nid in self.nodes}
-
-    def detect_cycles(self) -> List[List[str]]:
-        """检测循环依赖
-
-        Returns:
-            循环依赖列表，每个循环是一个节点 ID 列表
-        """
-        cycles = []
-        visited = set()
-        rec_stack = set()
-
-        def dfs(node_id: str, path: List[str]) -> bool:
-            """深度优先搜索检测循环"""
-            if node_id in rec_stack:
-                # 发现循环
-                cycle_start = path.index(node_id)
-                cycles.append(path[cycle_start:])
-                return True
-
-            if node_id in visited:
-                return False
-
-            visited.add(node_id)
-            rec_stack.add(node_id)
-            path.append(node_id)
-
-            for edge in self.outgoing_edges.get(node_id, []):
-                dfs(edge.target_id, path[:])
-
-            rec_stack.remove(node_id)
-            return False
-
-        for node_id in self.nodes:
-            if node_id not in visited:
-                dfs(node_id, [])
-
-        return cycles
-
-    def to_json(self) -> dict:
-        """序列化为 JSON"""
-        return {
-            "nodes": [
-                {
-                    "id": node.id,
-                    "type": node.type.value,
-                    "file_path": node.file_path,
-                    "line_number": node.line_number,
-                    "context": node.context,
-                    "metadata": node.metadata
-                }
-                for node in self.nodes.values()
-            ],
-            "edges": [
-                {
-                    "source": edge.source_id,
-                    "target": edge.target_id,
-                    "type": edge.edge_type.value,
-                    "file_path": edge.file_path,
-                    "line_number": edge.line_number
-                }
-                for edges in self.outgoing_edges.values()
-                for edge in edges
-            ]
-        }
-
-    @classmethod
-    def from_json(cls, data: dict) -> 'DependencyGraph':
-        """从 JSON 反序列化"""
-        graph = cls()
-
-        # 加载节点
-        from .node import NodeType
-        for node_data in data['nodes']:
-            node = Node(
-                id=node_data['id'],
-                type=NodeType(node_data['type']),
-                file_path=node_data['file_path'],
-                line_number=node_data['line_number'],
-                context=node_data.get('context'),
-                metadata=node_data.get('metadata', {})
-            )
-            graph.add_node(node)
-
-        # 加载边
-        for edge_data in data['edges']:
-            edge = Edge(
-                source_id=edge_data['source'],
-                target_id=edge_data['target'],
-                edge_type=EdgeType(edge_data['type']),
-                file_path=edge_data['file_path'],
-                line_number=edge_data['line_number']
-            )
-            graph.add_edge(edge)
-
-        return graph
-```
-
-#### **2.2.2 图构建器**
-
-```python
-# src/core/graph/builder.py
-
-from pathlib import Path
-from typing import List
-from ..parser.tag_parser import TagParser, ParseResult
-from ..parser.tag_types import TagType
-from .graph import DependencyGraph
-from .node import Node, NodeType
-from .edge import Edge, EdgeType
-
-class GraphBuilder:
-    """依赖图构建器"""
-
-    # 标记类型 -> 节点类型映射
-    ID_PREFIX_TO_NODE_TYPE = {
-        'RD': NodeType.REQUIREMENT,
-        'PRD': NodeType.FEATURE,
-        'DD': NodeType.API_DESIGN,
-        'TD': NodeType.TEST,
-        'CODE': NodeType.CODE,
-    }
-
-    # 标记类型 -> 边类型映射
-    TAG_TO_EDGE_TYPE = {
-        TagType.IMPLEMENTS: EdgeType.IMPLEMENTS,
-        TagType.DECOMPOSES: EdgeType.DECOMPOSES,
-        TagType.DESIGNS_FOR: EdgeType.DESIGNS_FOR,
-        TagType.TESTS_FOR: EdgeType.TESTS_FOR,
-    }
-
-    def __init__(self):
-        self.parser = TagParser()
-
-    def build_from_directory(self, project_dir: str | Path) -> DependencyGraph:
-        """从项目目录构建依赖图
-
-        Args:
-            project_dir: 项目根目录
-
-        Returns:
-            DependencyGraph: 依赖图
-        """
-        # 解析所有文件
-        parse_results = self.parser.parse_directory(project_dir)
-
-        # 构建图
-        graph = DependencyGraph()
-
-        # 第一步：添加所有节点（从 [ID: XXX] 标记）
-        for result in parse_results:
-            for tag in result.tags:
-                if tag.tag_type == TagType.ID:
-                    node = self._create_node_from_tag(tag)
-                    graph.add_node(node)
-
-        # 第二步：添加所有边（从 Implements, Decomposes 等标记）
-        for result in parse_results:
-            for tag in result.tags:
-                if tag.tag_type != TagType.ID:
-                    # 查找源节点（同一文件中最近的 [ID: XXX]）
-                    source_node_id = self._find_source_node_id(tag, result)
-                    if source_node_id:
-                        edge = self._create_edge_from_tag(tag, source_node_id)
-                        try:
-                            graph.add_edge(edge)
-                        except ValueError as e:
-                            # 目标节点不存在，记录警告
-                            print(f"Warning: {e}")
-
-        return graph
-
-    def _create_node_from_tag(self, tag) -> Node:
-        """从 [ID: XXX] 标记创建节点"""
-        # 根据 ID 前缀推断节点类型
-        prefix = tag.target_id.split('-')[0]
-        node_type = self.ID_PREFIX_TO_NODE_TYPE.get(prefix, NodeType.REQUIREMENT)
-
-        return Node(
-            id=tag.target_id,
-            type=node_type,
-            file_path=tag.file_path,
-            line_number=tag.line_number,
-            context=tag.context
-        )
-
-    def _create_edge_from_tag(self, tag, source_node_id: str) -> Edge:
-        """从 [Implements: XXX] 等标记创建边"""
-        edge_type = self.TAG_TO_EDGE_TYPE[tag.tag_type]
-
-        return Edge(
-            source_id=source_node_id,
-            target_id=tag.target_id,
-            edge_type=edge_type,
-            file_path=tag.file_path,
-            line_number=tag.line_number
-        )
-
-    def _find_source_node_id(self, tag, parse_result: ParseResult) -> str | None:
-        """查找源节点 ID
-
-        规则：在同一文件中，查找当前标记之前最近的 [ID: XXX] 标记
-        """
-        candidates = [
-            t for t in parse_result.tags
-            if t.tag_type == TagType.ID and t.line_number < tag.line_number
-        ]
-
-        if candidates:
-            # 返回最近的
-            return max(candidates, key=lambda t: t.line_number).target_id
-
-        return None
+**Key Sections:**
+
+```markdown
+# Product Requirements Document (PRD) Generator
+
+## Role
+You are an experienced Product Manager.
+
+## Task
+Generate or modify a Product Requirements Document (PRD) based on RD.md and product vision.
+
+## Critical Requirements
+
+### 1. Traceability Tags
+- Every feature MUST have: **[ID: PRD-FEAT-XXX]**
+- Every user story MUST have: **[ID: PRD-US-XXX]**
+- MUST link to RD: **[Implements: RD-REQ-XXX]**
+
+### 2. Document Structure
+# Product Requirements Document (PRD)
+
+> **Version**: X.X
+> **Based on**: RD.md (vX.X)
+
+## 1. Product Features
+
+### 1.1 [Feature Name]
+**[ID: PRD-FEAT-XXX] [Implements: RD-REQ-XXX]**
+
+#### User Story
+> **As** [user type]
+> **I want** [goal]
+> **So that** [benefit]
+
+#### Acceptance Criteria
+- ✅ [Criterion 1]
+- ✅ [Criterion 2]
+
+## Input Format
+1. RD.md (requirements document)
+2. Product vision statement
+3. User personas (if available)
+4. Existing PRD.md (if modifying)
+
+## Output Format
+Markdown file with:
+- Product features with [ID: PRD-FEAT-XXX]
+- User stories with [ID: PRD-US-XXX]
+- [Implements: RD-REQ-XXX] linking each feature to requirements
+
+## Examples
+
+### Example: OAuth2 Login Feature
+
+## 2. Authentication Features
+
+### 2.1 OAuth2 Social Login
+**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+
+Enable users to log in using their existing social media accounts.
+
+#### User Story
+> **As** a new user
+> **I want** to log in using my Google/GitHub/Microsoft account
+> **So that** I don't need to create and remember another password
+
+#### Acceptance Criteria
+- ✅ Login button displays for each supported OAuth2 provider
+- ✅ Clicking button redirects to provider's OAuth2 authorization page
+- ✅ After authorization, user is redirected back and logged in
+- ✅ User profile information is displayed in the app
+- ✅ If login fails, user sees clear error message
+
+## Validation Checklist
+- [ ] Every feature has [ID: PRD-FEAT-XXX]
+- [ ] Every feature links to RD with [Implements: RD-REQ-XXX]
+- [ ] User stories follow As/I want/So that format
+- [ ] Acceptance criteria are testable
 ```
 
 ---
 
-### **2.3 影响分析引擎**
+### **2.4 Design Document Generator Template**
 
-**[ID: DD-MOD-ANALYZER-001] [Designs-for: PRD-US-004.1]**
+**[ID: DESIGN-TEMPLATE-DESIGN-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-```python
-# src/core/analyzer/impact.py
+**File**: `templates/prompts/design-generator.md`
 
-from pathlib import Path
-from typing import List, Set
-from ..graph.graph import DependencyGraph
-from ..graph.node import Node
-from ..parser.tag_parser import TagParser
-import subprocess
+**Key Sections:**
 
-class ImpactAnalyzer:
-    """影响分析引擎"""
+```markdown
+# Design Document Generator
 
-    def __init__(self, graph: DependencyGraph, project_dir: Path):
-        self.graph = graph
-        self.project_dir = project_dir
-        self.parser = TagParser()
+## Role
+You are an experienced Software Architect.
 
-    def analyze_file_change(self, changed_file: str | Path) -> dict:
-        """分析单个文件变更的影响
+## Task
+Generate or modify a Design Document based on PRD.md and technical constraints.
 
-        Args:
-            changed_file: 变更的文件路径
+## Critical Requirements
 
-        Returns:
-            影响分析报告（字典）
-        """
-        changed_file = Path(changed_file)
+### 1. Traceability Tags
+- Architecture design: **[ID: DESIGN-ARCH-XXX]**
+- API design: **[ID: DESIGN-API-XXX]**
+- Database design: **[ID: DESIGN-DB-XXX]**
+- MUST link to PRD: **[Designs-for: PRD-FEAT-XXX]**
 
-        # 1. 使用 Git diff 获取变更内容
-        changed_lines = self._get_changed_lines(changed_file)
+### 2. Terminology
+- ALWAYS use "Design Document" (NEVER "DD")
+- File name: Design-Document.md (NOT DD.md)
 
-        # 2. 解析变更文件，识别受影响的节点
-        changed_nodes = self._identify_changed_nodes(changed_file, changed_lines)
+### 3. Document Structure
+# Design Document
 
-        # 3. 查询依赖图，获取下游节点
-        affected_nodes = set()
-        for node_id in changed_nodes:
-            downstream = self.graph.get_downstream_nodes(node_id)
-            affected_nodes.update(downstream)
+> **Version**: X.X
+> **Based on**: PRD.md (vX.X)
 
-        # 4. 分类受影响的节点
-        affected_docs = [n for n in affected_nodes if n.file_path.endswith('.md')]
-        affected_code = [n for n in affected_nodes if not n.file_path.endswith('.md')]
+## 1. Architecture Design
 
-        # 5. 生成建议的后续操作
-        recommendations = self._generate_recommendations(affected_nodes)
+### 1.1 [Component Name]
+**[ID: DESIGN-ARCH-XXX] [Designs-for: PRD-FEAT-XXX]**
 
-        # 6. 构建报告
-        report = {
-            "changed_file": str(changed_file),
-            "changed_nodes": [
-                {
-                    "id": nid,
-                    "type": self.graph.nodes[nid].type.value,
-                    "location": f"{self.graph.nodes[nid].file_path}#{self.graph.nodes[nid].line_number}"
-                }
-                for nid in changed_nodes
-            ],
-            "affected_documents": [
-                {
-                    "id": node.id,
-                    "type": node.type.value,
-                    "location": f"{node.file_path}#{node.line_number}",
-                    "context": node.context
-                }
-                for node in affected_docs
-            ],
-            "affected_code": [
-                {
-                    "id": node.id,
-                    "type": node.type.value,
-                    "location": f"{node.file_path}#{node.line_number}",
-                    "context": node.context
-                }
-                for node in affected_code
-            ],
-            "recommendations": recommendations
-        }
+[Architecture description with diagrams]
 
-        return report
+## 2. API Design
 
-    def _get_changed_lines(self, file_path: Path) -> Set[int]:
-        """使用 Git diff 获取变更的行号"""
-        try:
-            # git diff HEAD <file> --unified=0
-            result = subprocess.run(
-                ['git', 'diff', 'HEAD', str(file_path), '--unified=0'],
-                cwd=self.project_dir,
-                capture_output=True,
-                text=True
-            )
+### 2.1 [API Endpoint]
+**[ID: DESIGN-API-XXX] [Designs-for: PRD-FEAT-XXX]**
 
-            # 解析 diff 输出，提取行号
-            changed_lines = set()
-            for line in result.stdout.split('\n'):
-                if line.startswith('@@'):
-                    # 格式：@@ -old_start,old_count +new_start,new_count @@
-                    import re
-                    match = re.search(r'\+(\d+),?(\d+)?', line)
-                    if match:
-                        start = int(match.group(1))
-                        count = int(match.group(2)) if match.group(2) else 1
-                        changed_lines.update(range(start, start + count))
+**Endpoint**: [METHOD] /path
 
-            return changed_lines
-        except Exception as e:
-            print(f"Warning: Could not get git diff: {e}")
-            return set()
-
-    def _identify_changed_nodes(self, file_path: Path, changed_lines: Set[int]) -> Set[str]:
-        """识别变更文件中受影响的节点"""
-        # 重新解析文件
-        result = self.parser.parse_file(file_path)
-
-        changed_nodes = set()
-        for tag in result.tags:
-            if tag.tag_type.value == "ID":
-                # 检查此标记是否在变更范围内
-                if tag.line_number in changed_lines:
-                    changed_nodes.add(tag.target_id)
-
-        return changed_nodes
-
-    def _generate_recommendations(self, affected_nodes: Set[Node]) -> List[str]:
-        """生成后续操作建议"""
-        recommendations = []
-
-        # 分组
-        prd_nodes = [n for n in affected_nodes if n.id.startswith('PRD-')]
-        dd_nodes = [n for n in affected_nodes if n.id.startswith('DD-')]
-        code_nodes = [n for n in affected_nodes if n.id.startswith('CODE-')]
-
-        if prd_nodes:
-            recommendations.append(
-                f"重新生成受影响的 PRD 部分: specgov prd:regenerate --scope={prd_nodes[0].id}"
-            )
-
-        if dd_nodes:
-            recommendations.append(
-                f"评审并更新 DD: specgov dd:review --scope={dd_nodes[0].id}"
-            )
-
-        if code_nodes:
-            recommendations.append(
-                f"检查代码一致性: specgov check:consistency --scope={code_nodes[0].id}"
-            )
-
-        return recommendations
-```
-
----
-
-### **2.4 任务管理系统**
-
-**[ID: DD-MOD-TASK-001] [Designs-for: RD-TASK-LAYER-001]**
-
-#### **2.4.1 数据结构**
-
-```python
-# src/tasks/epic.py
-
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import List, Optional
-from datetime import datetime
-
-class EpicStatus(Enum):
-    """Epic 状态"""
-    NOT_STARTED = "not_started"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    BLOCKED = "blocked"
-
-@dataclass
-class Epic:
-    """Epic（高层级任务）"""
-    id: str                          # Epic ID（如 EPIC-RD-001）
-    title: str                       # Epic 标题
-    status: EpicStatus               # 状态
-    role: str                        # 负责角色
-    subtasks: List[str] = field(default_factory=list)  # 子任务 ID 列表
-    completed_subtasks: int = 0      # 已完成子任务数
-    total_subtasks: int = 0          # 总子任务数
-    estimated_time_minutes: int = 0  # 预计时间
-    actual_time_minutes: int = 0     # 实际时间
-    deliverables: List[str] = field(default_factory=list)  # 交付物
-    summary: Optional[str] = None    # 总结
-    created_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-
-    @property
-    def progress(self) -> float:
-        """进度百分比"""
-        if self.total_subtasks == 0:
-            return 0.0
-        return self.completed_subtasks / self.total_subtasks * 100
-```
-
-```python
-# src/tasks/task.py
-
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import List, Optional, Dict
-from datetime import datetime
-
-class TaskStatus(Enum):
-    """任务状态"""
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    BLOCKED = "blocked"
-
-class TaskComplexity(Enum):
-    """任务复杂度"""
-    SIMPLE = "simple"          # < 5K tokens
-    MEDIUM = "medium"          # 5K - 10K tokens
-    COMPLEX = "complex"        # 10K - 20K tokens
-    TOO_COMPLEX = "too_complex"  # > 20K tokens
-
-@dataclass
-class Task:
-    """角色级任务"""
-    id: str                          # 任务 ID（如 TASK-RD-GEN-001）
-    epic_id: str                     # 所属 Epic
-    title: str                       # 任务标题
-    status: TaskStatus               # 状态
-    command: str                     # 执行命令
-    context_files: List[str] = field(default_factory=list)  # 上下文文件
-    acceptance_criteria: List[str] = field(default_factory=list)  # 验收标准
-    complexity: Optional[TaskComplexity] = None  # 任务复杂度
-    estimated_tokens: int = 0        # 预计 Token 数
-    ai_backend: str = "claude-code"  # AI 后端
-    estimated_cost: float = 0.0      # 预计成本
-    actual_cost: float = 0.0         # 实际成本
-    estimated_time_minutes: int = 0  # 预计时间
-    actual_time_minutes: int = 0     # 实际时间
-    outputs: List[str] = field(default_factory=list)  # 输出文件
-    created_at: Optional[datetime] = None
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
-```
-
-```python
-# src/tasks/role.py
-
-from enum import Enum
-
-class Role(Enum):
-    """角色定义"""
-    PROJECT_MANAGER = "project-manager"
-    RD_ANALYST = "rd-analyst"
-    PRODUCT_MANAGER = "product-manager"
-    ARCHITECT = "architect"
-    TEST_MANAGER = "test-manager"
-    DEVELOPER = "developer"
-
-    @property
-    def display_name(self) -> str:
-        """显示名称"""
-        names = {
-            Role.PROJECT_MANAGER: "项目经理",
-            Role.RD_ANALYST: "需求分析师",
-            Role.PRODUCT_MANAGER: "产品经理",
-            Role.ARCHITECT: "架构师",
-            Role.TEST_MANAGER: "测试经理",
-            Role.DEVELOPER: "开发工程师",
-        }
-        return names[self]
-
-    @property
-    def responsibilities(self) -> str:
-        """职责描述"""
-        resp = {
-            Role.RD_ANALYST: "分析业务需求，生成需求文档 (RD)，评审需求的完整性和合理性",
-            Role.PRODUCT_MANAGER: "基于 RD 生成产品需求文档 (PRD)，定义产品功能和用户故事",
-            Role.ARCHITECT: "基于 PRD 设计系统架构和技术方案 (DD)，定义 API 和数据结构",
-            Role.TEST_MANAGER: "基于 DD 设计测试策略和测试用例 (TD)，确保质量覆盖",
-            Role.DEVELOPER: "基于 DD 实现代码，确保符合设计规范",
-            Role.PROJECT_MANAGER: "管理项目整体进度，协调各角色，跟踪 Epic 完成情况",
-        }
-        return resp.get(self, "")
-
-    @property
-    def task_file(self) -> str:
-        """任务文件路径"""
-        return f".specgov/tasks/{self.value}.md"
-```
-
-#### **2.4.2 任务复杂度检查器**
-
-```python
-# src/tasks/complexity.py
-
-from typing import List, Optional
-from pathlib import Path
-from .task import Task, TaskComplexity
-
-class ComplexityChecker:
-    """任务复杂度检查器"""
-
-    # Token 估算（粗略）
-    CHARS_PER_TOKEN = 4
-
-    # 复杂度阈值
-    THRESHOLDS = {
-        TaskComplexity.SIMPLE: 5000,
-        TaskComplexity.MEDIUM: 10000,
-        TaskComplexity.COMPLEX: 20000,
-    }
-
-    def check_task(self, task: Task) -> tuple[TaskComplexity, Optional[str]]:
-        """检查任务复杂度
-
-        Returns:
-            (complexity, warning_message)
-        """
-        # 估算上下文大小
-        total_tokens = self._estimate_context_size(task)
-
-        # 判断复杂度
-        if total_tokens > self.THRESHOLDS[TaskComplexity.COMPLEX]:
-            return (
-                TaskComplexity.TOO_COMPLEX,
-                f"任务过于复杂（{total_tokens} tokens），建议分解为多个子任务"
-            )
-        elif total_tokens > self.THRESHOLDS[TaskComplexity.MEDIUM]:
-            return (
-                TaskComplexity.COMPLEX,
-                f"任务较复杂（{total_tokens} tokens），建议仔细检查"
-            )
-        elif total_tokens > self.THRESHOLDS[TaskComplexity.SIMPLE]:
-            return (
-                TaskComplexity.MEDIUM,
-                None
-            )
-        else:
-            return (
-                TaskComplexity.SIMPLE,
-                None
-            )
-
-    def _estimate_context_size(self, task: Task) -> int:
-        """估算任务的上下文大小（tokens）"""
-        total_chars = 0
-
-        # 1. 角色定义 + 职责（约 500 tokens）
-        total_chars += 500 * self.CHARS_PER_TOKEN
-
-        # 2. 项目背景（project-brief.md，约 500 tokens）
-        total_chars += 500 * self.CHARS_PER_TOKEN
-
-        # 3. 当前焦点（current-focus.md，约 300 tokens）
-        total_chars += 300 * self.CHARS_PER_TOKEN
-
-        # 4. 上下文文件
-        for file_path in task.context_files:
-            try:
-                size = Path(file_path).stat().st_size
-                total_chars += size
-            except FileNotFoundError:
-                pass
-
-        # 5. 任务指令（约 200 tokens）
-        total_chars += 200 * self.CHARS_PER_TOKEN
-
-        return total_chars // self.CHARS_PER_TOKEN
-
-    def suggest_decomposition(self, task: Task) -> List[str]:
-        """建议任务分解方案
-
-        Returns:
-            分解后的子任务建议
-        """
-        suggestions = []
-
-        # 基于任务类型的分解策略
-        if "generate" in task.command:
-            # 生成任务：建议按模块分解
-            suggestions.append("按模块分解：--scope=ModuleName")
-            suggestions.append("使用自动分解：--auto-decompose")
-
-        elif "review" in task.command:
-            # 评审任务：建议分段评审
-            suggestions.append("分段评审：--section=1")
-
-        elif "check:consistency" in task.command and "--scope=full" in task.command:
-            # 全项目检查：建议并行检查
-            suggestions.append("并行检查各模块")
-
-        return suggestions
-```
-
-#### **2.4.3 上下文管理器**
-
-```python
-# src/tasks/context.py
-
-from pathlib import Path
-from typing import List, Dict, Optional
-import json
-
-class ContextManager:
-    """上下文管理器
-
-    负责管理和加载任务执行所需的上下文信息
-    """
-
-    def __init__(self, project_dir: Path):
-        self.project_dir = project_dir
-        self.context_dir = project_dir / '.specgov' / 'context'
-
-    def load_project_brief(self) -> str:
-        """加载项目简介"""
-        brief_file = self.context_dir / 'project-brief.md'
-        if brief_file.exists():
-            return brief_file.read_text(encoding='utf-8')
-        return ""
-
-    def load_current_focus(self) -> str:
-        """加载当前焦点"""
-        focus_file = self.context_dir / 'current-focus.md'
-        if focus_file.exists():
-            return focus_file.read_text(encoding='utf-8')
-        return ""
-
-    def update_current_focus(self, content: str):
-        """更新当前焦点"""
-        focus_file = self.context_dir / 'current-focus.md'
-        focus_file.write_text(content, encoding='utf-8')
-
-    def load_roles_context(self) -> Dict:
-        """加载角色上下文"""
-        context_file = self.context_dir / 'roles-context.json'
-        if context_file.exists():
-            return json.loads(context_file.read_text(encoding='utf-8'))
-        return {}
-
-    def update_role_context(self, role: str, context: Dict):
-        """更新角色上下文"""
-        all_contexts = self.load_roles_context()
-        all_contexts[role] = context
-
-        context_file = self.context_dir / 'roles-context.json'
-        context_file.write_text(
-            json.dumps(all_contexts, indent=2, ensure_ascii=False),
-            encoding='utf-8'
-        )
-
-    def build_task_prompt(self, role: 'Role', task: 'Task') -> str:
-        """构建任务的 AI 提示词
-
-        Args:
-            role: 角色
-            task: 任务
-
-        Returns:
-            完整的 AI 提示词
-        """
-        # 1. 角色定义
-        role_prompt = f"""你是一位{role.display_name}。
-
-你的职责：
-{role.responsibilities}
-"""
-
-        # 2. 项目背景
-        background = self.load_project_brief()
-
-        # 3. 当前焦点
-        focus = self.load_current_focus()
-
-        # 4. 任务上下文
-        task_context = self._load_task_context(task)
-
-        # 5. 任务指令
-        task_prompt = f"""当前任务：{task.title}
-
-执行命令：
-{task.command}
-
-验收标准：
-{self._format_criteria(task.acceptance_criteria)}
-"""
-
-        # 6. 组合
-        full_prompt = f"""{role_prompt}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-项目背景
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{background}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-当前状态
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{focus}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-相关文档
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{task_context}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-当前任务
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{task_prompt}
-"""
-
-        return full_prompt
-
-    def _load_task_context(self, task: 'Task') -> str:
-        """加载任务的上下文文件"""
-        context_parts = []
-
-        for file_path in task.context_files:
-            try:
-                path = Path(file_path)
-                if path.exists():
-                    content = path.read_text(encoding='utf-8')
-                    # 智能裁剪：只加载相关部分（这里简化处理，实际可以更智能）
-                    context_parts.append(f"【{file_path}】\n{content[:2000]}")  # 限制每个文件最多2000字符
-            except Exception as e:
-                context_parts.append(f"【{file_path}】\n无法加载：{e}")
-
-        return "\n\n".join(context_parts)
-
-    def _format_criteria(self, criteria: List[str]) -> str:
-        """格式化验收标准"""
-        if not criteria:
-            return "无"
-        return "\n".join(f"- {c}" for c in criteria)
-```
-
----
-
-## **三、AI 集成层设计**
-
-### **3.1 AI 后端抽象**
-
-**[ID: DD-AI-001] [Designs-for: PRD-TECH-001]**
-
-```python
-# src/ai/backend.py
-
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import Optional
-
-@dataclass
-class AIResponse:
-    """AI 响应"""
-    content: str
-    tokens_input: int
-    tokens_output: int
-    cost: float
-    model: str
-    backend: str
-
-class AIBackend(ABC):
-    """AI 后端抽象基类"""
-
-    @abstractmethod
-    def generate(self, prompt: str, max_tokens: int = 4000) -> AIResponse:
-        """生成内容
-
-        Args:
-            prompt: 提示词
-            max_tokens: 最大输出 tokens
-
-        Returns:
-            AIResponse: AI 响应
-        """
-        pass
-
-    @abstractmethod
-    def get_name(self) -> str:
-        """获取后端名称"""
-        pass
-
-    @abstractmethod
-    def get_model(self) -> str:
-        """获取模型名称"""
-        pass
-```
-
-```python
-# src/ai/claude_code.py
-
-import subprocess
-import json
-from .backend import AIBackend, AIResponse
-
-class ClaudeCodeBackend(AIBackend):
-    """Claude Code 后端适配器"""
-
-    def __init__(self, model: str = "claude-sonnet-4"):
-        self.model = model
-
-        # 成本（每 1K tokens）
-        self.cost_per_1k = {
-            "input": 0.003,
-            "output": 0.015
-        }
-
-    def generate(self, prompt: str, max_tokens: int = 4000) -> AIResponse:
-        """调用 Claude Code 生成内容"""
-
-        # 调用 claude-code CLI（假设有这样的命令）
-        # 实际实现需要根据 Claude Code 的真实 API
-        try:
-            result = subprocess.run(
-                [
-                    'claude-code',
-                    'execute',
-                    '--model', self.model,
-                    '--max-tokens', str(max_tokens),
-                    '--prompt', prompt
-                ],
-                capture_output=True,
-                text=True,
-                timeout=300  # 5 分钟超时
-            )
-
-            # 解析输出（假设返回 JSON）
-            output = json.loads(result.stdout)
-
-            # 计算成本
-            tokens_in = output.get('tokens_input', 0)
-            tokens_out = output.get('tokens_output', 0)
-            cost = (tokens_in / 1000 * self.cost_per_1k['input'] +
-                    tokens_out / 1000 * self.cost_per_1k['output'])
-
-            return AIResponse(
-                content=output['content'],
-                tokens_input=tokens_in,
-                tokens_output=tokens_out,
-                cost=cost,
-                model=self.model,
-                backend='claude-code'
-            )
-
-        except Exception as e:
-            raise RuntimeError(f"Claude Code execution failed: {e}")
-
-    def get_name(self) -> str:
-        return "claude-code"
-
-    def get_model(self) -> str:
-        return self.model
-```
-
-### **3.2 Generator-Reviewer 模式**
-
-**[ID: DD-AI-002] [Designs-for: PRD-US-002.1]**
-
-```python
-# src/ai/generator.py
-
-from pathlib import Path
-from .backend import AIBackend
-
-class GeneratorAgent:
-    """Generator Agent（生成器）"""
-
-    def __init__(self, backend: AIBackend, stage: str):
-        self.backend = backend
-        self.stage = stage  # rd, prd, dd, td
-        self.prompt_template = self._load_prompt_template()
-
-    def generate(self, input_data: dict) -> str:
-        """生成文档
-
-        Args:
-            input_data: 输入数据（依赖上游文档、用户输入等）
-
-        Returns:
-            生成的文档内容
-        """
-        # 构建提示词
-        prompt = self._build_prompt(input_data)
-
-        # 调用 AI
-        response = self.backend.generate(prompt)
-
-        return response.content
-
-    def _load_prompt_template(self) -> str:
-        """加载提示词模板"""
-        template_file = Path(__file__).parent / 'prompts' / f'{self.stage}_generator.txt'
-        if template_file.exists():
-            return template_file.read_text(encoding='utf-8')
-        return self._default_prompt_template()
-
-    def _build_prompt(self, input_data: dict) -> str:
-        """构建提示词"""
-        # 填充模板
-        prompt = self.prompt_template.format(**input_data)
-        return prompt
-
-    def _default_prompt_template(self) -> str:
-        """默认提示词模板"""
-        return f"""你是一位{self.stage.upper()}文档生成专家。
-
-【重要要求】
-1. 为每个需求/功能分配唯一 ID：[ID: {self.stage.upper()}-XXX-YYY]
-2. 使用 [Implements: XXX] 标记实现关系
-3. 输出 Markdown 格式
-
-输入内容：
-{{input_content}}
-
-请生成规范的文档。
-"""
-```
-
-```python
-# src/ai/reviewer.py
-
-from .backend import AIBackend
-import json
-
-class ReviewerAgent:
-    """Reviewer Agent（评审器）"""
-
-    def __init__(self, backend: AIBackend, stage: str):
-        self.backend = backend
-        self.stage = stage
-        self.prompt_template = self._load_prompt_template()
-
-    def review(self, document_content: str) -> dict:
-        """评审文档
-
-        Args:
-            document_content: 文档内容
-
-        Returns:
-            评审报告（字典）
-        """
-        # 构建提示词
-        prompt = self._build_prompt(document_content)
-
-        # 调用 AI
-        response = self.backend.generate(prompt)
-
-        # 解析评审报告（假设 AI 返回 JSON）
-        try:
-            report = json.loads(response.content)
-        except json.JSONDecodeError:
-            # 如果不是 JSON，尝试解析 Markdown
-            report = self._parse_markdown_review(response.content)
-
-        return report
-
-    def _load_prompt_template(self) -> str:
-        """加载提示词模板"""
-        template_file = Path(__file__).parent / 'prompts' / f'{self.stage}_reviewer.txt'
-        if template_file.exists():
-            return template_file.read_text(encoding='utf-8')
-        return self._default_prompt_template()
-
-    def _build_prompt(self, document_content: str) -> str:
-        """构建提示词"""
-        prompt = self.prompt_template.format(document=document_content)
-        return prompt
-
-    def _default_prompt_template(self) -> str:
-        """默认提示词模板"""
-        return f"""你是一位{self.stage.upper()}文档评审专家。
-
-请评审以下文档，检查：
-1. 可追溯性标记的完整性和正确性
-2. 内容的完整性和合理性
-3. 格式的规范性
-
-文档内容：
-{{document}}
-
-请以 JSON 格式输出评审报告：
-{{
-  "summary": "总结",
-  "issues": [
-    {{
-      "severity": "严重/警告/建议",
-      "location": "位置",
-      "description": "问题描述",
-      "suggestion": "修改建议"
-    }}
-  ],
-  "traceability_check": {{
-    "all_have_id": true/false,
-    "references_valid": true/false
-  }}
-}}
-"""
-
-    def _parse_markdown_review(self, content: str) -> dict:
-        """解析 Markdown 格式的评审报告"""
-        # 简化实现：提取关键信息
-        return {
-            "summary": "评审完成",
-            "issues": [],
-            "raw_content": content
-        }
-```
-
----
-
-## **四、CLI 命令实现**
-
-### **4.1 核心命令流程**
-
-**[ID: DD-CLI-001] [Designs-for: PRD-CMD-001]**
-
-#### **命令：specgov init**
-
-```python
-# src/cli/commands/init.py
-
-import click
-from pathlib import Path
-import shutil
-import yaml
-
-@click.command()
-@click.argument('project_name')
-@click.option('--ai', default='claude-code', help='AI 后端')
-@click.option('--no-git', is_flag=True, help='不初始化 Git')
-def init(project_name: str, ai: str, no_git: bool):
-    """初始化 SpecGovernor 项目"""
-
-    click.echo(f"✓ 初始化项目: {project_name}")
-    click.echo(f"✓ AI 后端: {ai}")
-
-    # 1. 创建目录结构
-    base_dir = Path('.specgov')
-    base_dir.mkdir(exist_ok=True)
-
-    (base_dir / 'artifacts').mkdir(exist_ok=True)
-    (base_dir / 'reviews').mkdir(exist_ok=True)
-    (base_dir / 'reports').mkdir(exist_ok=True)
-    (base_dir / 'index').mkdir(exist_ok=True)
-    (base_dir / 'context').mkdir(exist_ok=True)
-    (base_dir / 'tasks').mkdir(exist_ok=True)
-
-    click.echo("✓ 目录结构：")
-    click.echo("  .specgov/")
-    click.echo("    ├── config.yml")
-    click.echo("    ├── state.json")
-    click.echo("    ├── index/")
-    click.echo("    ├── artifacts/")
-    click.echo("    ├── context/")
-    click.echo("    └── tasks/")
-
-    # 2. 生成配置文件
-    config = {
-        'project_name': project_name,
-        'ai_backend': {
-            'default': ai,
-            'claude-code': {
-                'command': 'claude-code execute',
-                'model': 'claude-sonnet-4',
-                'max_tokens': 200000
-            }
-        },
-        'task_management': {
-            'complexity_thresholds': {
-                'simple': 5000,
-                'medium': 10000,
-                'complex': 20000
-            }
-        }
-    }
-
-    config_file = base_dir / 'config.yml'
-    with open(config_file, 'w') as f:
-        yaml.dump(config, f, default_flow_style=False)
-
-    # 3. 生成 state.json
-    state = {
-        'current_role': None,
-        'last_update': None
-    }
-
-    import json
-    state_file = base_dir / 'state.json'
-    with open(state_file, 'w') as f:
-        json.dump(state, f, indent=2)
-
-    # 4. 初始化 Git（如果需要）
-    if not no_git:
-        import subprocess
-        try:
-            subprocess.run(['git', 'init'], check=True, capture_output=True)
-            click.echo("✓ Git 仓库初始化完成")
-        except subprocess.CalledProcessError:
-            click.echo("⚠️  Git 初始化失败（可能已存在）")
-
-    # 5. 输出下一步指引
-    click.echo("\n📚 下一步：")
-    click.echo("  1. 编辑 .specgov/context/project-brief.md 添加项目背景")
-    click.echo("  2. 运行 specgov rd:generate 开始生成需求文档")
-```
-
-#### **命令：specgov rd:generate**
-
-```python
-# src/cli/commands/rd.py
-
-import click
-from pathlib import Path
-from ...ai.generator import GeneratorAgent
-from ...ai.claude_code import ClaudeCodeBackend
-from ...storage.file_ops import save_artifact
-
-@click.group()
-def rd():
-    """RD 阶段命令"""
-    pass
-
-@rd.command()
-@click.option('--input', type=click.Path(exists=True), help='输入文件')
-@click.option('--ai', default='claude-code', help='AI 后端')
-@click.option('--output', default='.specgov/artifacts/rd.md', help='输出路径')
-def generate(input: str, ai: str, output: str):
-    """生成需求文档 (RD)"""
-
-    click.echo("🤖 RD Generator Agent 正在工作...")
-
-    # 1. 读取输入
-    input_content = ""
-    if input:
-        click.echo(f"  读取输入：{input}")
-        input_content = Path(input).read_text(encoding='utf-8')
-
-    # 2. 初始化 AI 后端
-    click.echo(f"  调用 AI：{ai} (claude-sonnet-4)")
-    backend = ClaudeCodeBackend()
-
-    # 3. 创建 Generator Agent
-    generator = GeneratorAgent(backend, stage='rd')
-
-    # 4. 生成文档
-    click.echo("  生成中...")
-    result = generator.generate({'input_content': input_content})
-
-    # 5. 保存文档
-    output_path = Path(output)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(result, encoding='utf-8')
-
-    click.echo(f"✓ 生成完成：{output}")
-
-    # 6. 统计信息
-    # TODO: 解析标记，输出统计
-
-    click.echo("\n📚 下一步：")
-    click.echo("  运行 specgov rd:review 进行评审")
-
-@rd.command()
-@click.option('--ai', default='gemini-cli', help='AI 后端（建议使用不同后端）')
-def review(ai: str):
-    """评审需求文档 (RD)"""
-
-    click.echo("🔍 RD Reviewer Agent 正在评审...")
-
-    # 1. 读取文档
-    rd_file = Path('.specgov/artifacts/rd.md')
-    if not rd_file.exists():
-        click.echo("✗ 错误：RD 文档不存在，请先运行 specgov rd:generate")
-        return
-
-    click.echo(f"  读取文档：{rd_file}")
-    document = rd_file.read_text(encoding='utf-8')
-
-    # 2. 初始化 AI 后端
-    click.echo(f"  调用 AI：{ai}")
-    # TODO: 支持多后端
-    from ...ai.claude_code import ClaudeCodeBackend
-    backend = ClaudeCodeBackend()
-
-    # 3. 创建 Reviewer Agent
-    from ...ai.reviewer import ReviewerAgent
-    reviewer = ReviewerAgent(backend, stage='rd')
-
-    # 4. 评审
-    click.echo("  评审中...")
-    report = reviewer.review(document)
-
-    # 5. 保存评审报告
-    import json
-    review_file = Path('.specgov/reviews/rd-review.json')
-    review_file.parent.mkdir(parents=True, exist_ok=True)
-    review_file.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding='utf-8')
-
-    click.echo(f"✓ 评审完成：{review_file}")
-
-    # 6. 输出摘要
-    click.echo("\n📋 评审报告：")
-    click.echo(f"总结：{report.get('summary', '')}")
-
-    issues = report.get('issues', [])
-    if issues:
-        click.echo(f"\n⚠️  发现 {len(issues)} 个问题：")
-        for i, issue in enumerate(issues, 1):
-            click.echo(f"  {i}. [{issue['severity']}] {issue['description']}")
-    else:
-        click.echo("✓ 未发现问题")
-
-    click.echo("\n📚 下一步：")
-    click.echo("  运行 specgov rd:revise 根据评审意见修订")
-```
-
----
-
-## **五、数据存储设计**
-
-### **5.1 文件格式**
-
-**[ID: DD-STORAGE-001]**
-
-#### **依赖图存储格式**
-
+**Request:**
 ```json
-// .specgov/index/dependency-graph.json
+{...}
+```
+
+**Response:**
+```json
+{...}
+```
+
+## 3. Database Design
+
+### 3.1 [Table/Collection Name]
+**[ID: DESIGN-DB-XXX] [Designs-for: PRD-FEAT-XXX]**
+
+## Input Format
+1. PRD.md (product requirements)
+2. Technical constraints (language, framework, cloud platform, etc.)
+3. Existing Design-Document.md (if modifying)
+
+## Output Format
+Markdown file with:
+- Architecture diagrams and descriptions
+- API specifications
+- Database schemas
+- [Designs-for: PRD-XXX] linking each design to features
+
+## Examples
+
+### Example: OAuth2 API Design
+
+## 2. API Design
+
+### 2.1 OAuth2 Callback Endpoint
+**[ID: DESIGN-API-008] [Designs-for: PRD-FEAT-012]**
+
+Handle the OAuth2 callback after user authorizes the application.
+
+**Endpoint**: POST /auth/oauth2/callback
+
+**Request:**
+```json
 {
-  "version": "1.0",
-  "build_time": "2025-11-16T15:30:00Z",
-  "nodes": [
-    {
-      "id": "RD-REQ-005",
-      "type": "requirement",
-      "file_path": "docs/rd.md",
-      "line_number": 42,
-      "context": "## 1.1 OAuth2 登录",
-      "metadata": {}
-    }
-  ],
-  "edges": [
-    {
-      "source": "PRD-FEAT-012",
-      "target": "RD-REQ-005",
-      "type": "implements",
-      "file_path": "docs/prd.md",
-      "line_number": 128
-    }
-  ]
+  "provider": "google" | "github" | "microsoft",
+  "code": "authorization_code_from_provider",
+  "redirect_uri": "https://app.example.com/callback"
 }
 ```
 
-#### **任务文件格式**
+**Response (Success):**
+```json
+{
+  "access_token": "eyJhbGc...",
+  "refresh_token": "def50200...",
+  "expires_in": 3600,
+  "user": {
+    "id": "user-uuid",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+**Response (Error):**
+```json
+{
+  "error": "invalid_grant",
+  "error_description": "Invalid authorization code"
+}
+```
+
+**Implementation Notes:**
+- Validate provider is supported
+- Exchange auth code for access token using provider's OAuth2 API
+- Create or update user in database
+- Generate JWT for session management
+
+## Validation Checklist
+- [ ] All designs have [ID: DESIGN-XXX]
+- [ ] All designs link to PRD with [Designs-for: PRD-XXX]
+- [ ] API specs include request/response examples
+- [ ] Database schemas show all fields
+- [ ] ALWAYS use "Design Document" terminology
+```
+
+---
+
+### **2.5 Test Plan Generator Template**
+
+**[ID: DESIGN-TEMPLATE-TEST-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
+
+**File**: `templates/prompts/test-plan-generator.md`
+
+**Key Sections:**
 
 ```markdown
-// .specgov/tasks/project.md
-# SpecGovernor 项目任务（项目经理视图）
+# Test Plan Generator
 
-> **项目**: OAuth2 登录功能
-> **开始时间**: 2025-11-16 10:00
+## Role
+You are an experienced Test Manager / QA Engineer.
 
-## Epic 概览
+## Task
+Generate or modify a Test Plan based on Design Document and PRD.
 
-| Epic | 状态 | 进度 | 负责角色 | 预计时间 | 实际时间 |
-|------|------|------|---------|---------|---------|
-| Epic 1: RD 阶段 | ✅ 完成 | 3/3 (100%) | 需求分析师 | 30分钟 | 35分钟 |
-| Epic 2: PRD 阶段 | ⏳ 进行中 | 1/3 (33%) | 产品经理 | 40分钟 | 15分钟 |
+## Critical Requirements
 
-**总进度**: █████░░░░░░░░░░░ 27% (4/15)
+### 1. Traceability Tags
+- Test cases: **[ID: TEST-CASE-XXX]**
+- MUST link to design: **[Tests-for: DESIGN-API-XXX]**
+- Can also link to PRD: **[Tests-for: PRD-FEAT-XXX]**
+
+### 2. Terminology
+- ALWAYS use "Test Plan" (NEVER "TD")
+- File name: Test-Plan.md (NOT TD.md)
+
+### 3. Document Structure
+# Test Plan
+
+> **Version**: X.X
+> **Based on**: Design-Document.md (vX.X)
+
+## 1. Test Strategy
+
+[Overall testing approach]
+
+## 2. Test Cases
+
+### 2.1 [Feature/Component] Tests
+**[ID: TEST-CASE-XXX] [Tests-for: DESIGN-API-XXX]**
+
+#### Test Case: [Scenario Name]
+**[ID: TEST-CASE-XXX-001]**
+
+**Preconditions:**
+- [Precondition 1]
+
+**Steps:**
+1. [Step 1]
+2. [Step 2]
+
+**Expected Result:**
+- ✅ [Expected outcome 1]
+
+## Input Format
+1. Design-Document.md (technical design)
+2. PRD.md (product requirements)
+3. Existing Test-Plan.md (if modifying)
+
+## Output Format
+Markdown file with:
+- Test strategy overview
+- Detailed test cases with steps and expected results
+- [Tests-for: DESIGN-XXX] linking each test to design
+
+## Examples
+
+### Example: OAuth2 API Test Cases
+
+## 5. Authentication API Tests
+
+### 5.1 OAuth2 Callback Endpoint Tests
+**[ID: TEST-CASE-015] [Tests-for: DESIGN-API-008]**
+
+#### Test Case: Successful Google OAuth2 Login
+**[ID: TEST-CASE-015-001]**
+
+**Preconditions:**
+- User has a valid Google account
+- Application is registered with Google OAuth2
+- User has authorized the application
+
+**Steps:**
+1. Send POST /auth/oauth2/callback with valid Google authorization code:
+   ```json
+   {
+     "provider": "google",
+     "code": "valid_auth_code",
+     "redirect_uri": "https://app.example.com/callback"
+   }
+   ```
+2. Verify response status is 200
+3. Verify response contains access_token
+4. Verify response contains refresh_token
+5. Verify response contains user object with id, email, name
+
+**Expected Result:**
+- ✅ Status: 200 OK
+- ✅ access_token: valid JWT (can be decoded, not expired)
+- ✅ refresh_token: valid string
+- ✅ expires_in: 3600 seconds
+- ✅ user.email: matches Google account email
+
+#### Test Case: Invalid Authorization Code
+**[ID: TEST-CASE-015-002]**
+
+**Preconditions:**
+- None
+
+**Steps:**
+1. Send POST /auth/oauth2/callback with invalid authorization code:
+   ```json
+   {
+     "provider": "google",
+     "code": "invalid_code",
+     "redirect_uri": "https://app.example.com/callback"
+   }
+   ```
+2. Verify response status is 400
+3. Verify error message is clear
+
+**Expected Result:**
+- ✅ Status: 400 Bad Request
+- ✅ error: "invalid_grant"
+- ✅ error_description: "Invalid authorization code"
+
+## Validation Checklist
+- [ ] All test cases have [ID: TEST-CASE-XXX]
+- [ ] All test cases link to design with [Tests-for: DESIGN-XXX]
+- [ ] Preconditions clearly stated
+- [ ] Steps are actionable and specific
+- [ ] Expected results are measurable
+- [ ] ALWAYS use "Test Plan" terminology
 ```
 
 ---
 
-## **六、性能优化设计**
+### **2.6 Reviewer Templates**
 
-### **6.1 索引构建优化**
+**[ID: DESIGN-TEMPLATE-REVIEWERS-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**[ID: DD-PERF-001] [Designs-for: PRD-AC-002]**
+All reviewer templates follow similar structure to generators, but focus on:
 
-**目标：100万行代码 < 1分钟**
+1. **Completeness Check**: Are all sections present?
+2. **Traceability Validation**: Do all tags exist and reference valid IDs?
+3. **Quality Assessment**: Is content clear, unambiguous, testable?
+4. **Consistency Check**: Does content align with upstream documents?
 
-策略：
-1. **并行解析**：使用多进程解析多个文件
-2. **增量更新**：基于 Git diff 只重新解析变更文件
-3. **缓存机制**：缓存已解析的文件（基于文件哈希）
+**Example Structure** (`templates/prompts/rd-reviewer.md`):
+
+```markdown
+# Requirements Document (RD) Reviewer
+
+## Role
+You are an independent Requirements Review expert.
+
+## Task
+Review RD.md for completeness, traceability, and quality.
+
+## Review Checklist
+
+### 1. Traceability Tags
+- [ ] Every requirement has [ID: RD-XXX]
+- [ ] All [Decomposes: XXX] references point to existing parent IDs
+- [ ] No duplicate IDs
+
+### 2. Completeness
+- [ ] All requirements have clear descriptions
+- [ ] All requirements have acceptance criteria
+- [ ] No TODOs or placeholders
+
+### 3. Quality
+- [ ] Requirements are testable
+- [ ] Requirements are unambiguous
+- [ ] Requirements use consistent terminology
+
+## Output Format
+```markdown
+# RD Review Report
+
+## Summary
+✓ Overall quality: [Good/Fair/Poor]
+⚠️  Found [N] suggestions, [M] critical issues
+
+## Issues
+
+### 1. [Severity] [Section/ID]
+- Location: [Section X.X]
+- Issue: [Description]
+- Recommendation: [Specific fix]
+
+### 2. ...
+
+## Traceability Check
+✓ All requirements have [ID: XXX]
+✗ Found 2 broken [Decomposes: XXX] references
+```
+```
+
+---
+
+## **三、Workflow Documentation Design**
+
+### **3.1 Workflow Overview Document**
+
+**[ID: DESIGN-WORKFLOW-OVERVIEW-001] [Designs-for: PRD-FEAT-WORKFLOWS-001]**
+
+**File**: `templates/workflows/workflow-overview.md`
+
+**Content Structure:**
+
+```markdown
+# SpecGovernor Workflow Overview
+
+## 1. Introduction
+SpecGovernor provides a structured SDLC workflow using Claude Code and prompt templates.
+
+## 2. SDLC Stages
+
+1. **RD (Requirements Document)**: Define what needs to be built
+2. **PRD (Product Requirements Document)**: Define product features and user stories
+3. **Design Document**: Define technical architecture and design
+4. **Test Plan**: Define test strategy and cases
+5. **Code**: Implement the system
+
+## 3. Role Perspectives
+
+As a Super Individual, you will switch between these perspectives:
+
+- **Project Manager**: Create Epics, track overall progress
+- **Requirements Analyst**: Generate and review RD
+- **Product Manager**: Generate and review PRD
+- **Architect**: Generate and review Design Document
+- **Test Manager**: Generate and review Test Plan
+- **Developer**: Implement code
+
+## 4. General Workflow for Each Stage
+
+### Step 1: Switch to Role Perspective
+Open `.specgov/tasks/[role].md` to see assigned tasks.
+
+### Step 2: Load Generator Prompt in Claude Code
+Open Claude Code, load `.specgov/prompts/[stage]-generator.md`.
+
+### Step 3: Provide Context
+- Upstream documents (e.g., RD.md for PRD generation)
+- Additional requirements or constraints
+
+### Step 4: Generate Document
+Claude Code generates the document with embedded traceability tags.
+
+### Step 5: Review Document
+Switch perspective (or use same role), load reviewer prompt, review the generated document.
+
+### Step 6: Revise Based on Feedback
+Use generator prompt again (modification mode) to address review feedback.
+
+### Step 7: Update Task Documents
+- Update your role-specific task file (`.specgov/tasks/[role].md`)
+- Switch to Project Manager perspective
+- Update `.specgov/tasks/project-manager.md` with Epic progress
+
+## 5. Key Principles
+- **Explicit Traceability**: Always embed tags
+- **Dual Quality**: Generate + Review
+- **Two-Tier Tasks**: Epic (PM) + Tasks (Roles)
+- **Proper Terminology**: Design Document, Test Plan (not DD, TD)
+
+## 6. Next Steps
+See detailed workflows for each stage:
+- [RD Workflow](workflow-rd.md)
+- [PRD Workflow](workflow-prd.md)
+- [Design Document Workflow](workflow-design.md)
+- [Test Plan Workflow](workflow-test-plan.md)
+```
+
+---
+
+### **3.2 Stage-Specific Workflows**
+
+**[ID: DESIGN-WORKFLOW-STAGES-001] [Designs-for: PRD-FEAT-WORKFLOWS-001]**
+
+Each stage-specific workflow (`workflow-rd.md`, `workflow-prd.md`, etc.) provides:
+
+1. **Prerequisites**: What documents/inputs are needed
+2. **Role Perspective**: Which role to switch to
+3. **Step-by-Step Process**: Detailed walkthrough
+4. **Examples**: Concrete examples with screenshots/code blocks
+5. **Common Pitfalls**: What to avoid
+6. **Checklist**: Final validation before moving to next stage
+
+**Example** (`templates/workflows/workflow-design.md`):
+
+```markdown
+# Design Document Workflow
+
+## Prerequisites
+- ✅ PRD.md completed and reviewed
+- ✅ RD.md available for reference
+- ✅ Technical constraints identified (language, framework, cloud, etc.)
+
+## Role Perspective
+Switch to **Architect** role.
+
+## Step-by-Step Process
+
+### Step 1: Review PRD and Technical Constraints
+Open PRD.md and identify all features that need technical design.
+List technical constraints (e.g., "Must use Python/FastAPI, deploy on AWS Lambda").
+
+### Step 2: Open Claude Code and Load Prompt
+1. Open Claude Code
+2. Load `.specgov/prompts/design-generator.md`
+
+### Step 3: Provide Context
+Provide the following inputs to Claude Code:
+
+**Inputs:**
+- Full content of docs/PRD.md
+- Full content of docs/RD.md (for reference)
+- Technical constraints:
+  - Programming language: Python 3.11
+  - Framework: FastAPI
+  - Database: PostgreSQL
+  - Deployment: AWS Lambda + RDS
+  - Authentication: JWT
+
+### Step 4: Generate Design Document
+Claude Code will generate Design-Document.md with:
+- Architecture design [ID: DESIGN-ARCH-XXX]
+- API specifications [ID: DESIGN-API-XXX]
+- Database schemas [ID: DESIGN-DB-XXX]
+- Each section tagged with [Designs-for: PRD-FEAT-XXX]
+
+Save output to `docs/Design-Document.md`.
+
+### Step 5: Review Design Document
+1. Switch perspective (can stay as Architect or switch to another role for independence)
+2. Load `.specgov/prompts/design-reviewer.md` in Claude Code
+3. Provide docs/Design-Document.md for review
+4. Claude Code outputs review report
+
+### Step 6: Address Review Feedback
+If review identifies issues:
+1. Load `.specgov/prompts/design-generator.md` again
+2. Provide existing Design-Document.md + review feedback
+3. Claude Code modifies the document
+4. Repeat review if needed
+
+### Step 7: Update Task Documents
+1. Open `.specgov/tasks/architect.md`
+2. Mark Design Document generation task as complete
+3. Add notes on key design decisions
+4. Switch to Project Manager perspective
+5. Open `.specgov/tasks/project-manager.md`
+6. Update Epic progress (e.g., 60% → 80%)
+7. Commit both files to Git
+
+## Example Output
+
+## 2. API Design
+
+### 2.1 OAuth2 Callback Endpoint
+**[ID: DESIGN-API-008] [Designs-for: PRD-FEAT-012]**
+
+**Endpoint**: POST /auth/oauth2/callback
+
+**Request:**
+```json
+{
+  "provider": "google",
+  "code": "4/0AY0e-g7...",
+  "redirect_uri": "https://app.example.com/callback"
+}
+```
+
+**Response (Success):**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "def50200...",
+  "expires_in": 3600,
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "john.doe@gmail.com",
+    "name": "John Doe",
+    "avatar": "https://lh3.googleusercontent.com/..."
+  }
+}
+```
+
+**Implementation:**
+1. Validate provider (google/github/microsoft)
+2. Exchange authorization code for access token via provider's OAuth2 API
+3. Fetch user profile from provider
+4. Create or update user in PostgreSQL users table
+5. Generate JWT access_token and refresh_token
+6. Return tokens and user info
+
+## Common Pitfalls
+- ❌ Forgetting to add [Designs-for: PRD-XXX] tags
+- ❌ Using "DD" instead of "Design Document"
+- ❌ Not providing enough detail in API specs (missing error responses)
+- ❌ Designing without considering deployment constraints
+
+## Validation Checklist
+Before moving to Test Plan stage:
+- [ ] All designs have [ID: DESIGN-XXX] tags
+- [ ] All designs link to PRD with [Designs-for: PRD-XXX]
+- [ ] API specs include request, response (success + error), and implementation notes
+- [ ] Database schemas show all fields, indexes, relationships
+- [ ] Architecture aligns with technical constraints
+- [ ] Review completed and feedback addressed
+- [ ] Task documents updated (architect.md + project-manager.md)
+- [ ] Changes committed to Git
+```
+
+---
+
+## **四、Helper Scripts Design**
+
+### **4.1 Project Initialization Script**
+
+**[ID: DESIGN-SCRIPT-INIT-001] [Designs-for: PRD-FEAT-SCRIPTS-001]**
+
+**File**: `scripts/init_project.py`
+
+**Purpose**: Initialize SpecGovernor structure for user's project
+
+**Algorithm:**
 
 ```python
-# 伪代码
-def build_index_parallel(files: List[Path], num_workers: int = 4):
-    from multiprocessing import Pool
+#!/usr/bin/env python3
+"""
+Initialize SpecGovernor project structure.
+"""
+import os
+import json
+import shutil
+from datetime import datetime
 
-    with Pool(num_workers) as pool:
-        results = pool.map(parse_file, files)
+def prompt_project_size():
+    """Prompt user to select project size."""
+    print("请选择项目规模：")
+    print("1. 小项目（< 10 万行代码，单层文档结构）")
+    print("2. 大项目（≥ 10 万行代码，双层文档结构）")
 
-    return merge_results(results)
+    while True:
+        choice = input("您的选择 (1/2): ").strip()
+        if choice in ['1', '2']:
+            return 'small' if choice == '1' else 'large'
+        print("无效选择，请输入 1 或 2")
+
+def create_directory_structure(project_size):
+    """Create directory structure based on project size."""
+    # Create .specgov/ directory
+    os.makedirs('.specgov', exist_ok=True)
+    os.makedirs('.specgov/prompts', exist_ok=True)
+    os.makedirs('.specgov/workflows', exist_ok=True)
+    os.makedirs('.specgov/tasks', exist_ok=True)
+    os.makedirs('.specgov/index', exist_ok=True)
+
+    # Copy prompts from templates/
+    shutil.copytree('templates/prompts', '.specgov/prompts', dirs_exist_ok=True)
+    shutil.copytree('templates/workflows', '.specgov/workflows', dirs_exist_ok=True)
+
+    # Create task files
+    task_files = [
+        'project-manager.md',
+        'rd-analyst.md',
+        'product-manager.md',
+        'architect.md',
+        'test-manager.md'
+    ]
+    for task_file in task_files:
+        create_task_file(f'.specgov/tasks/{task_file}')
+
+    # Create docs/ structure
+    if project_size == 'small':
+        os.makedirs('docs', exist_ok=True)
+        create_placeholder('docs/RD.md', 'Requirements Document')
+        create_placeholder('docs/PRD.md', 'Product Requirements Document')
+        create_placeholder('docs/Design-Document.md', 'Design Document')
+        create_placeholder('docs/Test-Plan.md', 'Test Plan')
+    else:  # large
+        os.makedirs('docs/RD', exist_ok=True)
+        os.makedirs('docs/PRD', exist_ok=True)
+        os.makedirs('docs/Design-Document', exist_ok=True)
+        os.makedirs('docs/Test-Plan', exist_ok=True)
+        create_placeholder('docs/RD/RD-Overview.md', 'Requirements Overview')
+        create_placeholder('docs/PRD/PRD-Overview.md', 'Product Overview')
+        create_placeholder('docs/Design-Document/Design-Overview.md', 'Design Overview')
+        create_placeholder('docs/Test-Plan/Test-Overview.md', 'Test Overview')
+
+    # Create project config
+    config = {
+        "project_name": os.path.basename(os.getcwd()),
+        "project_size": project_size,
+        "document_structure": "single-tier" if project_size == 'small' else "two-tier",
+        "created_at": datetime.now().isoformat(),
+        "modules": []
+    }
+    with open('.specgov/project-config.json', 'w') as f:
+        json.dump(config, f, indent=2)
+
+def create_task_file(filepath):
+    """Create empty task file with header."""
+    role_name = os.path.basename(filepath).replace('.md', '').replace('-', ' ').title()
+    content = f"""# {role_name} Tasks
+
+## Active Tasks
+(No tasks assigned yet)
+
+## Completed Tasks
+(No tasks completed yet)
+"""
+    with open(filepath, 'w') as f:
+        f.write(content)
+
+def create_placeholder(filepath, doc_type):
+    """Create placeholder document."""
+    content = f"""# {doc_type}
+
+> **Version**: 1.0
+> **Created**: {datetime.now().strftime('%Y-%m-%d')}
+
+(This document will be generated using SpecGovernor prompt templates)
+"""
+    with open(filepath, 'w') as f:
+        f.write(content)
+
+def main():
+    print("SpecGovernor Project Initialization")
+    print("=" * 50)
+
+    project_size = prompt_project_size()
+    print(f"\n正在创建 {project_size} 项目结构...")
+
+    create_directory_structure(project_size)
+
+    print("\n✓ SpecGovernor 项目结构创建完成")
+    print("\n📚 下一步：")
+    print("  1. Review .specgov/workflows/workflow-overview.md")
+    print("  2. As Project Manager, create your first Epic in .specgov/tasks/project-manager.md")
+    print("  3. Switch to Requirements Analyst role, load .specgov/prompts/rd-generator.md in Claude Code")
+
+if __name__ == '__main__':
+    main()
 ```
 
-### **6.2 影响分析优化**
+---
 
-**[ID: DD-PERF-002] [Designs-for: PRD-US-004.1]**
+### **4.2 Tag Parser Script**
 
-**目标：< 10秒，$0成本**
+**[ID: DESIGN-SCRIPT-PARSER-001] [Designs-for: PRD-FEAT-SCRIPTS-001]**
 
-策略：
-1. **纯图查询**：无 AI 调用，只查询内存中的依赖图
-2. **BFS 算法**：广度优先搜索下游节点
-3. **索引优化**：使用哈希表加速查找
+**File**: `scripts/parse_tags.py`
+
+**Purpose**: Parse traceability tags from all files
+
+**Algorithm:**
+
+```python
+#!/usr/bin/env python3
+"""
+Parse traceability tags from Markdown and code files.
+"""
+import os
+import re
+import json
+from pathlib import Path
+
+TAG_PATTERNS = {
+    'id': r'\[ID:\s*([A-Z0-9-]+)\]',
+    'implements': r'\[Implements:\s*([A-Z0-9-]+)\]',
+    'decomposes': r'\[Decomposes:\s*([A-Z0-9-]+)\]',
+    'designs_for': r'\[Designs-for:\s*([A-Z0-9-]+)\]',
+    'tests_for': r'\[Tests-for:\s*([A-Z0-9-]+)\]',
+    'module': r'\[Module:\s*([A-Za-z0-9-]+)\]'
+}
+
+def scan_files(root_dirs=['docs', 'src']):
+    """Scan all Markdown and code files."""
+    files = []
+    for root_dir in root_dirs:
+        if not os.path.exists(root_dir):
+            continue
+        for filepath in Path(root_dir).rglob('*'):
+            if filepath.is_file() and (
+                filepath.suffix in ['.md', '.py', '.ts', '.tsx', '.js', '.jsx', '.java', '.go']
+            ):
+                files.append(str(filepath))
+    return files
+
+def parse_file(filepath):
+    """Parse traceability tags from a single file."""
+    tags = []
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            for line_num, line in enumerate(f, 1):
+                # Find ID tag
+                id_match = re.search(TAG_PATTERNS['id'], line)
+                if id_match:
+                    tag_id = id_match.group(1)
+                    tag_entry = {
+                        'id': tag_id,
+                        'file': filepath,
+                        'line': line_num,
+                        'type': infer_type(tag_id)
+                    }
+
+                    # Find relationship tags on same line
+                    for rel_type, pattern in TAG_PATTERNS.items():
+                        if rel_type in ['id', 'module']:
+                            continue
+                        match = re.search(pattern, line)
+                        if match:
+                            tag_entry[rel_type] = match.group(1)
+
+                    # Find module tag
+                    module_match = re.search(TAG_PATTERNS['module'], line)
+                    if module_match:
+                        tag_entry['module'] = module_match.group(1)
+
+                    tags.append(tag_entry)
+    except Exception as e:
+        print(f"Error reading {filepath}: {e}")
+
+    return tags
+
+def infer_type(tag_id):
+    """Infer tag type from ID prefix."""
+    if tag_id.startswith('RD-'):
+        return 'requirement'
+    elif tag_id.startswith('PRD-FEAT-'):
+        return 'feature'
+    elif tag_id.startswith('PRD-US-'):
+        return 'user_story'
+    elif tag_id.startswith('DESIGN-ARCH-'):
+        return 'architecture'
+    elif tag_id.startswith('DESIGN-API-'):
+        return 'api_design'
+    elif tag_id.startswith('DESIGN-DB-'):
+        return 'database_design'
+    elif tag_id.startswith('TEST-CASE-'):
+        return 'test_case'
+    elif tag_id.startswith('CODE-'):
+        return 'code'
+    else:
+        return 'unknown'
+
+def main():
+    print("Parsing traceability tags...")
+
+    files = scan_files()
+    print(f"✓ Scanning {len(files)} files")
+
+    all_tags = []
+    for filepath in files:
+        tags = parse_file(filepath)
+        all_tags.extend(tags)
+
+    # Count tags
+    id_count = len(all_tags)
+    implements_count = sum(1 for t in all_tags if 'implements' in t)
+    decomposes_count = sum(1 for t in all_tags if 'decomposes' in t)
+    designs_for_count = sum(1 for t in all_tags if 'designs_for' in t)
+    tests_for_count = sum(1 for t in all_tags if 'tests_for' in t)
+
+    # Save to JSON
+    output = {'tags': all_tags}
+    os.makedirs('.specgov/index', exist_ok=True)
+    with open('.specgov/index/tags.json', 'w') as f:
+        json.dump(output, f, indent=2)
+
+    print(f"✓ Found {id_count} [ID: XXX] tags")
+    print(f"✓ Found {implements_count} [Implements: XXX] tags")
+    print(f"✓ Found {decomposes_count} [Decomposes: XXX] tags")
+    print(f"✓ Found {designs_for_count} [Designs-for: XXX] tags")
+    print(f"✓ Found {tests_for_count} [Tests-for: XXX] tags")
+    print(f"✓ Saved to .specgov/index/tags.json")
+
+if __name__ == '__main__':
+    main()
+```
 
 ---
 
-## **七、测试策略**
+### **4.3 Dependency Graph Builder Script**
 
-### **7.1 单元测试**
+**[ID: DESIGN-SCRIPT-GRAPH-001] [Designs-for: PRD-FEAT-SCRIPTS-001]**
 
-**[ID: DD-TEST-001]**
+**File**: `scripts/build_graph.py`
 
-覆盖模块：
-- Tag Parser（标记解析准确性 > 95%）
-- Dependency Graph（图操作正确性）
-- Impact Analyzer（影响分析准确性）
-- Task Complexity Checker（复杂度判断准确性）
+**Purpose**: Build dependency graph from parsed tags
 
-### **7.2 集成测试**
+**Algorithm:**
 
-**[ID: DD-TEST-002]**
+```python
+#!/usr/bin/env python3
+"""
+Build dependency graph from parsed tags.
+"""
+import json
+import os
 
-测试场景：
-- 完整 RD → PRD → DD → TD → Code 流程
-- 影响分析端到端测试
-- 一致性检查端到端测试
+def load_tags():
+    """Load tags from tags.json."""
+    with open('.specgov/index/tags.json', 'r') as f:
+        data = json.load(f)
+    return data['tags']
 
-### **7.3 性能测试**
+def build_graph(tags):
+    """Build dependency graph from tags."""
+    nodes = []
+    edges = []
 
-**[ID: DD-TEST-003]**
+    # Create nodes
+    for tag in tags:
+        node = {
+            'id': tag['id'],
+            'type': tag['type'],
+            'location': f"{tag['file']}#L{tag['line']}"
+        }
+        if 'module' in tag:
+            node['module'] = tag['module']
+        nodes.append(node)
 
-性能基准：
-- 索引构建：100万行代码 < 1分钟
-- 影响分析：任意项目 < 10秒
-- 一致性检查：单需求 < 2分钟
+    # Create edges
+    for tag in tags:
+        source_id = tag['id']
+
+        # Implements relationship
+        if 'implements' in tag:
+            edges.append({
+                'from': source_id,
+                'to': tag['implements'],
+                'relation': 'implements'
+            })
+
+        # Decomposes relationship
+        if 'decomposes' in tag:
+            edges.append({
+                'from': source_id,
+                'to': tag['decomposes'],
+                'relation': 'decomposes'
+            })
+
+        # Designs-for relationship
+        if 'designs_for' in tag:
+            edges.append({
+                'from': source_id,
+                'to': tag['designs_for'],
+                'relation': 'designs-for'
+            })
+
+        # Tests-for relationship
+        if 'tests_for' in tag:
+            edges.append({
+                'from': source_id,
+                'to': tag['tests_for'],
+                'relation': 'tests-for'
+            })
+
+    return {'nodes': nodes, 'edges': edges}
+
+def detect_circular_dependencies(graph):
+    """Detect circular dependencies using DFS."""
+    # Build adjacency list
+    adj = {}
+    for edge in graph['edges']:
+        if edge['from'] not in adj:
+            adj[edge['from']] = []
+        adj[edge['from']].append(edge['to'])
+
+    visited = set()
+    rec_stack = set()
+    cycles = []
+
+    def dfs(node, path):
+        visited.add(node)
+        rec_stack.add(node)
+
+        if node in adj:
+            for neighbor in adj[node]:
+                if neighbor not in visited:
+                    dfs(neighbor, path + [neighbor])
+                elif neighbor in rec_stack:
+                    # Found cycle
+                    cycle_start = path.index(neighbor)
+                    cycles.append(path[cycle_start:] + [neighbor])
+
+        rec_stack.remove(node)
+
+    for node_data in graph['nodes']:
+        node = node_data['id']
+        if node not in visited:
+            dfs(node, [node])
+
+    return cycles
+
+def count_by_type(graph):
+    """Count nodes by type."""
+    counts = {}
+    for node in graph['nodes']:
+        node_type = node['type']
+        counts[node_type] = counts.get(node_type, 0) + 1
+    return counts
+
+def main():
+    print("Building dependency graph...")
+
+    tags = load_tags()
+    graph = build_graph(tags)
+
+    print(f"✓ Created {len(graph['nodes'])} nodes")
+    print(f"✓ Created {len(graph['edges'])} edges")
+
+    # Detect circular dependencies
+    cycles = detect_circular_dependencies(graph)
+    if cycles:
+        print(f"⚠️  Detected {len(cycles)} circular dependencies:")
+        for cycle in cycles:
+            print(f"   {' → '.join(cycle)}")
+    else:
+        print("✓ Detected 0 circular dependencies")
+
+    # Save graph
+    with open('.specgov/index/dependency-graph.json', 'w') as f:
+        json.dump(graph, f, indent=2)
+    print("✓ Saved to .specgov/index/dependency-graph.json")
+
+    # Statistics
+    counts = count_by_type(graph)
+    print("\n📊 Statistics:")
+    for node_type, count in sorted(counts.items()):
+        print(f"  - {node_type}: {count}")
+
+if __name__ == '__main__':
+    main()
+```
 
 ---
 
-## **八、实现计划**
+### **4.4 Impact Analysis Script**
 
-### **8.1 MVP（10-14周）**
+**[ID: DESIGN-SCRIPT-IMPACT-001] [Designs-for: PRD-FEAT-SCRIPTS-001]**
 
-**[ID: DD-IMPL-MVP]**
+**File**: `scripts/impact_analysis.py`
 
-| 周次 | 模块 | 工作内容 |
-|-----|------|---------|
-| 1-2 | 基础框架 | Fork spec-kit，搭建项目结构 |
-| 3-4 | Tag Parser | 实现标记解析器 + 单元测试 |
-| 5-6 | Dependency Graph | 实现依赖图 + 图算法 |
-| 7-8 | RD 阶段 | 实现 rd:generate/review/revise |
-| 9-10 | Impact Analysis | 实现影响分析引擎 |
-| 11-12 | Consistency Check | 实现一致性检查（单需求） |
-| 13-14 | 集成测试 | 端到端测试 + Bug修复 |
+**Purpose**: Analyze impact of file changes
 
-### **8.2 V1.0（MVP + 6-8周）**
+**Algorithm:**
 
-**[ID: DD-IMPL-V1]**
+```python
+#!/usr/bin/env python3
+"""
+Analyze impact of file changes using git diff and dependency graph.
+"""
+import json
+import subprocess
+import argparse
+import re
 
-| 周次 | 模块 | 工作内容 |
-|-----|------|---------|
-| 15-16 | PRD/DD/TD 阶段 | 实现其他文档阶段 |
-| 17-18 | 任务管理系统 | 实现两层任务管理 |
-| 19-20 | 增量索引 | 实现增量更新 |
-| 21-22 | 性能优化 | 并行化、缓存 |
+TAG_PATTERN = r'\[ID:\s*([A-Z0-9-]+)\]'
+
+def get_changed_lines(filepath):
+    """Get changed line numbers using git diff."""
+    try:
+        result = subprocess.run(
+            ['git', 'diff', 'HEAD', filepath],
+            capture_output=True,
+            text=True
+        )
+        diff = result.stdout
+
+        # Parse diff to find changed lines
+        changed_lines = []
+        current_line = 0
+        for line in diff.split('\n'):
+            if line.startswith('@@'):
+                # Extract line number from @@ -a,b +c,d @@
+                match = re.search(r'\+(\d+)', line)
+                if match:
+                    current_line = int(match.group(1))
+            elif line.startswith('+') and not line.startswith('+++'):
+                changed_lines.append(current_line)
+                current_line += 1
+            elif not line.startswith('-'):
+                current_line += 1
+
+        return changed_lines
+    except Exception as e:
+        print(f"Error running git diff: {e}")
+        return []
+
+def find_changed_tags(filepath, changed_lines):
+    """Find tags in changed lines."""
+    changed_tags = []
+
+    try:
+        with open(filepath, 'r') as f:
+            for line_num, line in enumerate(f, 1):
+                if line_num in changed_lines:
+                    match = re.search(TAG_PATTERN, line)
+                    if match:
+                        changed_tags.append(match.group(1))
+    except Exception as e:
+        print(f"Error reading file: {e}")
+
+    return changed_tags
+
+def load_graph():
+    """Load dependency graph."""
+    with open('.specgov/index/dependency-graph.json', 'r') as f:
+        return json.load(f)
+
+def find_downstream(graph, source_ids):
+    """Find all downstream nodes (BFS)."""
+    # Build adjacency list (reverse direction for downstream)
+    adj = {}
+    for edge in graph['edges']:
+        # Downstream: if A implements B, then B affects A
+        target = edge['from']
+        source = edge['to']
+        if source not in adj:
+            adj[source] = []
+        adj[source].append((target, edge['relation']))
+
+    # BFS from source_ids
+    queue = [(sid, None) for sid in source_ids]
+    visited = set(source_ids)
+    affected = []
+
+    while queue:
+        node_id, reason = queue.pop(0)
+
+        if node_id in adj:
+            for neighbor, relation in adj[node_id]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    affected.append((neighbor, f"{relation.capitalize()} {node_id}"))
+                    queue.append((neighbor, f"{relation} {node_id}"))
+
+    return affected
+
+def get_node_info(graph, node_id):
+    """Get node information."""
+    for node in graph['nodes']:
+        if node['id'] == node_id:
+            return node
+    return None
+
+def main():
+    parser = argparse.ArgumentParser(description='Analyze impact of file changes')
+    parser.add_argument('--changed', required=True, help='Changed file path')
+    args = parser.parse_args()
+
+    print("🔍 Analyzing impact...")
+
+    # Get changed lines
+    changed_lines = get_changed_lines(args.changed)
+    if not changed_lines:
+        print(f"No changes detected in {args.changed}")
+        return
+
+    # Find changed tags
+    changed_tags = find_changed_tags(args.changed, changed_lines)
+    if not changed_tags:
+        print("No traceability tags found in changed lines")
+        return
+
+    # Load graph
+    graph = load_graph()
+
+    # Find downstream nodes
+    affected = find_downstream(graph, changed_tags)
+
+    # Print report
+    print("\n" + "━" * 50)
+    print("📊 Impact Analysis Report")
+    print("━" * 50)
+
+    print(f"\nChanged Nodes ({len(changed_tags)}):")
+    for tag_id in changed_tags:
+        node = get_node_info(graph, tag_id)
+        if node:
+            print(f"  • {tag_id} ({node['type']}) at {node['location']}")
+
+    print(f"\nAffected Nodes ({len(affected)}):")
+    for node_id, reason in affected:
+        node = get_node_info(graph, node_id)
+        if node:
+            print(f"  ⚠️  {node_id} ({node['type']}) at {node['location']}")
+            print(f"      Reason: {reason}")
+
+    print("\nRecommended Actions:")
+    print("  1. Review and update affected documents")
+    print("  2. Run tests for affected code")
+    print("  3. Update dependency graph (python scripts/parse_tags.py && python scripts/build_graph.py)")
+
+    print("\n" + "━" * 50)
+    print(f"\n⏱️  Time: < 10 seconds")
+    print("💰 Cost: $0 (graph query only)")
+
+if __name__ == '__main__':
+    main()
+```
 
 ---
 
-## **九、风险缓解**
+## **五、Non-Functional Requirements**
 
-### **9.1 技术风险**
+### **5.1 Performance**
 
-**[ID: DD-RISK-001]**
+**[ID: DESIGN-NFR-PERF-001] [Designs-for: PRD-NFR-002]**
 
-| 风险 | 缓解措施 |
-|------|---------|
-| AI 生成标记不准确 | Reviewer Agent 检查 + 手动修复工具 |
-| 依赖图构建性能不足 | 并行解析 + 增量更新 |
-| 上下文窗口超限 | 任务复杂度检查 + 自动分解 |
-
----
-
-## **十、总结**
-
-### **10.1 设计亮点**
-
-**[ID: DD-SUMMARY-001]**
-
-1. ✅ **复用 spec-kit**：60-70% 代码复用，节省 5-6 周开发时间
-2. ✅ **显式追溯**：基于正则表达式解析，性能高、成本低
-3. ✅ **两层任务管理**：项目经理管理 Epic，角色管理任务
-4. ✅ **无状态设计**：所有状态存储在 Git，支持跨电脑工作
-5. ✅ **AI 上下文控制**：任务复杂度检查，避免超出窗口
-
-### **10.2 下一步**
-
-**[ID: DD-NEXT-001]**
-
-1. ✅ **编写 TD（测试文档）**：详细的测试用例和策略
-2. ✅ **开始实现**：Fork spec-kit，开始编码
+| Operation | Target | Implementation Strategy |
+|-----------|--------|------------------------|
+| Tag parsing | < 1 min for 100K LOC | Use regex, scan files in parallel (Python multiprocessing) |
+| Graph building | < 1 min for 100K LOC | In-memory graph construction, simple adjacency list |
+| Impact analysis | < 10 seconds | Graph query using BFS, no AI calls |
+| Project initialization | < 5 seconds | Simple file/directory creation |
 
 ---
 
-**设计文档结束**
+### **5.2 Cost**
+
+**[ID: DESIGN-NFR-COST-001] [Designs-for: PRD-NFR-003]**
+
+| Component | Cost | Rationale |
+|-----------|------|-----------|
+| Helper scripts | $0 | Pure Python, local execution, no external APIs |
+| Prompt templates | $0 | Just markdown files |
+| Using templates with Claude | User's Claude API cost | User pays for their own Claude Code usage |
+
+---
+
+### **5.3 Maintainability**
+
+**[ID: DESIGN-NFR-MAINT-001] [Designs-for: PRD-NFR-004]**
+
+- All templates: Plain markdown (no proprietary format)
+- All scripts: Python 3.8+ with standard library only
+- No external dependencies for core functionality
+- Git-trackable: All changes versioned
+- Extensible: Users can edit templates, add custom scripts
+
+---
+
+## **六、Summary**
+
+### **6.1 Deliverables**
+
+**[ID: DESIGN-SUMMARY-001]**
+
+Based on this Design Document, the following will be implemented:
+
+1. **Prompt Templates** (9+ markdown files in `templates/prompts/`)
+   - rd-generator.md, rd-reviewer.md
+   - prd-generator.md, prd-reviewer.md
+   - design-generator.md, design-reviewer.md
+   - test-plan-generator.md, test-plan-reviewer.md
+   - code-generator.md
+   - Large project variants (overview/module generators)
+
+2. **Workflow Documentation** (7 markdown files in `templates/workflows/`)
+   - workflow-overview.md
+   - workflow-rd.md, workflow-prd.md, workflow-design.md, workflow-test-plan.md
+   - workflow-task-mgmt.md
+   - workflow-large-project.md
+
+3. **Helper Scripts** (4 Python files in `scripts/`)
+   - init_project.py
+   - parse_tags.py
+   - build_graph.py
+   - impact_analysis.py
+
+---
+
+### **6.2 Next Steps**
+
+**[ID: DESIGN-NEXT-001]**
+
+1. ✅ **Write Test Plan**: Test strategy for all components
+2. ✅ **Implement Prompt Templates**: Create all .md files with detailed prompts
+3. ✅ **Implement Workflow Docs**: Write step-by-step guides
+4. ✅ **Implement Python Scripts**: Develop and test all helper scripts
+5. ✅ **Integration Testing**: Test complete workflow end-to-end
+
+---
+
+**Design Document Complete**
