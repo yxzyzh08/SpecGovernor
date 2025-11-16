@@ -11,7 +11,7 @@
 ## **重要说明 (Important Note)**
 
 **SpecGovernor 是什么**：
-- ✅ 一套**提示词模板集合**，用于引导 Claude Code 生成规范的 RD/PRD/DD/TD/Code
+- ✅ 一套**提示词模板集合**，用于引导 Claude Code 生成规范的 RD/PRD/Design Document/Test Plan/Code
 - ✅ 一套**标准流程文档**，指导人类开发者如何使用 Claude Code 进行规范化开发
 - ✅ 一些**辅助脚本**（Python/Shell），帮助解析可追溯性标记、构建依赖图、影响分析等
 
@@ -38,10 +38,10 @@
 | 术语/缩略语 | 英文全称 | 解释说明 |
 | :---- | :---- | :---- |
 | **SDLC** | Software Development Life Cycle | 软件开发生命周期 |
-| **RD** | Requirements Document | 需求文档 |
-| **PRD** | Product Requirements Document | 产品需求文档 |
-| **DD** | Design Document | 设计文档 |
-| **TD** | Test Document | 测试文档 |
+| **RD** | Requirements Document | 需求文档（行业标准术语） |
+| **PRD** | Product Requirements Document | 产品需求文档（行业标准术语） |
+| **Design Document** | Design Document | 设计文档（使用完整名字，不缩写为 DD） |
+| **Test Plan** | Test Plan | 测试计划（使用完整名字，不缩写为 TD） |
 | **Claude Code** | Claude Code | Anthropic 的 AI 编程助手 |
 | **Prompt Template** | 提示词模板 | 预定义的 AI 提示词，用于引导 Claude Code 生成特定内容 |
 | **Traceability Tag** | 可追溯性标记 | 在文档或代码中嵌入的结构化标记，如 `[ID: RD-REQ-005]` |
@@ -56,9 +56,9 @@
 
 | ID | 目标描述 | 达成标准 |
 | :---- | :---- | :---- |
-| **G-1** | **提供标准化提示词模板** | 覆盖 RD/PRD/DD/TD/Code 生成和评审的所有场景 |
+| **G-1** | **提供标准化提示词模板** | 覆盖 RD/PRD/Design Document/Test Plan/Code 生成和评审的所有场景 |
 | **G-2** | **定义规范化开发流程** | 提供清晰的流程文档，人类开发者可以遵循 |
-| **G-3** | **实现可追溯性** | 通过嵌入标记，建立 RD → PRD → DD → TD → Code 的追溯链 |
+| **G-3** | **实现可追溯性** | 通过嵌入标记，建立 RD → PRD → Design Document → Test Plan → Code 的追溯链 |
 | **G-4** | **提供辅助工具** | 简单的脚本帮助解析标记、构建依赖图、影响分析 |
 | **G-5** | **易于使用** | 人类开发者可以直接使用，无需安装复杂软件 |
 
@@ -76,8 +76,8 @@
 | :---- | :---- |
 | **需求分析师** | 使用 RD Generator 提示词生成需求文档 |
 | **产品经理** | 使用 PRD Generator 提示词生成产品文档 |
-| **架构师** | 使用 DD Generator 提示词生成设计文档 |
-| **测试经理** | 使用 TD Generator 提示词生成测试文档 |
+| **架构师** | 使用 Design Document Generator 提示词生成设计文档 |
+| **测试经理** | 使用 Test Plan Generator 提示词生成测试计划 |
 | **开发工程师** | 使用 Code Generator 提示词生成代码 |
 
 ### **3.2 使用方式**
@@ -105,9 +105,13 @@
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **rd-generator.md** | 生成需求文档 | 用户故事、业务需求 | RD.md（包含 `[ID: RD-XXX]` 标记） |
+| **rd-generator.md** | 生成或修改需求文档 | 用户故事、业务需求（或现有 RD.md） | RD.md（包含 `[ID: RD-XXX]` 标记） |
 | **rd-reviewer.md** | 评审需求文档 | RD.md | 评审报告（问题列表、建议） |
-| **rd-reviser.md** | 修订需求文档 | RD.md + 评审报告 | 修订后的 RD.md |
+
+**说明**：
+- `rd-generator.md` 既能**创建新文档**，也能**修改现有文档**（不需要单独的 reviser）
+- 当提供现有 RD.md 时，它会基于输入进行修订
+- 当只提供用户故事时，它会创建全新的 RD.md
 
 **提示词模板要求**：
 - 清晰的角色定义（"你是一位需求分析师..."）
@@ -121,28 +125,26 @@
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **prd-generator.md** | 生成产品文档 | RD.md | PRD.md（包含 `[ID: PRD-XXX]` 和 `[Implements: RD-XXX]`） |
+| **prd-generator.md** | 生成或修改产品文档 | RD.md（或 RD.md + 现有 PRD.md） | PRD.md（包含 `[ID: PRD-XXX]` 和 `[Implements: RD-XXX]`） |
 | **prd-reviewer.md** | 评审产品文档 | PRD.md + RD.md | 评审报告 |
-| **prd-reviser.md** | 修订产品文档 | PRD.md + 评审报告 | 修订后的 PRD.md |
 
-#### **FR-1.3 DD 阶段提示词**
+#### **FR-1.3 Design Document 阶段提示词**
 
 **[ID: RD-FR-1.3]**
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **dd-generator.md** | 生成设计文档 | PRD.md + RD.md | DD.md（包含 `[ID: DD-XXX]` 和 `[Designs-for: PRD-XXX]`） |
-| **dd-reviewer.md** | 评审设计文档 | DD.md + PRD.md | 评审报告 |
-| **dd-reviser.md** | 修订设计文档 | DD.md + 评审报告 | 修订后的 DD.md |
+| **design-generator.md** | 生成或修改设计文档 | PRD.md + RD.md（或 + 现有 Design Document） | Design Document（包含 `[ID: DESIGN-XXX]` 和 `[Designs-for: PRD-XXX]`） |
+| **design-reviewer.md** | 评审设计文档 | Design Document + PRD.md | 评审报告 |
 
-#### **FR-1.4 TD 阶段提示词**
+#### **FR-1.4 Test Plan 阶段提示词**
 
 **[ID: RD-FR-1.4]**
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **td-generator.md** | 生成测试文档 | DD.md + PRD.md | TD.md（包含 `[ID: TD-XXX]` 和 `[Tests-for: DD-XXX]`） |
-| **td-reviewer.md** | 评审测试文档 | TD.md + DD.md | 评审报告 |
+| **test-plan-generator.md** | 生成或修改测试计划 | Design Document + PRD.md（或 + 现有 Test Plan） | Test Plan（包含 `[ID: TEST-XXX]` 和 `[Tests-for: DESIGN-XXX]`） |
+| **test-plan-reviewer.md** | 评审测试计划 | Test Plan + Design Document | 评审报告 |
 
 #### **FR-1.5 Code 阶段提示词**
 
@@ -150,8 +152,8 @@
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **code-generator.md** | 生成代码 | DD.md + PRD.md | 代码（包含 `[ID: CODE-XXX]` 注释） |
-| **code-reviewer.md** | 评审代码 | 代码 + DD.md | 评审报告 |
+| **code-generator.md** | 生成或修改代码 | Design Document + PRD.md（或 + 现有代码） | 代码（包含 `[ID: CODE-XXX]` 注释） |
+| **code-reviewer.md** | 评审代码 | 代码 + Design Document | 评审报告 |
 
 #### **FR-1.6 一致性检查提示词**
 
@@ -159,7 +161,7 @@
 
 | 提示词 | 用途 | 输入 | 输出 |
 | :---- | :---- | :---- | :---- |
-| **consistency-checker.md** | 检查 RD/PRD/DD/Code 一致性 | 依赖链涉及的文档和代码 | 不一致报告 |
+| **consistency-checker.md** | 检查 RD/PRD/Design Document/Code 一致性 | 依赖链涉及的文档和代码 | 不一致报告 |
 | **impact-analyzer.md** | 分析变更影响 | 变更文件 + 依赖图 | 受影响的下游节点列表 |
 
 ---
@@ -195,8 +197,8 @@
 
 类似 RD 工作流程，提供：
 - `workflows/prd-workflow.md`
-- `workflows/dd-workflow.md`
-- `workflows/td-workflow.md`
+- `workflows/design-workflow.md`
+- `workflows/test-plan-workflow.md`
 - `workflows/code-workflow.md`
 
 #### **FR-2.3 影响分析工作流程**
@@ -339,8 +341,8 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 **输出**：生成 `context.md`，包含：
 - RD-REQ-005 的内容
 - PRD-FEAT-012 的内容（实现了 RD-REQ-005）
-- DD-API-008 的内容（设计了 PRD-FEAT-012）
-- CODE-API-008 的代码片段（实现了 DD-API-008）
+- DESIGN-API-008 的内容（设计了 PRD-FEAT-012）
+- CODE-API-008 的代码片段（实现了 DESIGN-API-008）
 
 人类开发者打开 Claude Code，加载 `prompts/consistency-checker.md`，提供 `context.md`，Claude Code 检查一致性。
 
@@ -358,8 +360,8 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 | :---- | :---- |
 | `templates/RD-template.md` | RD 文档结构模板 |
 | `templates/PRD-template.md` | PRD 文档结构模板 |
-| `templates/DD-template.md` | DD 文档结构模板 |
-| `templates/TD-template.md` | TD 文档结构模板 |
+| `templates/Design-Document-template.md` | Design Document 结构模板 |
+| `templates/Test-Plan-template.md` | Test Plan 结构模板 |
 
 **模板内容**：
 - 文档结构（章节标题）
@@ -378,8 +380,8 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 
 - `docs/RD.md`：示例需求文档（OAuth2 登录）
 - `docs/PRD.md`：示例产品文档
-- `docs/DD.md`：示例设计文档
-- `docs/TD.md`：示例测试文档
+- `docs/Design-Document.md`：示例设计文档
+- `docs/Test-Plan.md`：示例测试计划
 - `src/auth.controller.ts`：示例代码
 - `.specgov/dependency-graph.json`：示例依赖图
 
@@ -408,8 +410,8 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 | :---- | :---- | :---- |
 | RD | `RD-REQ-`, `RD-GOAL-` | RD-REQ-001, RD-GOAL-001 |
 | PRD | `PRD-FEAT-`, `PRD-US-` | PRD-FEAT-012, PRD-US-003 |
-| DD | `DD-API-`, `DD-DB-`, `DD-ARCH-` | DD-API-008, DD-DB-005 |
-| TD | `TD-CASE-`, `TD-PERF-` | TD-CASE-015, TD-PERF-003 |
+| Design Document | `DESIGN-API-`, `DESIGN-DB-`, `DESIGN-ARCH-` | DESIGN-API-008, DESIGN-DB-005 |
+| Test Plan | `TEST-CASE-`, `TEST-PERF-` | TEST-CASE-015, TEST-PERF-003 |
 | Code | `CODE-API-`, `CODE-SERVICE-` | CODE-API-008 |
 
 ### **5.3 嵌入位置**
@@ -426,7 +428,7 @@ python scripts/check-consistency.py --scope=RD-REQ-005 --output=context.md
 
 **代码文件**：
 ```typescript
-// [ID: CODE-API-008] [Implements: DD-API-008]
+// [ID: CODE-API-008] [Implements: DESIGN-API-008]
 export class AuthController {
     async oauth2Callback(req: Request, res: Response) {
         // ...
@@ -444,23 +446,23 @@ export class AuthController {
 SpecGovernor/
 ├── README.md                   # 使用指南
 ├── prompts/                    # 提示词模板
-│   ├── rd-generator.md
+│   ├── rd-generator.md         # 既能创建也能修改 RD
 │   ├── rd-reviewer.md
-│   ├── rd-reviser.md
-│   ├── prd-generator.md
+│   ├── prd-generator.md        # 既能创建也能修改 PRD
 │   ├── prd-reviewer.md
-│   ├── dd-generator.md
-│   ├── dd-reviewer.md
-│   ├── td-generator.md
-│   ├── code-generator.md
+│   ├── design-generator.md     # 既能创建也能修改 Design Document
+│   ├── design-reviewer.md
+│   ├── test-plan-generator.md  # 既能创建也能修改 Test Plan
+│   ├── test-plan-reviewer.md
+│   ├── code-generator.md       # 既能创建也能修改代码
 │   ├── code-reviewer.md
 │   ├── consistency-checker.md
 │   └── impact-analyzer.md
 ├── workflows/                  # 工作流程文档
 │   ├── rd-workflow.md
 │   ├── prd-workflow.md
-│   ├── dd-workflow.md
-│   ├── td-workflow.md
+│   ├── design-workflow.md
+│   ├── test-plan-workflow.md
 │   ├── code-workflow.md
 │   ├── impact-analysis.md
 │   └── consistency-check.md
@@ -472,15 +474,15 @@ SpecGovernor/
 ├── templates/                  # 文档模板
 │   ├── RD-template.md
 │   ├── PRD-template.md
-│   ├── DD-template.md
-│   └── TD-template.md
+│   ├── Design-Document-template.md
+│   └── Test-Plan-template.md
 ├── examples/                   # 示例项目
 │   └── oauth2-login/
 │       ├── docs/
 │       │   ├── RD.md
 │       │   ├── PRD.md
-│       │   ├── DD.md
-│       │   └── TD.md
+│       │   ├── Design-Document.md
+│       │   └── Test-Plan.md
 │       ├── src/
 │       │   └── auth.controller.ts
 │       └── .specgov/
@@ -488,8 +490,8 @@ SpecGovernor/
 └── docs/                       # SpecGovernor 自身的设计文档
     ├── RD.md                   # 本文档
     ├── PRD.md
-    ├── DD.md
-    └── TD.md
+    ├── Design-Document.md
+    └── Test-Plan.md
 ```
 
 ---
@@ -534,11 +536,11 @@ SpecGovernor/
 
 | 交付物 | 验收标准 |
 | :---- | :---- |
-| **提示词模板** | ✅ 覆盖所有阶段（RD/PRD/DD/TD/Code）<br>✅ 包含生成、评审、修订模板<br>✅ 输出包含可追溯性标记 |
+| **提示词模板** | ✅ 覆盖所有阶段（RD/PRD/Design Document/Test Plan/Code）<br>✅ 包含生成和评审模板（generator 既能创建也能修改）<br>✅ 输出包含可追溯性标记 |
 | **工作流程文档** | ✅ 清晰的步骤说明<br>✅ 示例截图或命令<br>✅ 验收标准明确 |
 | **辅助脚本** | ✅ 运行正常，无报错<br>✅ 性能达标<br>✅ 提供 `--help` |
 | **文档模板** | ✅ 结构清晰<br>✅ 标记位置示例 |
-| **示例项目** | ✅ 完整的 RD/PRD/DD/TD/Code<br>✅ 可追溯性标记完整 |
+| **示例项目** | ✅ 完整的 RD/PRD/Design Document/Test Plan/Code<br>✅ 可追溯性标记完整 |
 
 ---
 
@@ -598,7 +600,7 @@ SpecGovernor/
    ```
    受影响的文档：
      - PRD-FEAT-012 (docs/PRD.md:128)
-     - DD-API-008 (docs/DD.md:234)
+     - DESIGN-API-008 (docs/Design-Document.md:234)
    ```
 4. 人类开发者决定重新生成 PRD
 
@@ -621,7 +623,7 @@ SpecGovernor/
    **不一致检查报告**
 
    发现 1 处不一致：
-   - DD 设计的 API 是 POST /auth/callback
+   - Design Document 设计的 API 是 POST /auth/callback
    - 代码实现是 PUT /auth/callback
    ```
 
@@ -635,9 +637,9 @@ SpecGovernor/
 
 SpecGovernor 提供：
 
-1. ✅ **标准化的提示词模板**，引导 Claude Code 生成规范文档/代码
+1. ✅ **标准化的提示词模板**，引导 Claude Code 生成规范文档/代码（generator 既能创建也能修改）
 2. ✅ **清晰的工作流程**，指导人类开发者进行规范化开发
-3. ✅ **可追溯性机制**，建立 RD → PRD → DD → TD → Code 的追溯链
+3. ✅ **可追溯性机制**，建立 RD → PRD → Design Document → Test Plan → Code 的追溯链
 4. ✅ **轻量级辅助脚本**，自动化解析、分析任务
 5. ✅ **易于使用**，无需安装，直接配合 Claude Code 使用
 
@@ -646,8 +648,8 @@ SpecGovernor 提供：
 **[ID: RD-NEXT-001]**
 
 1. ⏳ **编写 PRD（产品需求文档）**：详细描述每个提示词模板的功能
-2. ⏳ **编写 DD（设计文档）**：定义辅助脚本的实现细节
-3. ⏳ **编写 TD（测试文档）**：设计如何测试提示词模板和脚本
+2. ⏳ **编写 Design Document（设计文档）**：定义辅助脚本的实现细节
+3. ⏳ **编写 Test Plan（测试计划）**：设计如何测试提示词模板和脚本
 4. ⏳ **实现提示词模板**：编写所有提示词模板
 5. ⏳ **实现辅助脚本**：编写 Python 脚本
 6. ⏳ **创建示例项目**：提供完整的示例
