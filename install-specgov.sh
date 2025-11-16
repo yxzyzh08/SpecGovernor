@@ -33,29 +33,29 @@ echo "[1/6] Checking prerequisites..."
 # Check Python
 if command -v python3 &> /dev/null; then
     PYTHON_VERSION=$(python3 --version 2>&1)
-    echo "  ✓ Python found: $PYTHON_VERSION"
+    echo "  [OK] Python found: $PYTHON_VERSION"
     PYTHON_CMD="python3"
 elif command -v python &> /dev/null; then
     PYTHON_VERSION=$(python --version 2>&1)
-    echo "  ✓ Python found: $PYTHON_VERSION"
+    echo "  [OK] Python found: $PYTHON_VERSION"
     PYTHON_CMD="python"
 else
-    echo "  ✗ Python not found. Please install Python 3.8+ first."
+    echo "  [FAIL] Python not found. Please install Python 3.8+ first."
     exit 1
 fi
 
 # Check Git
 if command -v git &> /dev/null; then
     GIT_VERSION=$(git --version 2>&1)
-    echo "  ✓ Git found: $GIT_VERSION"
+    echo "  [OK] Git found: $GIT_VERSION"
 else
-    echo "  ✗ Git not found. Please install Git first."
+    echo "  [FAIL] Git not found. Please install Git first."
     exit 1
 fi
 
 # Check curl
 if ! command -v curl &> /dev/null; then
-    echo "  ✗ curl not found. Please install curl first."
+    echo "  [FAIL] curl not found. Please install curl first."
     exit 1
 fi
 
@@ -77,9 +77,9 @@ directories=(
 for dir in "${directories[@]}"; do
     if [ ! -d "$dir" ]; then
         mkdir -p "$dir"
-        echo "  ✓ Created $dir"
+        echo "  [OK] Created $dir"
     else
-        echo "  • $dir already exists"
+        echo "  [SKIP] $dir already exists"
     fi
 done
 
@@ -100,10 +100,10 @@ for script in "${scripts[@]}"; do
     output="scripts/$script"
 
     echo "  Downloading $script..."
-    if curl -sSL "$url" -o "$output"; then
-        echo "  ✓ Downloaded $script"
+    if curl -sSL "$url" -o "$output" --max-time 30; then
+        echo "  [OK] Downloaded $script"
     else
-        echo "  ✗ Failed to download $script"
+        echo "  [FAIL] Failed to download $script"
     fi
 done
 
@@ -135,17 +135,20 @@ prompts=(
 )
 
 prompt_count=0
+prompt_total=${#prompts[@]}
 for prompt in "${prompts[@]}"; do
     url="$RAW_URL/templates/prompts/$prompt"
     output="templates/prompts/$prompt"
 
-    if curl -sSL "$url" -o "$output" 2>/dev/null; then
+    echo -n "  [$((prompt_count+1))/$prompt_total] Downloading $prompt... "
+    if curl -sSL "$url" -o "$output" --max-time 30 2>/dev/null; then
         ((prompt_count++))
+        echo "[OK]"
     else
-        echo "  ✗ Failed to download $prompt"
+        echo "[FAIL]"
     fi
 done
-echo "  ✓ Downloaded $prompt_count/${#prompts[@]} prompt templates"
+echo "  [INFO] Downloaded $prompt_count/$prompt_total prompt templates"
 
 echo
 echo "[5/6] Downloading workflow documentation..."
@@ -162,17 +165,20 @@ workflows=(
 )
 
 workflow_count=0
+workflow_total=${#workflows[@]}
 for workflow in "${workflows[@]}"; do
     url="$RAW_URL/templates/workflows/$workflow"
     output="templates/workflows/$workflow"
 
-    if curl -sSL "$url" -o "$output" 2>/dev/null; then
+    echo -n "  [$((workflow_count+1))/$workflow_total] Downloading $workflow... "
+    if curl -sSL "$url" -o "$output" --max-time 30 2>/dev/null; then
         ((workflow_count++))
+        echo "[OK]"
     else
-        echo "  ✗ Failed to download $workflow"
+        echo "[FAIL]"
     fi
 done
-echo "  ✓ Downloaded $workflow_count/${#workflows[@]} workflow docs"
+echo "  [INFO] Downloaded $workflow_count/$workflow_total workflow docs"
 
 echo
 echo "[6/6] Downloading documentation..."
@@ -189,14 +195,14 @@ for doc in "${docs[@]}"; do
     output="$doc"
 
     if [ ! -f "$output" ]; then
-        if curl -sSL "$url" -o "$output" 2>/dev/null; then
+        if curl -sSL "$url" -o "$output" --max-time 30 2>/dev/null; then
             ((doc_count++))
-            echo "  ✓ Downloaded $doc"
+            echo "  [OK] Downloaded $doc"
         else
-            echo "  ✗ Failed to download $doc"
+            echo "  [FAIL] Failed to download $doc"
         fi
     else
-        echo "  • $doc already exists (skipped)"
+        echo "  [SKIP] $doc already exists"
     fi
 done
 

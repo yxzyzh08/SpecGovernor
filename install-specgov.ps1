@@ -32,18 +32,18 @@ Write-Host "[1/6] Checking prerequisites..." -ForegroundColor Green
 # Check Python
 try {
     $pythonVersion = python --version 2>&1
-    Write-Host "  ✓ Python found: $pythonVersion" -ForegroundColor Gray
+    Write-Host "  [OK] Python found: $pythonVersion" -ForegroundColor Gray
 } catch {
-    Write-Host "  ✗ Python not found. Please install Python 3.8+ first." -ForegroundColor Red
+    Write-Host "  [FAIL] Python not found. Please install Python 3.8+ first." -ForegroundColor Red
     exit 1
 }
 
 # Check Git
 try {
     $gitVersion = git --version 2>&1
-    Write-Host "  ✓ Git found: $gitVersion" -ForegroundColor Gray
+    Write-Host "  [OK] Git found: $gitVersion" -ForegroundColor Gray
 } catch {
-    Write-Host "  ✗ Git not found. Please install Git first." -ForegroundColor Red
+    Write-Host "  [FAIL] Git not found. Please install Git first." -ForegroundColor Red
     exit 1
 }
 
@@ -64,9 +64,9 @@ $directories = @(
 foreach ($dir in $directories) {
     if (-not (Test-Path $dir)) {
         New-Item -ItemType Directory -Path $dir -Force | Out-Null
-        Write-Host "  ✓ Created $dir" -ForegroundColor Gray
+        Write-Host "  [OK] Created $dir" -ForegroundColor Gray
     } else {
-        Write-Host "  • $dir already exists" -ForegroundColor Gray
+        Write-Host "  [SKIP] $dir already exists" -ForegroundColor Gray
     }
 }
 
@@ -88,9 +88,9 @@ foreach ($script in $scripts) {
     try {
         Write-Host "  Downloading $script..." -ForegroundColor Gray
         Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop
-        Write-Host "  ✓ Downloaded $script" -ForegroundColor Gray
+        Write-Host "  [OK] Downloaded $script" -ForegroundColor Gray
     } catch {
-        Write-Host "  ✗ Failed to download $script" -ForegroundColor Red
+        Write-Host "  [FAIL] Failed to download $script" -ForegroundColor Red
         Write-Host "    Error: $_" -ForegroundColor Red
     }
 }
@@ -122,18 +122,22 @@ $prompts = @(
 )
 
 $promptCount = 0
+$promptTotal = $prompts.Count
 foreach ($prompt in $prompts) {
     $url = "$RAW_URL/templates/prompts/$prompt"
     $output = "templates/prompts/$prompt"
 
     try {
-        Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop
+        Write-Host "  [$($promptCount+1)/$promptTotal] Downloading $prompt..." -ForegroundColor Gray -NoNewline
+        Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop -TimeoutSec 30
         $promptCount++
+        Write-Host " [OK]" -ForegroundColor Green
     } catch {
-        Write-Host "  ✗ Failed to download $prompt" -ForegroundColor Red
+        Write-Host " [FAIL]" -ForegroundColor Red
+        Write-Host "    Error: $_" -ForegroundColor Red
     }
 }
-Write-Host "  ✓ Downloaded $promptCount/$($prompts.Count) prompt templates" -ForegroundColor Gray
+Write-Host "  [INFO] Downloaded $promptCount/$promptTotal prompt templates" -ForegroundColor Cyan
 
 Write-Host "`n[5/6] Downloading workflow documentation..." -ForegroundColor Green
 
@@ -149,18 +153,22 @@ $workflows = @(
 )
 
 $workflowCount = 0
+$workflowTotal = $workflows.Count
 foreach ($workflow in $workflows) {
     $url = "$RAW_URL/templates/workflows/$workflow"
     $output = "templates/workflows/$workflow"
 
     try {
-        Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop
+        Write-Host "  [$($workflowCount+1)/$workflowTotal] Downloading $workflow..." -ForegroundColor Gray -NoNewline
+        Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop -TimeoutSec 30
         $workflowCount++
+        Write-Host " [OK]" -ForegroundColor Green
     } catch {
-        Write-Host "  ✗ Failed to download $workflow" -ForegroundColor Red
+        Write-Host " [FAIL]" -ForegroundColor Red
+        Write-Host "    Error: $_" -ForegroundColor Red
     }
 }
-Write-Host "  ✓ Downloaded $workflowCount/$($workflows.Count) workflow docs" -ForegroundColor Gray
+Write-Host "  [INFO] Downloaded $workflowCount/$workflowTotal workflow docs" -ForegroundColor Cyan
 
 Write-Host "`n[6/6] Downloading documentation..." -ForegroundColor Green
 
@@ -177,14 +185,15 @@ foreach ($doc in $docs) {
 
     try {
         if (-not (Test-Path $output)) {
-            Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop
+            Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop -TimeoutSec 30
             $docCount++
-            Write-Host "  ✓ Downloaded $doc" -ForegroundColor Gray
+            Write-Host "  [OK] Downloaded $doc" -ForegroundColor Gray
         } else {
-            Write-Host "  • $doc already exists (skipped)" -ForegroundColor Gray
+            Write-Host "  [SKIP] $doc already exists" -ForegroundColor Gray
         }
     } catch {
-        Write-Host "  ✗ Failed to download $doc" -ForegroundColor Red
+        Write-Host "  [FAIL] Failed to download $doc" -ForegroundColor Red
+        Write-Host "    Error: $_" -ForegroundColor Red
     }
 }
 
