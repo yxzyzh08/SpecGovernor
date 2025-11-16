@@ -10,8 +10,8 @@
 
 **重要原则：所有文档文件名必须使用英文命名**
 
-- ✅ 正确示例：`RD.md`, `PRD.md`, `DD.md`, `TD.md`, `README.md`
-- ❌ 错误示例：`需求文档.md`, `设计文档.md`, `需求补充-任务管理.md`
+- ✅ 正确示例：`RD.md`, `PRD.md`, `Design-Document.md`, `Test-Plan.md`, `README.md`
+- ❌ 错误示例：`需求文档.md`, `设计文档.md`, `需求补充-任务管理.md`, `DD.md`, `TD.md`
 
 **标准文档命名：**
 
@@ -19,8 +19,8 @@
 |---------|--------|------|
 | 需求文档 | `RD.md` | Requirements Document |
 | 产品需求文档 | `PRD.md` | Product Requirements Document |
-| 设计文档 | `DD.md` | Design Document |
-| 测试文档 | `TD.md` | Test Document |
+| 设计文档 | `Design-Document.md` | Design Document（使用完整名字） |
+| 测试文档 | `Test-Plan.md` | Test Plan（使用完整名字） |
 | 对比分析 | `comparison-analysis.md` | 各类对比分析文档 |
 | 实施方案 | `implementation-plan.md` | 实施计划文档 |
 
@@ -30,17 +30,32 @@
 
 - **中文为主**：文档正文、说明、描述使用中文
 - **英文使用场景**：
-  - 专业术语（如 OAuth2, API, Database）
-  - 代码片段（变量名、函数名、类名等）
-  - 技术栈名称（如 NestJS, PostgreSQL, Claude Code）
-  - 命令行指令（如 `specgov init`, `git commit`）
+  - **章节标题**（如 Product Overview, Architecture Design, Test Strategy）
+  - **专业术语**（如 OAuth2, API, Database, Prompt Template）
+  - **代码片段**（变量名、函数名、类名等）
+  - **技术栈名称**（如 NestJS, PostgreSQL, Claude Code）
+  - **文件名和目录名**（如 `templates/prompts/`, `scripts/init_project.py`）
+  - **项目名称**（如 SpecGovernor）
+  - **命令行指令**（如 `python scripts/parse_tags.py`, `git commit`）
+
+**章节编号规则：**
+
+- 可以使用中文编号（一、二、三...）+ 英文标题
+- 或使用数字编号（1.1, 1.2...）+ 英文标题
 
 **示例：**
 
 ```markdown
-## 2.1 标记解析器 (Tag Parser)
+## **一、Architecture Design**
+
+### **1.1 Tag Parser**
 
 标记解析器负责从 Markdown 和代码文件中解析可追溯性标记。
+
+**核心功能：**
+- 扫描 `docs/` 和 `src/` 目录下的所有文件
+- 提取 `[ID: XXX]`, `[Implements: XXX]` 等标记
+- 生成 `.specgov/index/tags.json` 索引文件
 
 \`\`\`python
 class TagParser:
@@ -69,14 +84,18 @@ class TagParser:
 
 ### 4. 可追溯性标记规范
 
-文档中的可追溯性标记使用英文缩写：
+文档中的可追溯性标记使用英文标识符：
 
 ```markdown
-[ID: RD-REQ-001]
-[Implements: RD-REQ-001]
-[Decomposes: RD-AUTH-001]
-[Designs-for: PRD-FEAT-012]
-[Tests-for: DD-API-008]
+[ID: RD-REQ-001]           # Requirements Document
+[ID: PRD-FEAT-012]         # Product Requirements Document
+[ID: DESIGN-API-008]       # Design Document
+[ID: TEST-CASE-015]        # Test Plan
+
+[Implements: RD-REQ-001]   # PRD 实现 RD
+[Decomposes: RD-AUTH-001]  # 分解父级需求
+[Designs-for: PRD-FEAT-012] # Design Document 设计 PRD 功能
+[Tests-for: DESIGN-API-008] # Test Plan 测试 Design
 ```
 
 ### 5. Git 提交规范
@@ -95,8 +114,8 @@ git commit -m "Refactor DD architecture design"
 
 1. **RD.md** - 需求文档（Requirements Document）
 2. **PRD.md** - 产品需求文档（Product Requirements Document）
-3. **DD.md** - 设计文档（Design Document）
-4. **TD.md** - 测试文档（Test Document）
+3. **Design-Document.md** - 设计文档（Design Document）
+4. **Test-Plan.md** - 测试计划（Test Plan）
 5. **Code** - 代码实现
 
-每个阶段都使用 Generator-Reviewer 对模式，确保质量。
+每个阶段都提供 Generator 和 Reviewer 两个 prompt templates，确保生成和审查质量。
