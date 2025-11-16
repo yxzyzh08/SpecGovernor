@@ -1,8 +1,11 @@
 # **📝 需求规格概要：AI增强型研发流程治理系统 (Gemini 修订版)**
 
 > **版本说明 (v-gemini)**
-> 
+>
 > 本文档是基于原始需求的修订版，核心调整在于采纳了“**显式可追溯性标记 (Explicit Traceability Tagging)**”策略，以替代原方案中依赖 AI 进行隐式依赖推断的技术路径。此修订旨在大幅提升依赖关系构建的**可靠性、速度和成本效益**，使整个系统架构更为稳健。
+>
+> **本次更新 (2025年11月16日)**：
+> 针对“一个需求涉及多个模块”及“需求分层”的场景，扩展了可追溯性标记规则，引入了**多标记支持**和 **`[Decomposes: ID]` 标记**，以表达复杂的一对多、多对一及层级分解关系。
 
 ## **一、术语与缩略语解释 (Terminology and Glossary)**
 
@@ -19,7 +22,7 @@
 | **流程编排器** | Orchestrator | 负责定义、管理和执行 AI Agent 流程的软件核心组件。负责状态流转、上下文注入和流程强制执行。在本系统中表现为一组 CLI 命令和脚本。 |
 | **项目索引** | Project Index | 预先构建的项目结构化元数据，包含模块划分、依赖关系图、文档与代码的映射关系等。存储在 `.specgov/index/` 目录。 |
 | **依赖图** | Dependency Graph | 描述 RD → PRD → DD → TD → Code 之间依赖关系的有向图，支持快速影响分析。 |
-| **可追溯性标记** | Traceability Tag | **[新增]** 在文档或代码中嵌入的、用于明确声明依赖关系的结构化标记（如 `[Implements: RD-REQ-005]`），是构建高精度依赖图的基础。 |
+| **可追溯性标记** | Traceability Tag | 在文档或代码中嵌入的、用于明确声明依赖关系的结构化标记（如 `[ID: RD-REQ-005]`、`[Implements: RD-REQ-005]` 或 `[Decomposes: HL-ORDER-001]`），是构建高精度依赖图的基础。 |
 | **RAG** | Retrieval-Augmented Generation | 检索增强生成。**【注：本方案已明确约束，不采用此技术作为知识库】**。 |
 
 ## **二、用户角色与使用场景 (User Roles & Usage Scenarios)**
@@ -47,12 +50,12 @@
 
 ```
 RD 阶段：
-  客户端 1: RD Generator Agent（生成需求文档，并为每个需求分配唯一ID标记，如 `[ID: RD-REQ-001]`）
+  客户端 1: RD Generator Agent（生成需求文档，并为每个需求分配唯一ID标记，如 `[ID: RD-REQ-001]`，以及可能的分解关系 `[Decomposes: PARENT-ID]`）
   客户端 2: RD Reviewer Agent（评审需求文档）
   客户端 1: 根据评审结果修订文档
 
 PRD 阶段：
-  客户端 3: PRD Generator Agent（基于 RD 生成产品文档，并嵌入上游ID标记，如 `[Implements: RD-REQ-001]`）
+  客户端 3: PRD Generator Agent（基于 RD 生成产品文档，并嵌入上游ID标记，如 `[Implements: RD-REQ-001]`，支持一个功能点实现多个需求）
   客户端 4: PRD Reviewer Agent（评审产品文档）
 
 DD/TD/Code 阶段：依此类推...
@@ -142,15 +145,15 @@ DD/TD/Code 阶段：依此类推...
 | ID | 需求描述 | 关键交互组件 |
 | :---- | :---- | :---- |
 | **FR-1.1** | 系统需支持**生成-评审对模式**：每个文档阶段都有独立的 Generator Agent 和 Reviewer Agent。Generator 基于上游文档生成新文档，Reviewer 评审生成质量并提出修改建议。 | RD/PRD/DD/TD Generator & Reviewer Agent 对 |
-| **FR-1.2** | Generator Agent 的输入必须包含：(1) 上游文档内容（由编排器精准裁剪），(2) 生成提示词模板，(3) 项目上下文元数据。输出必须是结构化格式（Markdown + YAML Front Matter），**并包含指向其上游依赖的显式可追溯性标记**。 | 文档生成 Agent 族, 流程编排器 |
+| **FR-1.2** | Generator Agent 的输入必须包含：(1) 上游文档内容（由编排器精准裁剪），(2) 生成提示词模板，(3) 项目上下文元数据。输出必须是结构化格式（Markdown + YAML Front Matter），并包含**所有相关**的显式可追溯性标记（如 `[Implements: ID]` 或 `[Decomposes: ID]`），以准确表达其与上游的依赖或分解关系。 | 文档生成 Agent 族, 流程编排器 |
 | **FR-1.3** | Reviewer Agent 的输入必须包含：(1) 待评审文档，(2) 上游文档（对照），(3) 评审检查清单。输出必须是结构化的评审报告（JSON 格式），包含问题列表、严重程度、建议修改。 | 文档评审 Agent 族 |
-| **FR-1.4** | 代码与测试 Agent 需能基于 DD 和 PRD 的上下文，生成满足规范的测试用例和代码片段。同样采用 Generator-Reviewer 对模式，并**在代码注释中嵌入可追溯性标记**。 | 代码与测试 Agent 族 |
+| **FR-1.4** | 代码与测试 Agent 需能基于 DD 和 PRD 的上下文，生成满足规范的测试用例和代码片段。同样采用 Generator-Reviewer 对模式，并**在代码注释中嵌入所有相关的可追溯性标记**。 | 代码与测试 Agent 族 |
 
 ### **4.2 项目索引与依赖管理**
 
 | ID | 需求描述 | 关键交互组件 |
 | :---- | :---- | :---- |
-| **FR-2.1** | 系统需提供**索引构建命令**（如 `specgov index:build`），用于**解析项目中的显式可追溯性标记**（如 `[Implements: RD-REQ-005]`），并构建结构化索引。索引内容包括：(1) 模块划分，(2) 文档章节映射，(3) 代码符号（API、类、函数），(4) 依赖关系图。 | 索引构建服务 (高速文本解析器) |
+| **FR-2.1** | 系统需提供**索引构建命令**（如 `specgov index:build`），用于**解析项目中的所有显式可追溯性标记**（包括 `[ID:...]`, `[Implements:...]`, `[Decomposes:...]` 等），并支持**同一内容块中存在多个标记**，以此构建结构化索引。索引内容包括：(1) 模块划分，(2) 文档章节映射，(3) 代码符号（API、类、函数），(4) 依赖关系图。 | 索引构建服务 (高速文本解析器) |
 | **FR-2.2** | 索引需持久化到 `.specgov/index/` 目录，包含以下文件：`modules.json`（模块列表），`dependency-graph.json`（依赖图），`rd-map.json` / `prd-map.json` / `dd-map.json`（文档映射），`code-map.json`（代码符号映射）。 | 结构化文档管理服务 |
 | **FR-2.3** | 系统需支持**增量索引更新**：当文档或代码变更时（通过 Git diff 检测），只重新解析变更文件中的标记并更新索引，避免全量重建。 | 索引更新服务 |
 
@@ -220,11 +223,11 @@ DD/TD/Code 阶段：依此类推...
 
 | ID | 约束描述 | 验收标准 |
 | :---- | :---- | :---- |
-| **NFR-6.1** | **影响分析成本** | 几乎免费（基于索引的纯图查询，不调用 AI） | $0 |
-| **NFR-6.2** | **单点一致性检查成本** | 上下文 < 5K tokens | < $0.02 (Claude) 或 < $0.01 (Gemini) |
-| **NFR-6.3** | **模块级检查成本** | 上下文 < 20K tokens | < $0.05 |
-| **NFR-6.4** | **全项目检查成本** | 10 个模块，总上下文 < 200K tokens | < $2 |
-| **NFR-6.5** | **索引构建成本** | 一次性操作，纯文本解析 | $0 |
+| **NFR-6.1** | **影响分析成本**：几乎免费（基于索引的纯图查询，不调用 AI） | $0 |
+| **NFR-6.2** | **单点一致性检查成本**：上下文 < 5K tokens | < $0.02 (Claude) 或 < $0.01 (Gemini) |
+| **NFR-6.3** | **模块级检查成本**：上下文 < 20K tokens | < $0.05 |
+| **NFR-6.4** | **全项目检查成本**：10 个模块，总上下文 < 200K tokens | < $2 |
+| **NFR-6.5** | **索引构建成本**：一次性操作，纯文本解析 | $0 |
 
 ## **六、关键交付流程：生成-评审-验证机制**
 
@@ -233,8 +236,8 @@ DD/TD/Code 阶段：依此类推...
 ### **6.1 标准文档生成流程（以 RD 为例）**
 
 | 步骤 | CLI 命令 | 执行流程 | 涉及 Agent/服务 |
-| :---- | :---- | :---- |
-| **1. 生成** | `specgov rd:generate` | (1) 编排器读取项目上下文<br>(2) 调用 RD Generator Agent 生成初稿，**并嵌入唯一ID标记**<br>(3) 保存到 `docs/rd.md`<br>(4) 更新 `.specgov/state.json` | RD Generator Agent<br>流程编排器 |
+| :---- | :---- | :---- | :---- |
+| **1. 生成** | `specgov rd:generate` | (1) 编排器读取项目上下文<br>(2) 调用 RD Generator Agent 生成初稿，**并嵌入所有相关ID标记**（包括自身ID、分解关系等）<br>(3) 保存到 `docs/rd.md`<br>(4) 更新 `.specgov/state.json` | RD Generator Agent<br>流程编排器 |
 | **2. 评审** | `specgov rd:review` | (1) 编排器读取生成的 RD<br>(2) 调用 RD Reviewer Agent 评审<br>(3) 输出结构化评审报告（JSON）<br>(4) 如发现严重问题，提示人工介入 | RD Reviewer Agent<br>流程编排器 |
 | **3. 修订** | `specgov rd:revise` | (1) 编排器读取评审报告<br>(2) 调用 RD Generator Agent 根据评审意见修订<br>(3) 更新文档和状态 | RD Generator Agent<br>流程编排器 |
 | **4. 索引更新** | `specgov index:update --scope=rd` | (1) **高速解析** RD 文档中的标记<br>(2) 更新依赖图中的 RD 节点<br>(3) 保存到 `.specgov/index/` | 索引更新服务 (解析器) |
@@ -244,15 +247,15 @@ DD/TD/Code 阶段：依此类推...
 ### **6.2 变更传播与影响分析流程**
 
 | 触发场景 | CLI 命令 | 执行流程 | 输出 |
-| :---- | :---- | :---- |
+| :---- | :---- | :---- | :---- |
 | **超级个体修改 RD** | `specgov analyze:impact --changed=docs/rd.md` | (1) Git diff 识别变更内容<br>(2) **从高精度依赖图中**查询下游节点<br>(3) 返回受影响的 PRD/DD/TD/Code 列表 | JSON 格式的影响范围报告 |
-| **超级个体决定更新下游** | `specgov prd:regenerate --based-on=rd` | (1) 读取变更后的 RD<br>(2) 重新生成 PRD（**并自动嵌入新的可追溯性标记**）<br>(3) 自动触发 PRD 评审 | 更新后的 PRD 文档 |
+| **超级个体决定更新下游** | `specgov prd:regenerate --based-on=rd` | (1) 读取变更后的 RD<br>(2) 重新生成 PRD（**并自动嵌入所有相关的可追溯性标记**）<br>(3) 自动触发 PRD 评审 | 更新后的 PRD 文档 |
 
 ### **6.3 一致性检查流程**
 
 | 检查场景 | CLI 命令 | 执行流程 | 性能要求 |
-| :---- | :---- | :---- |
-| **检查单个需求的一致性** | `specgov check:consistency --scope=RD-REQ-005` | (1) 基于**高精度依赖图**定位依赖链<br>(2) 只加载相关文档和代码片段（< 5000 行）<br>(3) 调用一致性守护 Agent 深度分析<br>(4) 输出差异报告 | < 2 分钟 |
+| :---- | :---- | :---- | :---- |
+| **检查单个需求的一致性** | `specgov check:consistency --scope=RD-REQ-005` | (1) 基于**高精度依赖图**定位依赖链<br>(2) 只加载依赖链涉及的文档和代码片段（通常 < 5000 行）<br>(3) 调用一致性守护 Agent 深度分析<br>(4) 输出差异报告 | < 2 分钟 |
 | **检查单个模块的一致性** | `specgov check:consistency --scope=UserModule` | (1) 加载该模块相关的所有文档和代码<br>(2) 调用一致性守护 Agent<br>(3) 输出差异报告 | < 2 分钟 |
 | **全项目一致性检查** | `specgov check:consistency --scope=full` | (1) 分解为 10 个模块检查任务<br>(2) 超级个体启动多个 AI 客户端并行执行<br>(3) 汇总所有模块的差异报告 | < 10 分钟 |
 | **代码提交前验证** | `specgov check:pre-commit` | (1) 检测本次提交涉及的代码文件<br>(2) 只检查相关模块的一致性<br>(3) 如发现不一致，阻止提交（通过 Git Hook） | < 2 分钟 |
@@ -262,46 +265,49 @@ DD/TD/Code 阶段：依此类推...
 **场景**：超级个体开发一个新功能（用户 OAuth2 登录）
 
 ```bash
-# 1. 生成需求文档，自动包含ID
-$ specgov rd:generate --feature="用户OAuth2登录"
-生成完成: docs/rd.md (内容包含 "[ID: RD-REQ-005] ...")
+# 1. 生成高阶需求文档
+$ specgov rd:generate --feature="用户OAuth2登录" --level=high
+生成完成: docs/hl-rd.md (内容包含 "[ID: HL-AUTH-001] ...")
 
-# 2. 评审需求文档
-$ specgov rd:review
+# 2. 生成子模块需求文档，并声明分解关系
+$ specgov rd:generate --feature="OAuth2认证模块" --decomposes=HL-AUTH-001
+生成完成: docs/auth/rd.md (内容包含 "[ID: AUTH-REQ-005] [Decomposes: HL-AUTH-001] ...")
+
+# 3. 评审需求文档
+$ specgov rd:review --file=docs/auth/rd.md
 评审报告: .specgov/rd/review-report.json
 
-# 3. 修订 RD
-$ specgov rd:revise
-修订完成: docs/rd.md (v2)
+# 4. 修订 RD
+$ specgov rd:revise --file=docs/auth/rd.md
+修订完成: docs/auth/rd.md (v2)
 
-# 4. 更新索引 (通过解析标记，秒级完成)
+# 5. 更新索引 (通过解析标记，秒级完成)
 $ specgov index:update --scope=rd
 索引更新完成
 
-# 5. 基于 RD 生成 PRD，自动包含Implements标记
-$ specgov prd:generate --based-on=rd
-生成完成: docs/prd.md (内容包含 "[Implements: RD-REQ-005] ...")
+# 6. 基于 RD 生成 PRD，自动包含Implements标记
+$ specgov prd:generate --based-on=AUTH-REQ-005
+生成完成: docs/auth/prd.md (内容包含 "[Implements: AUTH-REQ-005] ...")
 
-# 6. 评审 PRD
-$ specgov prd:review
+# 7. 评审 PRD
+$ specgov prd:review --file=docs/auth/prd.md
 评审报告: .specgov/prd/review-report.json
 
-# 7. 继续生成 DD, TD, Code (过程中自动传递和嵌入标记)
+# 8. 继续生成 DD, TD, Code (过程中自动传递和嵌入标记，支持多标记)
 ...
 
-# 8. 编写代码后，提交前检查一致性
-$ specgov check:consistency --scope=UserModule
+# 9. 编写代码后，提交前检查一致性 (可检查高阶需求，系统会自动遍历所有子需求)
+$ specgov check:consistency --scope=HL-AUTH-001
 检查完成:
-  ✓ RD ↔ PRD 一致
-  ✓ PRD ↔ DD 一致
+  ✓ HL-AUTH-001 及其所有子需求链路一致
   ✗ DD ↔ Code 发现 1 处不一致
     - DD 设计的 API 是 POST /auth/oauth2，代码实现是 GET
 
-# 9. 修复代码后重新检查
-$ specgov check:consistency --scope=UserModule
+# 10. 修复代码后重新检查
+$ specgov check:consistency --scope=HL-AUTH-001
 检查完成: 全部一致 ✓
 
-# 10. 提交代码
+# 11. 提交代码
 $ git commit -m "feat: add OAuth2 login"
 [pre-commit hook 自动触发 specgov check:pre-commit]
 一致性检查通过 ✓
@@ -322,10 +328,10 @@ $ git commit -m "feat: add OAuth2 login"
 **解决方案：显式标记 + 解析构建 + 按需加载**
 
 ```
-核心思想：不依赖 AI 推断依赖关系，而是通过在文档和代码中嵌入显式标记，让依赖关系成为可直接解析的结构化数据。
+核心思想：不依赖 AI 推断依赖关系，而是通过在文档和代码中嵌入显式标记，让依赖关系成为可直接解析的结构化数据。此策略天然支持一对多、多对一以及层级分解等复杂依赖关系，确保依赖图的全面性和准确性。
 
 实现步骤：
-1. 在文档/代码中嵌入可追溯性标记 (如 `[Implements: RD-REQ-005]`)。
+1. 在文档/代码中嵌入可追溯性标记 (如 `[Implements: RD-REQ-005]` 或 `[Decomposes: HL-ORDER-001]`)。
 2. 通过高速解析器（非 AI）构建项目索引和 100% 可靠的依赖图。
 3. 基于精准的依赖图进行影响分析和依赖链定位。
 4. 只加载相关的文档和代码片段，将上下文控制在 AI 窗口范围内（< 20K tokens）。
@@ -354,35 +360,42 @@ my-project/
 │   ├── dd/
 │   └── consistency-reports/       # 一致性检查报告
 ├── docs/                          # 文档目录
-│   ├── rd.md
+│   ├── hl-rd.md                   # High-Level RD
+│   ├── auth/rd.md                 # 认证模块 RD
 │   ├── prd.md
 │   └── dd.md
 └── src/                           # 代码目录
 ```
 
-#### **7.2.2 依赖图示例 (基于显式标记)**
+#### **7.2.2 依赖图示例 (基于显式标记，含层级关系)**
 
 ```json
 // .specgov/index/dependency-graph.json
 {
   "nodes": [
     {
-      "id": "RD-REQ-005",
+      "id": "HL-AUTH-001",
+      "type": "high_level_requirement",
+      "summary": "实现完整的用户OAuth2登录体验",
+      "location": "docs/hl-rd.md#L5"
+    },
+    {
+      "id": "AUTH-REQ-005",
       "type": "requirement",
-      "summary": "用户必须支持OAuth2登录",
-      "location": "docs/rd.md#L42"
+      "summary": "OAuth2认证模块需求",
+      "location": "docs/auth/rd.md#L10"
     },
     {
       "id": "PRD-FEAT-012",
       "type": "feature",
       "summary": "实现OAuth2登录流程",
-      "location": "docs/prd.md#L128"
+      "location": "docs/auth/prd.md#L128"
     },
     {
       "id": "DD-API-008",
       "type": "api_design",
       "summary": "POST /auth/oauth2/callback",
-      "location": "docs/dd.md#L234"
+      "location": "docs/auth/dd.md#L234"
     },
     {
       "id": "CODE-API-008",
@@ -392,8 +405,9 @@ my-project/
     }
   ],
   "edges": [
-    // 这些边是通过解析 "[Implements: RD-REQ-005]" 等标记生成的
-    {"from": "RD-REQ-005", "to": "PRD-FEAT-012", "type": "implements"},
+    // 这些边是通过解析 "[Implements: ...]" 或 "[Decomposes: ...]" 等标记生成的
+    {"from": "HL-AUTH-001", "to": "AUTH-REQ-005", "type": "decomposes"},
+    {"from": "AUTH-REQ-005", "to": "PRD-FEAT-012", "type": "implements"},
     {"from": "PRD-FEAT-012", "to": "DD-API-008", "type": "designs"},
     {"from": "DD-API-008", "to": "CODE-API-008", "type": "implemented_by"}
   ]
@@ -407,43 +421,68 @@ my-project/
 import re
 import os
 
-TAG_REGEX = re.compile(r"[(ID|Implements|Designs-for|Tests-for):\s*([\w-]+)]")
+# 匹配所有支持的标记类型，并捕获类型和ID
+TAG_REGEX = re.compile(r"[(ID|Implements|Designs-for|Tests-for|Decomposes):\s*([\w-]+)]")
 
 def build_index(project_path):
     nodes = []
     edges = []
 
+    # 辅助函数：从文件内容中查找当前文档/代码块的ID
+    def get_current_block_id(file_content, line_num):
+        # 实际实现会更复杂，可能需要解析Markdown标题、代码注释块等
+        # 这里简化为查找当前行或附近行的 [ID: ...] 标记
+        for i in range(max(0, line_num - 5), min(len(file_content), line_num + 5)):
+            match = re.search(r"[ID:\s*([\w-]+)]", file_content[i])
+            if match:
+                return match.group(1)
+        return None
+
     # 1. 遍历所有相关文件
     for root, _, files in os.walk(project_path):
-        for file in files:
-            if not (file.endswith(".md") or file.endswith(".ts")):
+        for file_name in files:
+            # 仅处理Markdown和TypeScript文件作为示例
+            if not (file_name.endswith(".md") or file_name.endswith(".ts")):
                 continue
             
-            file_path = os.path.join(root, file)
-            with open(file_path, 'r') as f:
-                for line_num, line in enumerate(f, 1):
+            file_path = os.path.join(root, file_name)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                file_lines = f.readlines()
+                for line_num, line_content in enumerate(file_lines, 1):
                     # 2. 使用正则表达式查找所有标记
-                    for match in TAG_REGEX.finditer(line):
-                        tag_type, tag_id = match.groups()
-                        
-                        # 假设当前文件/符号的ID可以通过其他方式获得
-                        current_id = get_id_for_location(file_path, line_num)
+                    for match in TAG_REGEX.finditer(line_content):
+                        tag_type, target_id = match.groups() # target_id 是标记中引用的ID
 
                         if tag_type == "ID":
-                            # 定义一个新节点
-                            nodes.append({"id": tag_id, "location": f"{file_path}#L{line_num}"})
-                        else:
-                            # 定义一条边
-                            relation_map = {
-                                "Implements": "implements",
-                                "Designs-for": "designs",
-                                "Tests-for": "tested_by"
-                            }
-                            edges.append({
-                                "from": tag_id, 
-                                "to": current_id, 
-                                "type": relation_map.get(tag_type)
+                            # 定义一个新节点，其ID就是tag_id
+                            nodes.append({
+                                "id": target_id, 
+                                "type": get_node_type_from_file(file_name, target_id), # 根据文件类型和ID推断节点类型
+                                "location": f"{file_path}#L{line_num}"
                             })
+                        else: # Implements, Designs-for, Tests-for, Decomposes
+                            # 获取当前行或当前代码/文档块自身的ID
+                            current_block_id = get_current_block_id(file_lines, line_num)
+                            if current_block_id:
+                                relation_map = {
+                                    "Implements": "implements",
+                                    "Designs-for": "designs",
+                                    "Tests-for": "tested_by",
+                                    "Decomposes": "decomposes"
+                                }
+                                # 边的方向：Decomposes是父指向子，其他是子指向父
+                                if tag_type == "Decomposes":
+                                    edges.append({
+                                        "from": target_id, # 父ID
+                                        "to": current_block_id, # 子ID
+                                        "type": relation_map.get(tag_type)
+                                    })
+                                else:
+                                    edges.append({
+                                        "from": current_block_id, # 子ID
+                                        "to": target_id, # 父ID
+                                        "type": relation_map.get(tag_type)
+                                    })
 
     # 3. 构建并保存依赖图
     dependency_graph = {"nodes": nodes, "edges": edges}
@@ -464,7 +503,7 @@ def analyze_impact(changed_file):
     # 1. 识别变更的节点 (通过解析文件中的ID标记)
     changed_nodes = identify_changed_nodes(changed_file)
 
-    # 2. 基于高精度依赖图查询下游节点（图遍历）
+    # 2. 基于高精度依赖图查询下游节点（图遍历），支持层级和多对多关系
     affected_nodes = []
     for node in changed_nodes:
         downstream = traverse_graph(node, direction="downstream")
@@ -487,9 +526,11 @@ def analyze_impact(changed_file):
 # 伪代码：一致性检查逻辑
 
 def check_consistency(scope):
-    # 1. 基于 scope 和高精度依赖图定位依赖链
-    if scope == "RD-REQ-005":
-        dependency_chain = get_dependency_chain("RD-REQ-005")
+    # 1. 基于 scope 和高精度依赖图定位依赖链，支持层级和多对多关系
+    if scope.startswith("HL-"): # 检查高阶需求
+        dependency_chain = get_dependency_chain_for_high_level_req(scope)
+    elif scope.startswith("RD-REQ-"):
+        dependency_chain = get_dependency_chain(scope)
     # ...
 
     # 2. 加载依赖链涉及的内容（精准裁剪）
@@ -519,11 +560,11 @@ def check_consistency(scope):
 # 成本：< $0.05（上下文 < 20K tokens）
 ```
 
-### **7.3.3 上下文裁剪策略**
+### **7.4 上下文裁剪策略**
 
 #### **关键原则**：
 
-1. **精准定位**：基于**100%可靠的**依赖图，只加载相关节点
+1. **精准定位**：基于**100%可靠的**依赖图（支持复杂关系），只加载相关节点
 2. **分层加载**：优先加载摘要，按需加载详细内容
 3. **控制大小**：单次 AI 调用上下文 < 20K tokens（约 5000 行代码）
 4. **分而治之**：大型检查任务分解为多个小任务
@@ -534,15 +575,15 @@ def check_consistency(scope):
 
 本需求文档（Gemini 修订版）定义了一个面向**超级个体**的 AI 增强型研发流程治理系统，其核心策略经过优化，特点更加突出：
 
-1. ✅ **显式标记驱动的一致性**：通过在文档和代码中嵌入**可追溯性标记**，实现 100% 可靠的依赖图构建，为整个系统提供了坚实的基础。
-2. ✅ **生成-评审对模式**：每个阶段都有独立的 Generator 和 Reviewer Agent，提高质量。
-3. ✅ **纯 CLI 架构**：无需后台服务，部署简单，适合超级个体使用。
-4. ✅ **极致的成本与性能控制**：通过将依赖发现转为零成本的本地解析，并结合精准的上下文裁剪，严格控制 AI 调用成本和响应时间。
-5. ✅ **多 AI 后端支持**：灵活切换 Claude Code、Gemini CLI 等工具。
+1.  ✅ **灵活且可靠的显式标记驱动**：通过支持**多标记和层级分解标记**，实现 100% 可靠且能表达复杂关系的依赖图构建，为整个系统提供了坚实的基础。
+2.  ✅ **生成-评审对模式**：每个阶段都有独立的 Generator 和 Reviewer Agent，提高质量。
+3.  ✅ **纯 CLI 架构**：无需后台服务，部署简单，适合超级个体使用。
+4.  ✅ **极致的成本与性能控制**：通过将依赖发现转为零成本的本地解析，并结合精准的上下文裁剪，严格控制 AI 调用成本和响应时间。
+5.  ✅ **多 AI 后端支持**：灵活切换 Claude Code、Gemini CLI 等工具。
 
 **建议的下一步工作**：
 
-1. **编写 PRD（产品需求文档）**：详细描述每个 CLI 命令的功能特性和交互流程。
-2. **设计 DD（软件设计文档）**：定义系统架构、模块划分、数据结构、API 接口。
-3. **原型验证 (MVP)**：优先实现核心的**标记解析器** (`index:build`) 和**影响分析** (`analyze:impact`) 功能，以验证新策略的可行性。
-4. **Agent 提示词设计**：为 Generator 和 Reviewer Agent 设计高质量的提示词模板，**强调对可追溯性标记的生成与处理**。
+1.  **编写 PRD（产品需求文档）**：详细描述每个 CLI 命令的功能特性和交互流程。
+2.  **设计 DD（软件设计文档）**：定义系统架构、模块划分、数据结构、API 接口。
+3.  **原型验证 (MVP)**：优先实现核心的**标记解析器** (`index:build`) 和**影响分析** (`analyze:impact`) 功能，以验证新策略的可行性。
+4.  **Agent 提示词设计**：为 Generator 和 Reviewer Agent 设计高质量的提示词模板，**强调对所有可追溯性标记的生成与处理**。
