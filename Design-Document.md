@@ -47,6 +47,9 @@ SpecGovernor Repository/
 │   │   ├── test-plan-generator.md
 │   │   ├── test-plan-reviewer.md
 │   │   ├── code-generator.md
+│   │   ├── code-reviewer.md
+│   │   ├── consistency-checker.md        # 一致性检查
+│   │   ├── impact-analyzer.md            # 影响分析
 │   │   ├── rd-overview-generator.md      # 大项目使用
 │   │   ├── rd-module-generator.md        # 大项目使用
 │   │   └── ... (其他阶段类似)
@@ -64,7 +67,8 @@ SpecGovernor Repository/
 │   ├── init_project.py
 │   ├── parse_tags.py
 │   ├── build_graph.py
-│   └── impact_analysis.py
+│   ├── impact_analysis.py
+│   └── check_consistency.py
 │
 ├── docs/                         # 生成的文档（用户项目）
 │   ├── RD.md                     # （大项目使用 RD/ 目录）
@@ -606,7 +610,538 @@ Markdown 文件，包含：
 
 ---
 
-### **2.6 Reviewer Templates**
+### **2.6 Code Generator Template**
+
+**[ID: DESIGN-TEMPLATE-CODE-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
+
+**文件**: `templates/prompts/code-generator.md`
+
+**关键章节：**
+
+```markdown
+# Code Generator
+
+## Role
+你是一位经验丰富的 Software Developer / Engineer。
+
+## Task
+根据 Design Document 和 PRD 生成或修改代码实现。
+
+## Critical Requirements
+
+### 1. Traceability Tags
+- 代码注释中必须包含：**[ID: CODE-XXX] [Implements: DESIGN-XXX]**
+- 每个主要类、函数、API endpoint 都应有标记
+- 标记应放在代码注释中（根据语言使用适当的注释格式）
+
+### 2. Code Quality Standards
+- **可读性**：清晰的变量命名、适当的注释
+- **可维护性**：模块化设计、单一职责原则
+- **错误处理**：完善的异常处理和错误日志
+- **性能**：考虑时间和空间复杂度
+- **安全性**：防止常见漏洞（SQL 注入、XSS、CSRF 等）
+
+### 3. Language-Specific Standards
+根据项目技术栈遵循相应的编码规范：
+- **Python**: PEP 8
+- **TypeScript/JavaScript**: ESLint + Prettier
+- **Java**: Google Java Style Guide
+- **Go**: Effective Go
+- **C#**: Microsoft C# Coding Conventions
+
+### 4. Documentation Requirements
+- 每个函数/方法都有文档注释
+- API endpoints 有完整的参数和返回值说明
+- 复杂逻辑有行内注释解释
+
+## Input Format
+1. 如果创建新代码：
+   - Design Document（技术设计）
+   - PRD（产品功能，供参考）
+   - 技术栈和框架要求
+   - 项目编码规范
+
+2. 如果修改现有代码：
+   - 现有代码文件
+   - Design Document（更新的设计）
+   - 变更请求或 bug 修复说明
+
+## Output Format
+代码文件，包含：
+- 可追溯性标记（代码注释中的 [ID: CODE-XXX] [Implements: DESIGN-XXX]）
+- 遵循项目编码规范
+- 完善的错误处理
+- 适当的日志记录
+- 文档注释
+
+## Examples
+
+### Example 1: TypeScript API Controller
+
+\```typescript
+/**
+ * OAuth2 Authentication Controller
+ * Handles OAuth2 callback and user authentication
+ *
+ * [ID: CODE-API-008] [Implements: DESIGN-API-008]
+ */
+import { Request, Response } from 'express';
+import { OAuth2Service } from '../services/oauth2.service';
+import { UserService } from '../services/user.service';
+import { AuthService } from '../services/auth.service';
+import { Logger } from '../utils/logger';
+
+const logger = new Logger('AuthController');
+
+export class AuthController {
+    constructor(
+        private oauth2Service: OAuth2Service,
+        private userService: UserService,
+        private authService: AuthService
+    ) {}
+
+    /**
+     * Handle OAuth2 callback
+     * POST /auth/oauth2/callback
+     *
+     * @param req Express request with provider, code, redirect_uri
+     * @param res Express response
+     * @returns JWT access token and user info
+     */
+    async oauth2Callback(req: Request, res: Response): Promise<void> {
+        try {
+            const { provider, code, redirect_uri } = req.body;
+
+            // Validate provider
+            const validProviders = ['google', 'github', 'microsoft'];
+            if (!validProviders.includes(provider)) {
+                logger.warn(`Invalid OAuth2 provider: ${provider}`);
+                res.status(400).json({
+                    error: 'invalid_provider',
+                    error_description: 'Supported providers: google, github, microsoft'
+                });
+                return;
+            }
+
+            // Validate required fields
+            if (!code || !redirect_uri) {
+                res.status(400).json({
+                    error: 'invalid_request',
+                    error_description: 'Missing required fields: code, redirect_uri'
+                });
+                return;
+            }
+
+            // Exchange authorization code for access token
+            logger.info(`Exchanging OAuth2 code for provider: ${provider}`);
+            const tokens = await this.oauth2Service.exchangeCode(
+                provider,
+                code,
+                redirect_uri
+            );
+
+            // Get user profile from provider
+            const profile = await this.oauth2Service.getUserProfile(
+                provider,
+                tokens.access_token
+            );
+
+            // Create or update user in database
+            const user = await this.userService.createOrUpdate({
+                email: profile.email,
+                name: profile.name,
+                avatar: profile.avatar,
+                provider: provider,
+                providerId: profile.id
+            });
+
+            // Generate JWT tokens
+            const jwt = this.authService.generateJWT({
+                userId: user.id,
+                email: user.email
+            });
+
+            logger.info(`User ${user.email} authenticated successfully via ${provider}`);
+
+            res.json({
+                access_token: jwt.access_token,
+                refresh_token: jwt.refresh_token,
+                expires_in: 3600,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    avatar: user.avatar
+                }
+            });
+
+        } catch (error) {
+            logger.error('OAuth2 callback failed:', error);
+
+            // Handle specific errors
+            if (error.code === 'INVALID_GRANT') {
+                res.status(400).json({
+                    error: 'invalid_grant',
+                    error_description: 'Invalid authorization code'
+                });
+            } else if (error.code === 'PROVIDER_ERROR') {
+                res.status(502).json({
+                    error: 'provider_error',
+                    error_description: 'OAuth2 provider error'
+                });
+            } else {
+                res.status(500).json({
+                    error: 'server_error',
+                    error_description: 'Internal server error'
+                });
+            }
+        }
+    }
+}
+\```
+
+### Example 2: Python Service Class
+
+\```python
+"""
+OAuth2 Service - Handles OAuth2 provider interactions
+
+[ID: CODE-SERVICE-009] [Implements: DESIGN-SERVICE-009]
+"""
+import requests
+from typing import Dict, Any
+from .exceptions import OAuth2Error, InvalidGrantError
+from .logger import get_logger
+
+logger = get_logger(__name__)
+
+
+class OAuth2Service:
+    """Service for OAuth2 authentication with multiple providers"""
+
+    PROVIDER_CONFIG = {
+        'google': {
+            'token_url': 'https://oauth2.googleapis.com/token',
+            'user_info_url': 'https://www.googleapis.com/oauth2/v2/userinfo'
+        },
+        'github': {
+            'token_url': 'https://github.com/login/oauth/access_token',
+            'user_info_url': 'https://api.github.com/user'
+        },
+        'microsoft': {
+            'token_url': 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+            'user_info_url': 'https://graph.microsoft.com/v1.0/me'
+        }
+    }
+
+    def __init__(self, client_secrets: Dict[str, Dict[str, str]]):
+        """
+        Initialize OAuth2 service
+
+        Args:
+            client_secrets: Dict mapping provider name to client_id and client_secret
+                           Example: {'google': {'client_id': '...', 'client_secret': '...'}}
+        """
+        self.client_secrets = client_secrets
+
+    def exchange_code(
+        self,
+        provider: str,
+        code: str,
+        redirect_uri: str
+    ) -> Dict[str, Any]:
+        """
+        Exchange authorization code for access token
+
+        Args:
+            provider: OAuth2 provider name (google/github/microsoft)
+            code: Authorization code from provider
+            redirect_uri: Redirect URI used in authorization request
+
+        Returns:
+            Dict containing access_token, refresh_token, expires_in
+
+        Raises:
+            InvalidGrantError: If authorization code is invalid
+            OAuth2Error: If provider returns an error
+        """
+        if provider not in self.PROVIDER_CONFIG:
+            raise ValueError(f"Unsupported provider: {provider}")
+
+        config = self.PROVIDER_CONFIG[provider]
+        secrets = self.client_secrets.get(provider)
+
+        if not secrets:
+            raise OAuth2Error(f"No client secrets configured for {provider}")
+
+        # Prepare token request
+        data = {
+            'grant_type': 'authorization_code',
+            'code': code,
+            'redirect_uri': redirect_uri,
+            'client_id': secrets['client_id'],
+            'client_secret': secrets['client_secret']
+        }
+
+        try:
+            logger.info(f"Exchanging code with {provider}")
+            response = requests.post(
+                config['token_url'],
+                data=data,
+                headers={'Accept': 'application/json'},
+                timeout=10
+            )
+
+            if response.status_code != 200:
+                error_data = response.json()
+                if error_data.get('error') == 'invalid_grant':
+                    raise InvalidGrantError("Invalid authorization code")
+                raise OAuth2Error(f"Token exchange failed: {error_data}")
+
+            tokens = response.json()
+            logger.info(f"Successfully exchanged code for {provider}")
+
+            return {
+                'access_token': tokens['access_token'],
+                'refresh_token': tokens.get('refresh_token'),
+                'expires_in': tokens.get('expires_in', 3600)
+            }
+
+        except requests.RequestException as e:
+            logger.error(f"HTTP error during token exchange: {e}")
+            raise OAuth2Error(f"Provider communication error: {e}")
+
+    def get_user_profile(self, provider: str, access_token: str) -> Dict[str, Any]:
+        """
+        Get user profile from OAuth2 provider
+
+        Args:
+            provider: OAuth2 provider name
+            access_token: Valid access token
+
+        Returns:
+            Dict containing user profile (id, email, name, avatar)
+
+        Raises:
+            OAuth2Error: If profile fetch fails
+        """
+        if provider not in self.PROVIDER_CONFIG:
+            raise ValueError(f"Unsupported provider: {provider}")
+
+        config = self.PROVIDER_CONFIG[provider]
+
+        try:
+            logger.info(f"Fetching user profile from {provider}")
+            response = requests.get(
+                config['user_info_url'],
+                headers={'Authorization': f'Bearer {access_token}'},
+                timeout=10
+            )
+
+            if response.status_code != 200:
+                raise OAuth2Error(f"Profile fetch failed: {response.status_code}")
+
+            profile = response.json()
+
+            # Normalize profile across providers
+            return self._normalize_profile(provider, profile)
+
+        except requests.RequestException as e:
+            logger.error(f"HTTP error during profile fetch: {e}")
+            raise OAuth2Error(f"Provider communication error: {e}")
+
+    def _normalize_profile(self, provider: str, raw_profile: Dict) -> Dict[str, Any]:
+        """Normalize profile data across different providers"""
+        if provider == 'google':
+            return {
+                'id': raw_profile['id'],
+                'email': raw_profile['email'],
+                'name': raw_profile['name'],
+                'avatar': raw_profile.get('picture')
+            }
+        elif provider == 'github':
+            return {
+                'id': str(raw_profile['id']),
+                'email': raw_profile['email'],
+                'name': raw_profile['name'] or raw_profile['login'],
+                'avatar': raw_profile.get('avatar_url')
+            }
+        elif provider == 'microsoft':
+            return {
+                'id': raw_profile['id'],
+                'email': raw_profile['userPrincipalName'],
+                'name': raw_profile['displayName'],
+                'avatar': None  # Microsoft Graph doesn't provide avatar in basic profile
+            }
+        else:
+            raise ValueError(f"Unknown provider: {provider}")
+\```
+
+## Validation Checklist
+输出前验证：
+- [ ] 所有主要类/函数都有 [ID: CODE-XXX] [Implements: DESIGN-XXX] 标记
+- [ ] 代码遵循项目编码规范
+- [ ] 所有函数都有文档注释
+- [ ] 错误处理完善（try-catch, 错误日志）
+- [ ] 输入验证完整（防止注入攻击）
+- [ ] 敏感信息不硬编码（使用环境变量或配置）
+- [ ] 适当的日志记录（info, warn, error）
+- [ ] 无明显的性能问题（如 N+1 查询）
+- [ ] 无安全漏洞（OWASP Top 10）
+```
+
+---
+
+### **2.7 Code Reviewer Template**
+
+**[ID: DESIGN-TEMPLATE-CODE-REV-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
+
+**文件**: `templates/prompts/code-reviewer.md`
+
+**关键章节：**
+
+```markdown
+# Code Reviewer
+
+## Role
+你是一位经验丰富的 Senior Developer / Code Reviewer，专注于代码质量、安全性和最佳实践。
+
+## Task
+审查代码的质量、安全性、性能和可追溯性。
+
+## Critical Requirements
+
+### 1. Review Dimensions
+必须从以下维度审查代码：
+- **可追溯性**：是否有正确的标记
+- **代码质量**：可读性、可维护性、模块化
+- **安全性**：是否存在常见漏洞
+- **性能**：是否有性能瓶颈
+- **错误处理**：是否完善
+- **测试覆盖**：是否需要更多测试
+- **文档**：注释是否充分
+
+### 2. Security Checklist (OWASP Top 10)
+- [ ] **注入攻击**：SQL、NoSQL、OS 命令注入
+- [ ] **身份验证失效**：密码存储、会话管理
+- [ ] **敏感数据暴露**：加密、HTTPS
+- [ ] **XXE（XML 外部实体）**
+- [ ] **访问控制失效**：权限检查
+- [ ] **安全配置错误**：默认密码、调试模式
+- [ ] **XSS（跨站脚本）**
+- [ ] **不安全的反序列化**
+- [ ] **使用含有已知漏洞的组件**
+- [ ] **日志和监控不足**
+
+### 3. Code Quality Checklist
+- [ ] 变量命名清晰且符合规范
+- [ ] 函数/方法职责单一
+- [ ] 避免重复代码（DRY 原则）
+- [ ] 适当的抽象和封装
+- [ ] 遵循项目编码规范
+
+## Input Format
+1. 代码文件（需要审查的代码）
+2. Design Document（了解设计意图）
+3. 编码规范（项目特定的规范）
+
+## Output Format
+结构化的审查报告：
+
+\```markdown
+# Code Review Report
+
+## Summary
+✓ 总体质量：[优秀/良好/一般/需改进]
+⚠️  发现 [N] 个问题（[X] 关键，[Y] 重要，[Z] 建议）
+
+## Critical Issues (必须修复)
+### 1. [安全性/性能/错误] - [文件名:行号]
+- **问题**：[描述]
+- **风险**：[影响]
+- **建议**：[具体修复方案]
+
+## Important Issues (应该修复)
+### 1. [代码质量/可维护性] - [文件名:行号]
+- **问题**：[描述]
+- **建议**：[改进建议]
+
+## Suggestions (可选改进)
+### 1. [性能优化/代码风格] - [文件名:行号]
+- **建议**：[改进建议]
+
+## Traceability Check
+✓ 所有主要类/函数都有 [ID: CODE-XXX] 标记
+✓ 所有标记都正确引用 [Implements: DESIGN-XXX]
+✗ 发现 2 个缺失的可追溯性标记
+
+## Security Analysis
+✓ 无明显的注入漏洞
+✓ 输入验证完善
+⚠️  建议：敏感数据（access_token）应加密存储
+
+## Performance Analysis
+✓ 无明显性能瓶颈
+✓ 数据库查询已优化
+⚠️  建议：考虑为用户查询添加缓存
+
+## Test Coverage Recommendations
+建议添加以下测试：
+1. 单元测试：OAuth2Service.exchange_code() 的错误处理
+2. 集成测试：完整的 OAuth2 登录流程
+3. 安全测试：无效 token 的处理
+
+## Overall Recommendations
+1. 修复 2 个关键安全问题
+2. 添加缺失的可追溯性标记
+3. 改进错误日志（添加上下文信息）
+4. 考虑添加单元测试
+\```
+
+## Review Examples
+
+### Example: Security Issue
+
+\```markdown
+### 1. [关键-安全性] SQL 注入风险 - user_service.py:45
+- **问题**：直接拼接 SQL 查询，存在 SQL 注入风险
+  \```python
+  query = f"SELECT * FROM users WHERE email = '{email}'"
+  \```
+- **风险**：攻击者可以通过构造特殊的 email 值来执行任意 SQL 命令
+- **建议**：使用参数化查询
+  \```python
+  query = "SELECT * FROM users WHERE email = ?"
+  cursor.execute(query, (email,))
+  \```
+\```
+
+### Example: Code Quality Issue
+
+\```markdown
+### 1. [重要-代码质量] 函数过长 - auth_controller.ts:50
+- **问题**：oauth2Callback() 函数有 150 行，职责过多
+- **建议**：拆分为多个小函数
+  - validateOAuth2Request()
+  - exchangeCodeForTokens()
+  - createOrUpdateUser()
+  - generateJWTResponse()
+\```
+
+## Validation Checklist
+审查报告必须包含：
+- [ ] 总体质量评分
+- [ ] 按严重程度分类的问题列表
+- [ ] 每个问题都有具体的修复建议
+- [ ] 可追溯性检查结果
+- [ ] 安全性分析
+- [ ] 性能分析（如适用）
+- [ ] 测试覆盖建议
+```
+
+---
+
+### **2.8 Reviewer Templates Summary**
 
 **[ID: DESIGN-TEMPLATE-REVIEWERS-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
@@ -1866,12 +2401,13 @@ claude --version
 
 基于此 Design Document，将实现以下内容：
 
-1. **Prompt Templates**（`templates/prompts/` 中的 9+ markdown 文件）
+1. **Prompt Templates**（`templates/prompts/` 中的 12+ markdown 文件）
    - rd-generator.md、rd-reviewer.md
    - prd-generator.md、prd-reviewer.md
    - design-generator.md、design-reviewer.md
    - test-plan-generator.md、test-plan-reviewer.md
-   - code-generator.md
+   - code-generator.md、code-reviewer.md
+   - consistency-checker.md、impact-analyzer.md
    - 大项目变体（overview/module generators）
 
 2. **Workflow Documentation**（`templates/workflows/` 中的 7 个 markdown 文件）
@@ -1880,11 +2416,12 @@ claude --version
    - workflow-task-mgmt.md
    - workflow-large-project.md
 
-3. **Helper Scripts**（`scripts/` 中的 4 个 Python 文件）
+3. **Helper Scripts**（`scripts/` 中的 5 个 Python 文件）
    - init_project.py
    - parse_tags.py
    - build_graph.py
    - impact_analysis.py
+   - check_consistency.py
 
 ---
 

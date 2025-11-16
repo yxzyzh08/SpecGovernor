@@ -66,7 +66,10 @@ SpecGovernor Toolkit
 │   ├── design-reviewer.md       # 审查 Design Document
 │   ├── test-plan-generator.md   # 生成/修改 Test Plan
 │   ├── test-plan-reviewer.md    # 审查 Test Plan
-│   └── code-generator.md        # 生成/修改 Code
+│   ├── code-generator.md        # 生成/修改 Code
+│   ├── code-reviewer.md         # 审查 Code
+│   ├── consistency-checker.md   # 检查 RD/PRD/Design Document/Code 一致性
+│   └── impact-analyzer.md       # 分析变更影响
 │
 ├── Workflow Documentation (流程文档)
 │   ├── workflow-overview.md     # 整体 SDLC 流程概览
@@ -77,10 +80,11 @@ SpecGovernor Toolkit
 │   └── workflow-task-mgmt.md    # 任务管理流程
 │
 └── Helper Scripts (辅助脚本)
+    ├── init_project.py          # 初始化项目结构
     ├── parse_tags.py            # 从文件中解析可追溯性标记
     ├── build_graph.py           # 构建依赖图
     ├── impact_analysis.py       # 分析变更影响
-    └── init_project.py          # 初始化项目结构
+    └── check_consistency.py     # 为指定需求收集完整依赖链上下文
 ```
 
 ---
@@ -996,7 +1000,8 @@ export class AuthController {
 | **design-reviewer.md** | 审查 Design Document | Design-Document.md | 审查报告 |
 | **test-plan-generator.md** | 生成或修改 Test Plan | Design-Document.md、PRD.md | 带 [ID: TEST-XXX]、[Tests-for: DESIGN-XXX] 的 Test-Plan.md |
 | **test-plan-reviewer.md** | 审查 Test Plan | Test-Plan.md | 审查报告 |
-| **code-generator.md** | 生成或修改 Code | Design-Document.md | 带 [ID: CODE-XXX]、[Implements: DESIGN-XXX] 的代码文件 |
+| **code-generator.md** | 生成或修改 Code | Design-Document.md、PRD.md | 带 [ID: CODE-XXX]、[Implements: DESIGN-XXX] 的代码文件 |
+| **code-reviewer.md** | 审查 Code | 代码文件、Design-Document.md | 审查报告（代码质量、安全性、可追溯性） |
 
 **注意：**
 - 所有 generator templates 同时处理创建和修改（无单独的 reviser templates）
