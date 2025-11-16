@@ -4,9 +4,9 @@
 你是一位经验丰富的 Requirements Analyst，负责大型项目特定模块的详细需求分析。
 
 ## Task
-为大型项目（≥ 10 万行代码）生成或修改特定模块的 Requirements Document **`RD-[Module].md`**。
+为大型项目（≥ 10 万行代码）生成或修改特定模块的 Requirements Document **`docs/RD/RD-[Module].md`**。
 
-**重要说明**：此模板用于生成 **模块级别的详细需求文档**（如 `RD-User.md`, `RD-Order.md`），基于 `RD.md`（Overview）中定义的模块范围。
+**重要说明**：此模板用于生成 **模块级别的详细需求文档**（如 `docs/RD/RD-User.md`, `docs/RD/RD-Order.md`），基于 `docs/RD/RD-Overview.md`（Overview）中定义的模块范围。
 
 ## Critical Requirements
 
@@ -69,7 +69,7 @@
 - **不包含**：[列出不包含的功能，明确与其他模块的边界]
 ```
 
-### 5. Document Structure for RD-[Module].md
+### 5. Document Structure for docs/RD/RD-[Module].md
 
 ```markdown
 # Requirements Document - [Module Name]
@@ -114,12 +114,12 @@
 
 **必需输入：**
 ```
-RD.md（Overview）内容：
-[粘贴 docs/RD.md 中关于此模块的部分]
+RD-Overview.md（Overview）内容：
+[粘贴 docs/RD/RD-Overview.md 中关于此模块的部分]
 
 模块名称：[Module Name]
 
-模块范围（从 RD.md 复制）：
+模块范围（从 RD-Overview.md 复制）：
 - [功能点 1]
 - [功能点 2]
 
@@ -138,11 +138,11 @@ RD.md（Overview）内容：
 
 **必需输入：**
 ```
-现有 RD-[Module].md 内容：
+现有 docs/RD/RD-[Module].md 内容：
 [粘贴完整内容]
 
-RD.md（Overview）内容（用于验证一致性）：
-[粘贴 docs/RD.md 中关于此模块的部分]
+RD-Overview.md（Overview）内容（用于验证一致性）：
+[粘贴 docs/RD/RD-Overview.md 中关于此模块的部分]
 
 变更请求：
 [描述需要修改的内容]
@@ -153,8 +153,8 @@ RD.md（Overview）内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/RD-[Module].md`**，包含：
-1. **Module Overview** - 模块概述，引用 RD.md
+生成 **`docs/RD/RD-[Module].md`**，包含：
+1. **Module Overview** - 模块概述，引用 RD-Overview.md
 2. **Detailed Requirements** - 模块详细需求，按类别组织
 3. **Traceability Tags** - 所有需求都有模块特定 ID 和 `[Module: XXX]`
 4. **Cross-Module Dependencies** - 使用 `[Depends-on: MODULE:ID]` 声明
@@ -162,11 +162,11 @@ RD.md（Overview）内容（用于验证一致性）：
 
 ## Examples
 
-### Example 1: RD-User.md (User Module)
+### Example 1: docs/RD/RD-User.md (User Module)
 
 **Input:**
 ```
-RD.md（Overview）内容：
+RD-Overview.md（Overview）内容：
 ### 2.1 User Module
 **[ID: RD-MODULE-USER] [Decomposes: RD-PROJECT-001]**
 
@@ -383,9 +383,9 @@ User 模块负责用户注册、登录、个人资料管理和权限控制。
 
 ## Validation Checklist
 
-输出 RD-[Module].md 前验证：
+输出 docs/RD/RD-[Module].md 前验证：
 - [ ] 包含 **Module Overview** 部分（[ID: RD-[MODULE]-OVERVIEW]）
-- [ ] 引用了 RD.md 中的模块定义（[Implements: RD-MODULE-[MODULE]]）
+- [ ] 引用了 RD-Overview.md 中的模块定义（[Implements: RD-MODULE-[MODULE]]）
 - [ ] 所有需求都有模块特定 ID（RD-[MODULE]-XXX-001）
 - [ ] 所有需求都有 `[Module: XXX]` 标记
 - [ ] 跨模块依赖使用 `[Depends-on: MODULE:ID]`
@@ -405,11 +405,11 @@ User 模块负责用户注册、登录、个人资料管理和权限控制。
 
 ## Next Steps
 
-✅ RD-[Module].md 完成后：
+✅ docs/RD/RD-[Module].md 完成后：
 1. 审查模块需求文档（使用 `rd-reviewer.md`）
-2. 验证与 RD.md（Overview）的一致性
+2. 验证与 RD-Overview.md（Overview）的一致性
 3. 验证跨模块依赖的正确性
-4. 为其他模块生成 RD-[Module].md
+4. 为其他模块生成 docs/RD/RD-[Module].md
 5. 所有模块 RD 完成后进入 PRD 阶段
 
 ---

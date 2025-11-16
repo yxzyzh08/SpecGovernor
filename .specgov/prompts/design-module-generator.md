@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改特定模块的 Design Document **`Design-Document-[Module].md`**。
 
-**重要说明**：此模板用于生成 **模块级别的详细设计文档**（如 `Design-Document-User.md`, `Design-Document-Order.md`），基于 `Design-Document.md`（Overview）中定义的模块架构和 `PRD-[Module].md` 中定义的模块功能。
+**重要说明**：此模板用于生成 **模块级别的详细设计文档**（如 `Design-Document-User.md`, `Design-Document-Order.md`），基于 `Design-Overview.md`（Overview）中定义的模块架构和 `PRD-[Module].md` 中定义的模块功能。
 
 **CRITICAL**：始终使用 "Design Document"，不要使用 "DD"！
 
@@ -58,26 +58,26 @@
 
 ### 5. Link to Overview and PRD
 
-模块文档开头必须引用 Design-Document.md（Overview）和 PRD-[Module].md：
+模块文档开头必须引用 Design-Overview.md（Overview）和 PRD-[Module].md：
 
 ```markdown
 # Design Document - [Module Name]
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: Design-Document.md (v1.0), PRD-[Module].md (v1.0)
+> **Based on**: Design-Overview.md (v1.0), PRD-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Design Overview
 **[ID: DESIGN-[MODULE]-OVERVIEW] [Module: [Module]] [Designs-for: PRD-[MODULE]-OVERVIEW]**
 
-[模块设计概述，引用 Design-Document.md 和 PRD-[Module].md]
+[模块设计概述，引用 Design-Overview.md 和 PRD-[Module].md]
 
 **技术栈：**
-- [从 Design-Document.md 复制]
+- [从 Design-Overview.md 复制]
 
 **模块架构：**
-- [从 Design-Document.md 复制]
+- [从 Design-Overview.md 复制]
 ```
 
 ### 6. Document Structure for Design-Document-[Module].md
@@ -87,7 +87,7 @@
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: Design-Document.md (v1.0), PRD-[Module].md (v1.0)
+> **Based on**: Design-Overview.md (v1.0), PRD-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Design Overview
@@ -130,8 +130,8 @@
 
 **必需输入：**
 ```
-Design-Document.md（Overview）内容：
-[粘贴 docs/Design-Document.md 中关于此模块的部分]
+Design-Overview.md（Overview）内容：
+[粘贴 docs/Design-Document/Design-Overview.md 中关于此模块的部分]
 
 PRD-[Module].md 内容：
 [粘贴完整内容]
@@ -141,7 +141,7 @@ RD-[Module].md 内容（供参考）：
 
 模块名称：[Module Name]
 
-技术约束（从 Design-Document.md 复制）：
+技术约束（从 Design-Overview.md 复制）：
 - 编程语言：[...]
 - 框架：[...]
 - 数据库：[...]
@@ -154,7 +154,7 @@ RD-[Module].md 内容（供参考）：
 现有 Design-Document-[Module].md 内容：
 [粘贴完整内容]
 
-Design-Document.md（Overview）内容（用于验证一致性）：
+Design-Overview.md（Overview）内容（用于验证一致性）：
 [粘贴相关部分]
 
 PRD-[Module].md 内容（用于验证一致性）：
@@ -170,7 +170,7 @@ PRD-[Module].md 内容（用于验证一致性）：
 ## Output Format
 
 生成 **`docs/Design-Document-[Module].md`**，包含：
-1. **Module Design Overview** - 模块设计概述，引用 Design-Document.md 和 PRD-[Module].md
+1. **Module Design Overview** - 模块设计概述，引用 Design-Overview.md 和 PRD-[Module].md
 2. **API Design** - API 端点定义、请求/响应、错误处理
 3. **Database Design** - 数据库表、字段、索引、关系
 4. **Service Design** - 服务层设计、业务逻辑
@@ -187,7 +187,7 @@ PRD-[Module].md 内容（用于验证一致性）：
 
 > **Version**: 1.0
 > **Module**: User
-> **Based on**: Design-Document.md (v1.0), PRD-User.md (v1.0)
+> **Based on**: Design-Overview.md (v1.0), PRD-User.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. User Module Design Overview
@@ -202,7 +202,7 @@ User 模块负责用户认证、授权和个人资料管理。
 - **数据库**：user_db (PostgreSQL RDS)
 - **缓存**：Redis (Session Cache)
 
-**模块架构（从 Design-Document.md）：**
+**模块架构（从 Design-Overview.md）：**
 - User Service (FastAPI) → PostgreSQL user_db
 - 提供 API：/auth/register, /auth/login, /users/{id}
 - 调用 API：Notification 模块（发送邮件）
@@ -659,7 +659,7 @@ def verify_password(password: str, hashed: str) -> bool:
 
 输出 Design-Document-[Module].md 前验证：
 - [ ] 包含 **Module Design Overview** 部分（[ID: DESIGN-[MODULE]-OVERVIEW]）
-- [ ] 引用了 Design-Document.md 和 PRD-[Module].md
+- [ ] 引用了 Design-Overview.md 和 PRD-[Module].md
 - [ ] 所有设计都有模块特定 ID（DESIGN-[MODULE]-XXX-YYY）
 - [ ] 所有设计都有 `[Module: XXX]` 标记
 - [ ] API 设计包含端点、请求、响应、错误响应、实现说明
@@ -684,7 +684,7 @@ def verify_password(password: str, hashed: str) -> bool:
 
 ✅ Design-Document-[Module].md 完成后：
 1. 审查模块设计文档（使用 `design-reviewer.md`）
-2. 验证与 Design-Document.md（Overview）和 PRD-[Module].md 的一致性
+2. 验证与 Design-Overview.md（Overview）和 PRD-[Module].md 的一致性
 3. 为其他模块生成 Design-Document-[Module].md
 4. 所有模块 Design Document 完成后进入 Test Plan 阶段
 

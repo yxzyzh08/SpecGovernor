@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改 Requirements Document (RD) **Overview**（整体需求概览）。
 
-**重要说明**：此模板用于生成 **`RD.md`（Overview）**，定义项目整体需求、模块划分和跨模块需求。具体模块的详细需求由 `rd-module-generator.md` 生成。
+**重要说明**：此模板用于生成 **`docs/RD/RD-Overview.md`（Overview）**，定义项目整体需求、模块划分和跨模块需求。具体模块的详细需求由 `rd-module-generator.md` 生成。
 
 ## Critical Requirements
 
@@ -14,19 +14,19 @@
 
 大项目采用 **两层需求文档结构**：
 
-#### Overview Document (RD.md)
+#### Overview Document (docs/RD/RD-Overview.md)
 - 项目整体概述
 - 模块划分和边界定义
 - 跨模块需求（Cross-Cutting Requirements）
 - 每个模块的高层级范围说明
 
-#### Module Documents (RD-[Module].md)
+#### Module Documents (docs/RD/RD-[Module].md)
 - 模块具体需求
 - 详细验收标准
 - 模块内部分解
 - 模块间依赖声明
 
-**当前模板只负责生成 RD.md（Overview）**。
+**当前模板只负责生成 docs/RD/RD-Overview.md（Overview）**。
 
 ### 2. Traceability Tags
 
@@ -39,11 +39,11 @@
 
 #### DO NOT USE in Overview
 ```markdown
-❌ **[ID: RD-USER-REG-001]** - 这是模块级别 ID，属于 RD-User.md
-❌ **[ID: RD-ORDER-CREATE-001]** - 这是模块级别 ID，属于 RD-Order.md
+❌ **[ID: RD-USER-REG-001]** - 这是模块级别 ID，属于 docs/RD/RD-User.md
+❌ **[ID: RD-ORDER-CREATE-001]** - 这是模块级别 ID，属于 docs/RD/RD-Order.md
 ```
 
-### 3. Document Structure for RD.md (Overview)
+### 3. Document Structure for docs/RD/RD-Overview.md (Overview)
 
 ```markdown
 # Requirements Document (RD)
@@ -144,17 +144,17 @@
 
 ## Output Format
 
-生成 **`docs/RD.md`**（Overview），包含：
+生成 **`docs/RD/RD-Overview.md`**（Overview），包含：
 1. **Project Overview** - 项目整体描述
 2. **Module Requirements** - 模块划分和高层级范围
 3. **Cross-Cutting Requirements** - 跨模块需求
 4. **Traceability Tags** - 所有模块和跨模块需求都有 ID
 
-**重要**：Overview 只定义"是什么模块"和"模块边界"，不包含详细需求实现。详细需求由 `RD-[Module].md` 定义。
+**重要**：Overview 只定义"是什么模块"和"模块边界"，不包含详细需求实现。详细需求由 `docs/RD/RD-[Module].md` 定义。
 
 ## Examples
 
-### Example 1: E-Commerce Platform RD.md (Overview)
+### Example 1: E-Commerce Platform docs/RD/RD-Overview.md
 
 **Input:**
 ```

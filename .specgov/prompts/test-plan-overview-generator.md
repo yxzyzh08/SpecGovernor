@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改 Test Plan **Overview**（整体测试策略概览）。
 
-**重要说明**：此模板用于生成 **`Test-Plan.md`（Overview）**，定义项目整体测试策略、模块测试范围和跨模块测试。具体模块的详细测试用例由 `test-plan-module-generator.md` 生成。
+**重要说明**：此模板用于生成 **`docs/Test-Plan/Test-Overview.md`（Overview）**，定义项目整体测试策略、模块测试范围和跨模块测试。具体模块的详细测试用例由 `test-plan-module-generator.md` 生成。
 
 **CRITICAL**：始终使用 "Test Plan"，不要使用 "TD" 或 "TP"！
 
@@ -55,7 +55,7 @@
 ❌ **[ID: TEST-CASE-CREATE-ORDER-001]** - 这是模块级别用例，属于 Test-Plan-Order.md
 ```
 
-### 4. Document Structure for Test-Plan.md (Overview)
+### 4. Document Structure for docs/Test-Plan/Test-Overview.md (Overview)
 
 ```markdown
 # Test Plan
@@ -111,7 +111,7 @@
 
 ## Input Format
 
-### 1. Creating New Test-Plan.md (Overview)
+### 1. Creating New docs/Test-Plan/Test-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -137,7 +137,7 @@ RD.md（Overview）内容：
 ...
 ```
 
-### 2. Modifying Existing Test-Plan.md (Overview)
+### 2. Modifying Existing docs/Test-Plan/Test-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -156,7 +156,7 @@ Design-Document.md、PRD.md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Test-Plan.md`**（Overview），包含：
+生成 **`docs/Test-Plan/Test-Overview.md`**（Overview），包含：
 1. **Test Strategy** - 项目整体测试策略、测试类型、测试环境
 2. **Module Test Scope** - 模块测试范围和优先级
 3. **Cross-Module Integration Tests** - 跨模块集成测试场景
@@ -167,7 +167,7 @@ Design-Document.md、PRD.md 内容（用于验证一致性）：
 
 ## Examples
 
-### Example 1: E-Commerce Platform Test-Plan.md (Overview)
+### Example 1: E-Commerce Platform docs/Test-Plan/Test-Overview.md (Overview)
 
 **Output:**
 ```markdown

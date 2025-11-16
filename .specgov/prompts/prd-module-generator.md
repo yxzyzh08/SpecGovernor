@@ -4,9 +4,9 @@
 你是一位经验丰富的 Product Manager，负责大型项目特定模块的详细产品功能设计。
 
 ## Task
-为大型项目（≥ 10 万行代码）生成或修改特定模块的 Product Requirements Document **`PRD-[Module].md`**。
+为大型项目（≥ 10 万行代码）生成或修改特定模块的 Product Requirements Document **`docs/PRD/docs/PRD/PRD-[Module].md`**。
 
-**重要说明**：此模板用于生成 **模块级别的详细产品功能文档**（如 `PRD-User.md`, `PRD-Order.md`），基于 `PRD.md`（Overview）中定义的模块产品目标和 `RD-[Module].md` 中定义的模块需求。
+**重要说明**：此模板用于生成 **模块级别的详细产品功能文档**（如 `PRD-User.md`, `PRD-Order.md`），基于 `PRD-Overview.md`（Overview）中定义的模块产品目标和 `RD-[Module].md` 中定义的模块需求。
 
 ## Critical Requirements
 
@@ -60,37 +60,37 @@
 
 ### 5. Link to Overview and RD
 
-模块文档开头必须引用 PRD.md（Overview）和 RD-[Module].md：
+模块文档开头必须引用 PRD-Overview.md（Overview）和 RD-[Module].md：
 
 ```markdown
 # Product Requirements Document - [Module Name]
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: PRD.md (v1.0), RD-[Module].md (v1.0)
+> **Based on**: PRD-Overview.md (v1.0), RD-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Overview
 **[ID: PRD-[MODULE]-OVERVIEW] [Module: [Module]] [Implements: PRD-MODULE-[MODULE], RD-[MODULE]-OVERVIEW]**
 
-[模块产品描述，引用 PRD.md 和 RD-[Module].md]
+[模块产品描述，引用 PRD-Overview.md 和 RD-[Module].md]
 
 **核心用户价值：**
-- [从 PRD.md 复制]
+- [从 PRD-Overview.md 复制]
 
 **模块边界：**
 - **包含**：[列出包含的功能]
 - **不包含**：[列出不包含的功能]
 ```
 
-### 6. Document Structure for PRD-[Module].md
+### 6. Document Structure for docs/PRD/PRD-[Module].md
 
 ```markdown
 # Product Requirements Document - [Module Name]
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: PRD.md (v1.0), RD-[Module].md (v1.0)
+> **Based on**: PRD-Overview.md (v1.0), RD-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Overview
@@ -129,19 +129,19 @@
 
 ## Input Format
 
-### 1. Creating New PRD-[Module].md
+### 1. Creating New docs/PRD/PRD-[Module].md
 
 **必需输入：**
 ```
-PRD.md（Overview）内容：
-[粘贴 docs/PRD.md 中关于此模块的部分]
+PRD-Overview.md（Overview）内容：
+[粘贴 docs/PRD/PRD-Overview.md 中关于此模块的部分]
 
 RD-[Module].md 内容：
 [粘贴完整内容]
 
 模块名称：[Module Name]
 
-模块产品目标（从 PRD.md 复制）：
+模块产品目标（从 PRD-Overview.md 复制）：
 - 核心用户价值：[...]
 - 关键成功指标：[...]
 
@@ -150,15 +150,15 @@ RD-[Module].md 内容：
 - [用户类型 2]：[描述]
 ```
 
-### 2. Modifying Existing PRD-[Module].md
+### 2. Modifying Existing docs/PRD/PRD-[Module].md
 
 **必需输入：**
 ```
-现有 PRD-[Module].md 内容：
+现有 docs/PRD/PRD-[Module].md 内容：
 [粘贴完整内容]
 
-PRD.md（Overview）内容（用于验证一致性）：
-[粘贴 docs/PRD.md 中关于此模块的部分]
+PRD-Overview.md（Overview）内容（用于验证一致性）：
+[粘贴 docs/PRD/PRD-Overview.md 中关于此模块的部分]
 
 RD-[Module].md 内容（用于验证一致性）：
 [粘贴完整内容]
@@ -172,8 +172,8 @@ RD-[Module].md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/PRD-[Module].md`**，包含：
-1. **Module Overview** - 模块产品概述，引用 PRD.md 和 RD-[Module].md
+生成 **`docs/PRD/docs/PRD/PRD-[Module].md`**，包含：
+1. **Module Overview** - 模块产品概述，引用 PRD-Overview.md 和 RD-[Module].md
 2. **Detailed Features** - 模块详细产品功能，按类别组织
 3. **User Stories** - 所有功能都有 As/I want/So that 格式的用户故事
 4. **Acceptance Criteria** - 可测试的验收标准（从用户角度）
@@ -186,7 +186,7 @@ RD-[Module].md 内容（用于验证一致性）：
 
 **Input:**
 ```
-PRD.md（Overview）内容：
+PRD-Overview.md（Overview）内容：
 ### 2.1 User Module
 **[ID: PRD-MODULE-USER] [Implements: RD-MODULE-USER]**
 
@@ -215,7 +215,7 @@ RD-User.md 内容：
 
 > **Version**: 1.0
 > **Module**: User
-> **Based on**: PRD.md (v1.0), RD-User.md (v1.0)
+> **Based on**: PRD-Overview.md (v1.0), RD-User.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. User Module Overview
@@ -426,9 +426,9 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 
 ## Validation Checklist
 
-输出 PRD-[Module].md 前验证：
+输出 docs/PRD/PRD-[Module].md 前验证：
 - [ ] 包含 **Module Overview** 部分（[ID: PRD-[MODULE]-OVERVIEW]）
-- [ ] 引用了 PRD.md 和 RD-[Module].md（[Implements: PRD-MODULE-XXX, RD-[MODULE]-OVERVIEW]）
+- [ ] 引用了 PRD-Overview.md 和 RD-[Module].md（[Implements: PRD-MODULE-XXX, RD-[MODULE]-OVERVIEW]）
 - [ ] 所有功能都有模块特定 ID（PRD-[MODULE]-XXX）
 - [ ] 所有功能都有 `[Module: XXX]` 标记
 - [ ] 所有功能都有 As/I want/So that 格式的用户故事
@@ -450,11 +450,11 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 
 ## Next Steps
 
-✅ PRD-[Module].md 完成后：
+✅ docs/PRD/PRD-[Module].md 完成后：
 1. 审查模块产品文档（使用 `prd-reviewer.md`）
-2. 验证与 PRD.md（Overview）和 RD-[Module].md 的一致性
+2. 验证与 PRD-Overview.md（Overview）和 RD-[Module].md 的一致性
 3. 验证跨模块依赖的正确性
-4. 为其他模块生成 PRD-[Module].md
+4. 为其他模块生成 docs/PRD/PRD-[Module].md
 5. 所有模块 PRD 完成后进入 Design Document 阶段
 
 ---

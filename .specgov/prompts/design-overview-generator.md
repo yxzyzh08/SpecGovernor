@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改 Design Document **Overview**（整体架构概览）。
 
-**重要说明**：此模板用于生成 **`Design-Document.md`（Overview）**，定义项目整体架构、技术栈、模块架构和跨模块设计决策。具体模块的详细设计由 `design-module-generator.md` 生成。
+**重要说明**：此模板用于生成 **`docs/Design-Document/Design-Overview.md`（Overview）**，定义项目整体架构、技术栈、模块架构和跨模块设计决策。具体模块的详细设计由 `design-module-generator.md` 生成。
 
 **CRITICAL**：始终使用 "Design Document"，不要使用 "DD"！
 
@@ -54,7 +54,7 @@
 ❌ **[ID: DESIGN-DB-USERS-TABLE]** - 这是模块级别 ID，属于 Design-Document-User.md
 ```
 
-### 4. Document Structure for Design-Document.md (Overview)
+### 4. Document Structure for docs/Design-Document/Design-Overview.md (Overview)
 
 ```markdown
 # Design Document
@@ -111,7 +111,7 @@
 
 ## Input Format
 
-### 1. Creating New Design-Document.md (Overview)
+### 1. Creating New docs/Design-Document/Design-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -134,7 +134,7 @@ RD.md（Overview）内容：
 ...
 ```
 
-### 2. Modifying Existing Design-Document.md (Overview)
+### 2. Modifying Existing docs/Design-Document/Design-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -153,7 +153,7 @@ PRD.md 和 RD.md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Design-Document.md`**（Overview），包含：
+生成 **`docs/Design-Document/Design-Overview.md`**（Overview），包含：
 1. **System Architecture** - 项目整体架构、技术栈、部署架构
 2. **Module Architecture** - 模块架构和模块间交互
 3. **Cross-Module Design** - 跨模块设计决策
@@ -164,7 +164,7 @@ PRD.md 和 RD.md 内容（用于验证一致性）：
 
 ## Examples
 
-### Example 1: E-Commerce Platform Design-Document.md (Overview)
+### Example 1: E-Commerce Platform docs/Design-Document/Design-Overview.md (Overview)
 
 **Input:**
 ```

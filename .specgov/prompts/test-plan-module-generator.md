@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改特定模块的 Test Plan **`Test-Plan-[Module].md`**。
 
-**重要说明**：此模板用于生成 **模块级别的详细测试用例文档**（如 `Test-Plan-User.md`, `Test-Plan-Order.md`），基于 `Test-Plan.md`（Overview）中定义的模块测试范围和 `Design-Document-[Module].md` 中定义的模块设计。
+**重要说明**：此模板用于生成 **模块级别的详细测试用例文档**（如 `Test-Plan-User.md`, `Test-Plan-Order.md`），基于 `Test-Overview.md`（Overview）中定义的模块测试范围和 `Design-Document-[Module].md` 中定义的模块设计。
 
 **CRITICAL**：始终使用 "Test Plan"，不要使用 "TD" 或 "TP"！
 
@@ -83,26 +83,26 @@
 
 ### 5. Link to Overview and Design
 
-模块文档开头必须引用 Test-Plan.md（Overview）和 Design-Document-[Module].md：
+模块文档开头必须引用 Test-Overview.md（Overview）和 Design-Document-[Module].md：
 
 ```markdown
 # Test Plan - [Module Name]
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: Test-Plan.md (v1.0), Design-Document-[Module].md (v1.0)
+> **Based on**: Test-Overview.md (v1.0), Design-Document-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Test Overview
 **[ID: TEST-[MODULE]-OVERVIEW] [Module: [Module]] [Tests-for: TEST-MODULE-[MODULE]-SCOPE, DESIGN-[MODULE]-OVERVIEW]**
 
-[模块测试概述，引用 Test-Plan.md 和 Design-Document-[Module].md]
+[模块测试概述，引用 Test-Overview.md 和 Design-Document-[Module].md]
 
 **测试范围：**
-- [从 Test-Plan.md 复制]
+- [从 Test-Overview.md 复制]
 
 **测试优先级：**
-- [从 Test-Plan.md 复制]
+- [从 Test-Overview.md 复制]
 ```
 
 ### 6. Document Structure for Test-Plan-[Module].md
@@ -112,7 +112,7 @@
 
 > **Version**: 1.0
 > **Module**: [Module Name]
-> **Based on**: Test-Plan.md (v1.0), Design-Document-[Module].md (v1.0)
+> **Based on**: Test-Overview.md (v1.0), Design-Document-[Module].md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. [Module Name] Module Test Overview
@@ -143,8 +143,8 @@
 
 **必需输入：**
 ```
-Test-Plan.md（Overview）内容：
-[粘贴 docs/Test-Plan.md 中关于此模块的部分]
+Test-Overview.md（Overview）内容：
+[粘贴 docs/Test-Plan/Test-Overview.md 中关于此模块的部分]
 
 Design-Document-[Module].md 内容：
 [粘贴完整内容]
@@ -154,7 +154,7 @@ PRD-[Module].md 内容（供参考）：
 
 模块名称：[Module Name]
 
-测试环境（从 Test-Plan.md 复制）：
+测试环境（从 Test-Overview.md 复制）：
 - 操作系统：[...]
 - 浏览器：[...]
 - 数据库：[...]
@@ -168,7 +168,7 @@ PRD-[Module].md 内容（供参考）：
 现有 Test-Plan-[Module].md 内容：
 [粘贴完整内容]
 
-Test-Plan.md（Overview）内容（用于验证一致性）：
+Test-Overview.md（Overview）内容（用于验证一致性）：
 [粘贴相关部分]
 
 Design-Document-[Module].md 内容（用于验证一致性）：
@@ -184,7 +184,7 @@ Design-Document-[Module].md 内容（用于验证一致性）：
 ## Output Format
 
 生成 **`docs/Test-Plan-[Module].md`**，包含：
-1. **Module Test Overview** - 模块测试概述，引用 Test-Plan.md 和 Design-Document-[Module].md
+1. **Module Test Overview** - 模块测试概述，引用 Test-Overview.md 和 Design-Document-[Module].md
 2. **Detailed Test Cases** - 模块详细测试用例，按功能分类组织
 3. **Preconditions, Steps, Expected Results** - 每个测试用例包含前置条件、步骤、预期结果
 4. **Test Data** - 测试数据示例（如适用）
@@ -200,7 +200,7 @@ Design-Document-[Module].md 内容（用于验证一致性）：
 
 > **Version**: 1.0
 > **Module**: User
-> **Based on**: Test-Plan.md (v1.0), Design-Document-User.md (v1.0)
+> **Based on**: Test-Overview.md (v1.0), Design-Document-User.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. User Module Test Overview
@@ -618,7 +618,7 @@ User 模块测试覆盖用户认证、授权和个人资料管理。
 
 输出 Test-Plan-[Module].md 前验证：
 - [ ] 包含 **Module Test Overview** 部分（[ID: TEST-[MODULE]-OVERVIEW]）
-- [ ] 引用了 Test-Plan.md 和 Design-Document-[Module].md
+- [ ] 引用了 Test-Overview.md 和 Design-Document-[Module].md
 - [ ] 所有测试用例都有模块特定 ID（TEST-[MODULE]-CASE-XXX-001）
 - [ ] 所有测试用例都有 `[Module: XXX]` 标记
 - [ ] 所有测试用例包含前置条件、步骤、预期结果
@@ -647,7 +647,7 @@ User 模块测试覆盖用户认证、授权和个人资料管理。
 
 ✅ Test-Plan-[Module].md 完成后：
 1. 审查模块测试文档（使用 `test-plan-reviewer.md`）
-2. 验证与 Test-Plan.md（Overview）和 Design-Document-[Module].md 的一致性
+2. 验证与 Test-Overview.md（Overview）和 Design-Document-[Module].md 的一致性
 3. 为其他模块生成 Test-Plan-[Module].md
 4. 所有模块 Test Plan 完成后开始实现测试用例
 

@@ -6,7 +6,7 @@
 ## Task
 为大型项目（≥ 10 万行代码）生成或修改 Product Requirements Document (PRD) **Overview**（整体产品概览）。
 
-**重要说明**：此模板用于生成 **`PRD.md`（Overview）**，定义项目整体产品愿景、模块产品目标和跨模块用户体验。具体模块的详细产品功能由 `prd-module-generator.md` 生成。
+**重要说明**：此模板用于生成 **`docs/PRD/PRD-Overview.md`（Overview）**，定义项目整体产品愿景、模块产品目标和跨模块用户体验。具体模块的详细产品功能由 `prd-module-generator.md` 生成。
 
 ## Critical Requirements
 
@@ -43,7 +43,7 @@
 ❌ **[ID: PRD-ORDER-CREATE]** - 这是模块级别 ID，属于 PRD-Order.md
 ```
 
-### 3. Document Structure for PRD.md (Overview)
+### 3. Document Structure for docs/PRD/PRD-Overview.md (Overview)
 
 ```markdown
 # Product Requirements Document (PRD)
@@ -108,7 +108,7 @@
 
 ## Input Format
 
-### 1. Creating New PRD.md (Overview)
+### 1. Creating New docs/PRD/PRD-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -130,7 +130,7 @@ RD.md（Overview）内容：
 - [用户类型 2]：[描述]
 ```
 
-### 2. Modifying Existing PRD.md (Overview)
+### 2. Modifying Existing docs/PRD/PRD-Overview.md (Overview)
 
 **必需输入：**
 ```
@@ -149,7 +149,7 @@ RD.md（Overview）内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/PRD.md`**（Overview），包含：
+生成 **`docs/PRD/PRD-Overview.md`**（Overview），包含：
 1. **Product Overview** - 产品整体愿景
 2. **Module Product Goals** - 模块产品目标和核心用户价值
 3. **Cross-Module User Experience** - 跨模块用户体验
@@ -160,7 +160,7 @@ RD.md（Overview）内容（用于验证一致性）：
 
 ## Examples
 
-### Example 1: E-Commerce Platform PRD.md (Overview)
+### Example 1: E-Commerce Platform docs/PRD/PRD-Overview.md (Overview)
 
 **Input:**
 ```
