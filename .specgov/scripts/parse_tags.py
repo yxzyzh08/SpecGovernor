@@ -83,8 +83,12 @@ def parse_file(filepath):
 
 def infer_type(tag_id):
     """从 ID 前缀推断标记类型。"""
-    if tag_id.startswith('RD-'):
+    if tag_id.startswith('RD-MODULE-'):
+        return 'module'
+    elif tag_id.startswith('RD-'):
         return 'requirement'
+    elif tag_id.startswith('PRD-MODULE-'):
+        return 'module'
     elif tag_id.startswith('PRD-FEAT-'):
         return 'feature'
     elif tag_id.startswith('PRD-US-'):
@@ -157,7 +161,71 @@ def main():
             print(f"  - {tag_type}: {count}")
         print()
 
+    # 提取模块信息并更新 project-config.json（仅适用于大项目）
+    update_project_modules(all_tags)
+
     return 0
+
+
+def update_project_modules(all_tags):
+    """从标记中提取模块信息并更新 project-config.json。"""
+    config_path = '.specgov/project-config.json'
+
+    # 检查配置文件是否存在
+    if not os.path.exists(config_path):
+        return
+
+    # 读取当前配置
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = json.load(f)
+    except Exception as e:
+        print(f"⚠️  Warning: Could not read {config_path}: {e}")
+        return
+
+    # 仅处理大项目（双层文档结构）
+    if config.get('document_structure') != 'two-tier':
+        return
+
+    # 提取所有模块标记（RD-MODULE-XXX）
+    module_tags = [tag for tag in all_tags if tag.get('type') == 'module' and tag['id'].startswith('RD-MODULE-')]
+
+    if not module_tags:
+        return
+
+    # 构建模块列表
+    modules = []
+    for tag in module_tags:
+        # 从 RD-MODULE-USER 提取 "USER"
+        module_id = tag['id'].replace('RD-MODULE-', '')
+        module_name = module_id.title()  # USER -> User
+
+        module_info = {
+            'id': module_id,
+            'name': module_name,
+            'tag': tag['id'],
+            'file': tag.get('file', ''),
+            'line': tag.get('line', 0)
+        }
+        modules.append(module_info)
+
+    # 更新配置文件
+    old_modules = config.get('modules', [])
+    config['modules'] = modules
+
+    try:
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+
+        if modules:
+            print("📦 Updated project modules:")
+            for module in modules:
+                print(f"  - {module['name']} ({module['id']}) in {module['file']}:{module['line']}")
+            print(f"✓ Updated {len(modules)} modules in {config_path}")
+            print()
+    except Exception as e:
+        print(f"⚠️  Warning: Could not update {config_path}: {e}")
+        print()
 
 
 if __name__ == '__main__':

@@ -306,7 +306,7 @@ Claude Code 将输出审查报告，例如：
 python .specgov/scripts/parse_tags.py
 ```
 
-**输出示例**：
+**输出示例（小项目）**：
 ```
 Parsing docs/RD.md...
 Found 9 tags:
@@ -322,6 +322,27 @@ Found 9 tags:
 
 Tags saved to .specgov/index/tags.json
 ```
+
+**输出示例（大项目，生成 RD-Overview.md 后）**：
+```
+Parsing docs/RD/RD-Overview.md...
+Found 5 tags:
+- RD-PROJECT-001 (requirement)
+- RD-MODULE-USER (module, decomposes: RD-PROJECT-001)
+- RD-MODULE-ORDER (module, decomposes: RD-PROJECT-001)
+- RD-MODULE-PAYMENT (module, decomposes: RD-PROJECT-001)
+- RD-CROSS-AUTH-001 (requirement)
+
+Tags saved to .specgov/index/tags.json
+
+📦 Updated project modules:
+  - User (USER) in docs/RD/RD-Overview.md:25
+  - Order (ORDER) in docs/RD/RD-Overview.md:35
+  - Payment (PAYMENT) in docs/RD/RD-Overview.md:45
+✓ Updated 3 modules in .specgov/project-config.json
+```
+
+> **大项目提示**：`parse_tags.py` 会自动从 `RD-Overview.md` 中提取模块定义（`[ID: RD-MODULE-XXX]`）并更新 `.specgov/project-config.json` 中的 `modules` 字段。这样后续脚本和工具就能知道项目有哪些模块了。
 
 ### 3.2 构建依赖图谱
 
@@ -505,9 +526,10 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 1. **使用 Claude 斜杠命令**：在 Claude Code 中使用 `/specgov-xx-gen` 命令，无需手动打开 prompt 文件
 2. **一次性提供完整上下文**：将需求、约束、示例等信息一次性粘贴到 Claude Code，生成质量更好
 3. **定期运行 Helper Scripts**：每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
-4. **使用 Git 追踪变更**：所有文档都应该提交到 Git，便于团队协作和版本追溯
-5. **双重质量保证**：始终使用 Generator + Reviewer 模式（生成 + 审查）
-6. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
+4. **大项目模块管理**：生成 RD-Overview.md 后立即运行 `parse_tags.py`，它会自动提取模块信息到 `project-config.json`
+5. **使用 Git 追踪变更**：所有文档都应该提交到 Git，便于团队协作和版本追溯
+6. **双重质量保证**：始终使用 Generator + Reviewer 模式（生成 + 审查）
+7. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
 
 **可用的 Claude 斜杠命令（小项目）**：
 - `/specgov-rd-gen` - 生成 RD
@@ -552,6 +574,22 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 - 是否在项目根目录运行（包含 `.specgov/` 目录）
 - 文档中的标记格式是否正确（如 `[ID: RD-REQ-001]`）
 - 查看错误消息，根据提示修复
+
+### Q3a: 大项目中 project-config.json 的 modules 字段为什么是空的？
+
+**A**: `modules` 字段会在您生成 RD-Overview.md 后自动更新。
+
+**解决步骤**：
+1. 使用 `/specgov-rd-overview` 生成 `docs/RD/RD-Overview.md`
+2. 确保 Overview 中包含模块定义（如 `[ID: RD-MODULE-USER]`, `[ID: RD-MODULE-ORDER]`）
+3. 运行 `python .specgov/scripts/parse_tags.py`
+4. 脚本会自动提取模块信息并更新 `project-config.json`
+
+**验证**：
+```bash
+cat .specgov/project-config.json
+```
+应该看到 `modules` 字段包含了您定义的所有模块。
 
 ### Q4: 我可以跳过某个阶段吗？
 
