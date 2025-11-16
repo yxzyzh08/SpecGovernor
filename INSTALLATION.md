@@ -38,104 +38,9 @@ bash --version     # 应该显示 4.0+
 
 ---
 
-## 🚀 安装方式
+## 🚀 安装步骤
 
-SpecGovernor 提供两种安装方式，根据您的需求选择：
-
-### 方式1: 新项目（推荐）
-
-**适用场景**: 创建全新项目，SpecGovernor 作为项目模板
-
-**优点**:
-- ✅ 一步到位，包含所有文件
-- ✅ 完整的 Git 历史
-- ✅ 可以直接修改和扩展模板
-
-**步骤**:
-
-#### Step 1: 克隆仓库
-
-```powershell
-# 克隆 SpecGovernor 仓库到新项目目录
-git clone https://github.com/yourname/SpecGovernor.git my-project
-
-# 进入项目目录
-cd my-project
-```
-
-#### Step 2: 配置远程仓库（可选）
-
-```powershell
-# 如果您想将项目推送到自己的 GitHub 仓库
-# 1. 在 GitHub 上创建新仓库（如 my-project）
-# 2. 更改远程 origin
-git remote remove origin
-git remote add origin https://github.com/yourusername/my-project.git
-
-# 3. 推送到新仓库
-git push -u origin main
-```
-
-#### Step 3: 初始化项目
-
-```powershell
-# 运行初始化脚本
-python scripts/init_project.py
-```
-
-**初始化脚本会：**
-- ✅ 创建 `.specgov/index/` 目录
-- ✅ 创建 `.specgov/tasks/` 目录和任务文件
-- ✅ 创建 `docs/` 目录和文档模板
-- ✅ 创建 `.specgov/config.json` 配置文件
-- ✅ 复制 prompt 模板到 `.specgov/prompts/`
-- ✅ 复制工作流文档到 `.specgov/workflows/`
-
-#### Step 4: 验证安装
-
-```powershell
-# 检查目录结构
-ls .specgov/
-
-# 应该看到：
-# - config.json
-# - prompts/      (20 个 .md 文件)
-# - workflows/    (7 个 .md 文件)
-# - tasks/        (6 个 .md 文件)
-# - index/        (空目录，运行脚本后会生成文件)
-
-# 检查文档目录
-ls docs/
-
-# 应该看到：
-# - RD.md
-# - PRD.md
-# - Design-Document.md
-# - Test-Plan.md
-```
-
-#### Step 5: 开始使用
-
-```powershell
-# 阅读快速开始指南
-type QUICK-START.md
-
-# 或在 VS Code 中打开
-code QUICK-START.md
-```
-
----
-
-### 方式2: 集成到现有项目
-
-**适用场景**: 为现有项目添加 SpecGovernor 工具包
-
-**优点**:
-- ✅ 不影响现有项目结构
-- ✅ 可以与现有文档共存
-- ✅ 灵活集成
-
-**步骤**:
+SpecGovernor 使用自动化安装脚本，将工具包集成到您的项目中。安装脚本会自动下载所有必要的文件并设置项目结构。
 
 #### Step 1: 下载安装脚本
 
@@ -209,11 +114,12 @@ rm install-specgov.sh   # Linux/Mac
 
 ## 📁 安装后的目录结构
 
-成功安装后，您的项目应该包含以下结构：
+成功安装后，您的项目将新增以下 SpecGovernor 相关目录和文件：
 
 ```
-your-project/
-├── .specgov/                   # SpecGovernor 配置和数据
+your-project/                   # 您的项目根目录
+│
+├── .specgov/                   # ✨ SpecGovernor 配置和数据
 │   ├── config.json             # 项目配置
 │   ├── prompts/                # Prompt 模板（20 个）
 │   │   ├── rd-generator.md
@@ -254,24 +160,38 @@ your-project/
 │   └── index/                  # 索引数据（由脚本生成）
 │       ├── tags.json           # 可追溯性标记索引
 │       └── dependency-graph.json   # 依赖图谱
-├── docs/                       # 项目文档
-│   ├── RD.md                   # Requirements Document
-│   ├── PRD.md                  # Product Requirements Document
-│   ├── Design-Document.md      # Design Document
-│   └── Test-Plan.md            # Test Plan
-├── scripts/                    # Helper Scripts
+│
+├── templates/                  # ✨ SpecGovernor 模板文件（源文件）
+│   ├── prompts/                # （与 .specgov/prompts/ 相同）
+│   └── workflows/              # （与 .specgov/workflows/ 相同）
+│
+├── scripts/                    # ✨ SpecGovernor Helper Scripts
 │   ├── init_project.py         # 项目初始化
 │   ├── parse_tags.py           # 解析标记
 │   ├── build_graph.py          # 构建图谱
 │   ├── check_consistency.py    # 一致性检查
 │   └── impact_analysis.py      # 影响分析
-├── src/                        # 源代码（您的代码）
-├── tests/                      # 测试代码（您的测试）
-├── README.md                   # 项目 README
-├── INSTALLATION.md             # 本文档
-├── QUICK-START.md              # 快速开始指南
-└── CLAUDE.md                   # Claude Code 项目指南
+│
+├── docs/                       # ✨ 您的项目文档目录
+│   ├── RD.md                   # 您的 Requirements Document
+│   ├── PRD.md                  # 您的 Product Requirements Document
+│   ├── Design-Document.md      # 您的 Design Document
+│   └── Test-Plan.md            # 您的 Test Plan
+│
+├── src/                        # 您的源代码
+├── tests/                      # 您的测试代码
+├── README.md                   # 您的项目 README
+│
+├── QUICK-START.md              # ✨ SpecGovernor 快速开始指南
+└── CLAUDE.md                   # ✨ Claude Code 项目指南
+
+✨ = 由 SpecGovernor 安装脚本创建或下载的文件
 ```
+
+**说明：**
+- `.specgov/`, `templates/`, `scripts/` 由安装脚本自动创建
+- `docs/` 目录会被创建，但文档内容由您使用 SpecGovernor 工具生成
+- `src/`, `tests/`, `README.md` 等是您项目原有的文件，不受影响
 
 ---
 
@@ -470,20 +390,7 @@ $env:HTTPS_PROXY = "http://proxy.example.com:8080"
 
 ## 🔄 更新 SpecGovernor
 
-### 方式1 安装的更新方法
-
-```powershell
-# 1. 进入项目目录
-cd my-project
-
-# 2. 拉取最新更改
-git pull origin main
-
-# 3. 重新运行初始化（如有新功能）
-python scripts/init_project.py
-```
-
-### 方式2 安装的更新方法
+### 更新到最新版本
 
 ```powershell
 # 1. 重新下载安装脚本
