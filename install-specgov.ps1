@@ -172,8 +172,7 @@ Write-Host "`n[6/6] Downloading documentation..." -ForegroundColor Green
 
 # Download documentation files
 $docs = @(
-    "QUICK-START.md",
-    "CLAUDE.md"
+    "QUICK-START.md"
 )
 
 $docCount = 0

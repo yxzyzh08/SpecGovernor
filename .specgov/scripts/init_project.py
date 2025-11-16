@@ -132,6 +132,196 @@ def create_placeholder(filepath, doc_type):
         f.write(content)
 
 
+def create_claude_md(project_name, project_size):
+    """创建用户项目的 CLAUDE.md 文件。"""
+    large_project_note = '''
+**大项目专用命令**：
+- `/specgov-rd-module` - 生成 RD 模块文档
+- `/specgov-prd-module` - 生成 PRD 模块文档
+- `/specgov-design-module` - 生成 Design 模块文档
+- `/specgov-test-module` - 生成 Test Plan 模块文档
+''' if project_size == 'large' else ''
+
+    large_project_ref = '- [大项目流程](.specgov/workflows/workflow-large-project.md)\n' if project_size == 'large' else ''
+
+    claude_content = f'''# {project_name} - 项目指南
+
+## 项目概述
+
+**项目名称**: {project_name}
+**项目规模**: {"小项目（< 10 万行代码）" if project_size == 'small' else "大项目（≥ 10 万行代码）"}
+**使用工具**: SpecGovernor + Claude Code
+
+> 请在此处填写您的项目简介、目标用户、核心功能等信息。
+
+---
+
+## 🛠️ SpecGovernor 工作流
+
+本项目使用 **SpecGovernor** 工具包进行需求到代码的全流程可追溯性管理。
+
+### SDLC 五阶段流程
+
+1. **RD.md** - Requirements Document（需求文档）
+2. **PRD.md** - Product Requirements Document（产品需求文档）
+3. **Design-Document.md** - 设计文档
+4. **Test-Plan.md** - 测试计划
+5. **Code** - 代码实现
+
+### Claude Code 斜杠命令
+
+在 Claude Code 中使用以下命令快速加载 prompt 模板：
+
+**基础命令**（适用于{"小项目" if project_size == 'small' else "大项目"}）：
+- `/specgov-rd-gen` - 生成 RD{"" if project_size == 'small' else " Overview"}
+- `/specgov-rd-review` - 审查 RD
+- `/specgov-prd-gen` - 生成 PRD{"" if project_size == 'small' else " Overview"}
+- `/specgov-prd-review` - 审查 PRD
+- `/specgov-design-gen` - 生成 Design Document{"" if project_size == 'small' else " Overview"}
+- `/specgov-design-review` - 审查 Design Document
+- `/specgov-test-gen` - 生成 Test Plan{"" if project_size == 'small' else " Overview"}
+- `/specgov-test-review` - 审查 Test Plan
+- `/specgov-code-gen` - 生成代码
+- `/specgov-code-review` - 审查代码
+{large_project_note}
+**工具命令**：
+- `/specgov-consistency` - 检查可追溯性一致性
+- `/specgov-impact` - 分析需求变更影响
+
+### Helper Scripts
+
+```bash
+# 解析可追溯性标记
+python .specgov/scripts/parse_tags.py
+
+# 构建依赖图谱
+python .specgov/scripts/build_graph.py
+
+# 一致性检查
+python .specgov/scripts/check_consistency.py
+
+# 影响分析
+python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
+```
+
+---
+
+## 📋 文档命名与版本管理规范
+
+### 1. 文档命名规范
+
+**重要原则：所有文档文件名必须使用英文命名**
+
+- ✅ 正确示例：`RD.md`, `PRD.md`, `Design-Document.md`, `Test-Plan.md`
+- ❌ 错误示例：`需求文档.md`, `设计文档.md`, `DD.md`, `TD.md`
+
+### 2. 文档内容语言规范
+
+**混合语言原则：**
+- **中文为主**：文档正文、说明、描述使用中文
+- **英文使用场景**：
+  - 章节标题（如 Product Overview, Architecture Design）
+  - 专业术语（如 OAuth2, API, Database）
+  - 代码片段（变量名、函数名、类名）
+  - 技术栈名称（如 React, PostgreSQL, Docker）
+
+### 3. 版本管理规范
+
+**单一版本原则：所有文档只保留最新版本**
+
+- ✅ 只保留一个需求文档：`RD.md`
+- ❌ 不要创建：`RD-v1.md`, `RD-v2.md`, `需求补充.md`
+- ✅ 新需求直接更新到 `RD.md` 中
+- ✅ 使用 Git 版本控制来追踪历史变更
+
+### 4. 可追溯性标记规范
+
+文档中的可追溯性标记使用英文标识符：
+
+```markdown
+[ID: RD-REQ-001]           # Requirements Document
+[ID: PRD-FEAT-012]         # Product Requirements Document
+[ID: DESIGN-API-008]       # Design Document
+[ID: TEST-CASE-015]        # Test Plan
+
+[Implements: RD-REQ-001]   # PRD 实现 RD
+[Decomposes: RD-AUTH-001]  # 分解父级需求
+[Designs-for: PRD-FEAT-012] # Design Document 设计 PRD 功能
+[Tests-for: DESIGN-API-008] # Test Plan 测试 Design
+```
+
+### 5. 术语强制规范
+
+**CRITICAL：必须使用完整英文术语，禁止缩写**
+
+- ✅ **正确**: "Design Document"
+- ❌ **错误**: "DD", "设计文档"
+
+- ✅ **正确**: "Test Plan"
+- ❌ **错误**: "TD", "TP", "测试文档"
+
+---
+
+## 🏗️ 项目技术栈
+
+> 请在此处填写您的项目技术栈信息
+
+### 前端技术栈
+- （请填写，如 React, Vue, Angular 等）
+
+### 后端技术栈
+- （请填写，如 Node.js, Python, Java 等）
+
+### 数据库
+- （请填写，如 PostgreSQL, MongoDB, Redis 等）
+
+### 部署环境
+- （请填写，如 Docker, Kubernetes, AWS 等）
+
+---
+
+## 📐 架构约束
+
+> 请在此处填写项目的架构约束、设计原则等
+
+### 设计原则
+- （请填写项目的设计原则）
+
+### 技术约束
+- （请填写技术约束，如性能要求、兼容性要求等）
+
+### 安全要求
+- （请填写安全要求）
+
+---
+
+## 👥 团队协作规范
+
+> 请在此处填写团队的协作规范
+
+### Git 提交规范
+- （请填写 Git commit message 规范）
+
+### Code Review 流程
+- （请填写 Code Review 流程）
+
+### 文档更新规范
+- （请填写文档更新规范）
+
+---
+
+## 📚 参考文档
+
+- [SpecGovernor 快速开始](QUICK-START.md)
+- [工作流概览](.specgov/workflows/workflow-overview.md)
+- [任务管理](.specgov/workflows/workflow-task-mgmt.md)
+{large_project_ref}
+'''
+
+    with open('CLAUDE.md', 'w', encoding='utf-8') as f:
+        f.write(claude_content)
+
+
 def create_claude_commands():
     """创建 Claude Code 斜杠命令。"""
     os.makedirs('.claude/commands', exist_ok=True)
@@ -202,6 +392,7 @@ def main():
     print()
 
     try:
+        project_name = os.path.basename(os.getcwd())
         create_directory_structure(project_size)
 
         # 创建 Claude Code 命令
@@ -209,6 +400,12 @@ def main():
         print("正在创建 Claude Code 斜杠命令...")
         command_count = create_claude_commands()
         print(f"✅ 已创建 {command_count} 个 Claude Code 命令！")
+
+        # 创建项目的 CLAUDE.md
+        print()
+        print("正在创建项目 CLAUDE.md 文件...")
+        create_claude_md(project_name, project_size)
+        print(f"✅ 已创建 CLAUDE.md 项目指南！")
 
         print()
         print("✅ SpecGovernor 项目结构创建完成！")
@@ -226,6 +423,7 @@ def main():
         print("  .claude/")
         print("    └── commands/     (20 个斜杠命令)")
         print("  docs/             (项目文档目录)")
+        print("  CLAUDE.md         (项目指南，请根据实际情况填写)")
         print()
         print("=" * 60)
         print("📚 下一步指南：")

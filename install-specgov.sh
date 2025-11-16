@@ -184,7 +184,6 @@ echo "[6/6] Downloading documentation..."
 # Download documentation files
 docs=(
     "QUICK-START.md"
-    "CLAUDE.md"
 )
 
 doc_count=0
