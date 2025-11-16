@@ -110,8 +110,8 @@ git commit -m "Create Epic 1: User Authentication System"
 - 支持主流 OAuth2 提供商（Google、GitHub、Microsoft）
 
 技术约束：
-- 操作系统：Windows 10/11
-- Shell 环境：PowerShell 5.1+
+- 操作系统：Windows / Linux / macOS
+- Shell 环境：PowerShell 5.1+ / Bash 4.0+
 - Python 版本：Python 3.8+
 - AI 助手：Claude Code
 - 版本控制：Git

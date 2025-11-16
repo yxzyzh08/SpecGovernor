@@ -27,6 +27,241 @@
 
 ---
 
+## **零、Test Environment Setup**
+
+### **0.1 Testing Approach**
+
+**[ID: TEST-ENV-001]**
+
+SpecGovernor 是一个工具包产品，测试需要在**独立的测试项目**中进行，而不是在 SpecGovernor 开发项目本身中测试。
+
+**测试策略：**
+
+1. 在 SpecGovernor 项目**外部**创建独立的测试项目
+2. 按照 `INSTALLATION.md` 安装 SpecGovernor 工具包到测试项目
+3. 在测试项目中执行所有测试用例
+4. 发现问题后，返回 SpecGovernor 项目修复
+5. 重新安装工具包到测试项目，继续测试
+
+**目录结构示例：**
+
+```
+D:\test_workspace\                 # 测试工作区
+│
+├── SpecGovernor\                  # 工具包开发项目（本项目）
+│   ├── templates/                 # 产品：Prompt Templates
+│   ├── scripts/                   # 产品：Helper Scripts
+│   ├── install-specgov.ps1        # 安装脚本
+│   ├── install-specgov.sh         # 安装脚本
+│   ├── docs/
+│   │   ├── RD.md                  # SpecGovernor 的需求文档
+│   │   ├── PRD.md                 # SpecGovernor 的产品文档
+│   │   ├── Design-Document.md     # SpecGovernor 的设计文档
+│   │   └── Test-Plan.md           # SpecGovernor 的测试计划（本文档）
+│   └── INSTALLATION.md
+│
+└── TestProject-TodoApp\           # 独立的测试项目
+    ├── .specgov/                  # 由 init_project.py 创建
+    │   ├── prompts/               # 从 SpecGovernor/templates/prompts/ 复制
+    │   ├── workflows/             # 从 SpecGovernor/templates/workflows/ 复制
+    │   ├── tasks/
+    │   ├── index/
+    │   └── config.json
+    ├── templates/                 # 从 SpecGovernor 复制（供 init_project.py 使用）
+    │   ├── prompts/
+    │   └── workflows/
+    ├── scripts/                   # 从 SpecGovernor 复制
+    │   ├── init_project.py
+    │   ├── parse_tags.py
+    │   ├── build_graph.py
+    │   ├── check_consistency.py
+    │   └── impact_analysis.py
+    ├── docs/                      # TodoApp 的文档（由测试生成）
+    │   ├── RD.md                  # TodoApp 的需求文档
+    │   ├── PRD.md                 # TodoApp 的产品文档
+    │   ├── Design-Document.md     # TodoApp 的设计文档
+    │   └── Test-Plan.md           # TodoApp 的测试计划
+    └── src/                       # TodoApp 的代码
+```
+
+---
+
+### **0.2 Test Project Preparation**
+
+**[ID: TEST-ENV-002]**
+
+在执行测试前，需要准备测试项目。
+
+#### **步骤 1：创建测试项目目录**
+
+**Windows (PowerShell)**:
+```powershell
+# 在 SpecGovernor 项目外部创建测试项目
+cd D:\test_workspace\
+mkdir TestProject-TodoApp
+cd TestProject-TodoApp
+
+# 初始化 Git 仓库（推荐）
+git init
+```
+
+**Linux/Mac (Bash)**:
+```bash
+# 在 SpecGovernor 项目外部创建测试项目
+cd ~/test_workspace/
+mkdir TestProject-TodoApp
+cd TestProject-TodoApp
+
+# 初始化 Git 仓库（推荐）
+git init
+```
+
+#### **步骤 2：安装 SpecGovernor 工具包**
+
+按照 `INSTALLATION.md` 的指引安装：
+
+**Windows (PowerShell)**:
+```powershell
+# 下载安装脚本
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1"
+
+# 或从本地复制（如果在离线环境）
+Copy-Item D:\test_workspace\SpecGovernor\install-specgov.ps1 .
+
+# 运行安装脚本
+powershell -ExecutionPolicy Bypass -File install-specgov.ps1
+```
+
+**Linux/Mac (Bash)**:
+```bash
+# 下载安装脚本
+curl -O https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.sh
+chmod +x install-specgov.sh
+
+# 或从本地复制（如果在离线环境）
+cp ~/test_workspace/SpecGovernor/install-specgov.sh .
+chmod +x install-specgov.sh
+
+# 运行安装脚本
+./install-specgov.sh
+```
+
+安装脚本会自动：
+- ✅ 下载所有 scripts 和 templates
+- ✅ 创建 `.specgov/` 目录结构
+- ✅ 运行 `init_project.py`（会提示选择项目规模）
+- ✅ 创建 `docs/` 目录
+
+#### **步骤 3：验证安装**
+
+检查以下目录和文件是否已创建：
+
+```powershell
+# Windows
+ls .specgov\prompts\ | Measure-Object
+# 应该显示 20 个 .md 文件
+
+ls .specgov\workflows\ | Measure-Object
+# 应该显示 7 个 .md 文件
+
+ls scripts\ | Measure-Object
+# 应该显示 5 个 .py 文件
+
+# Linux/Mac
+ls .specgov/prompts/ | wc -l
+# 应该显示 20
+
+ls .specgov/workflows/ | wc -l
+# 应该显示 7
+
+ls scripts/ | wc -l
+# 应该显示 5
+```
+
+**验证清单：**
+- [ ] `.specgov/prompts/rd-generator.md` 存在
+- [ ] `.specgov/workflows/workflow-overview.md` 存在
+- [ ] `scripts/parse_tags.py` 存在
+- [ ] `.specgov/config.json` 存在
+- [ ] `docs/` 目录已创建
+
+---
+
+### **0.3 Testing Execution Context**
+
+**[ID: TEST-ENV-003]**
+
+**重要说明：本测试计划中的所有测试用例，除非特别说明，都应该在独立的测试项目中执行（如 `TestProject-TodoApp/`），而不是在 SpecGovernor 开发项目中。**
+
+**路径引用约定：**
+
+本文档中的路径引用默认指测试项目（如 `TestProject-TodoApp/`）中的路径：
+
+| 路径引用 | 实际路径（示例） |
+|---------|----------------|
+| `.specgov/prompts/rd-generator.md` | `D:\test_workspace\TestProject-TodoApp\.specgov\prompts\rd-generator.md` |
+| `docs/RD.md` | `D:\test_workspace\TestProject-TodoApp\docs\RD.md` |
+| `python scripts/parse_tags.py` | 在 `TestProject-TodoApp/` 目录下运行 `python scripts\parse_tags.py` |
+
+**当前工作目录：**
+
+所有测试用例默认在测试项目根目录（`TestProject-TodoApp/`）下执行，除非特别说明。
+
+**SpecGovernor 项目路径：**
+
+当需要修复问题时，返回 SpecGovernor 项目：
+- Windows: `D:\test_workspace\SpecGovernor\`
+- Linux/Mac: `~/test_workspace/SpecGovernor/`
+
+---
+
+### **0.4 Test Data Preparation**
+
+**[ID: TEST-ENV-004]**
+
+某些测试用例需要预先准备的测试数据。
+
+#### **小项目测试数据**
+
+在 `TestProject-TodoApp/` 中创建示例需求：
+
+```markdown
+# docs/RD.md（部分内容，用于测试）
+
+## 1. Todo Management Requirements
+**[ID: RD-TODO-001]**
+
+### 1.1 Create Todo Item
+**[ID: RD-REQ-001] [Decomposes: RD-TODO-001]**
+
+用户必须能够创建待办事项。
+
+### 1.2 Mark Todo as Complete
+**[ID: RD-REQ-002] [Decomposes: RD-TODO-001]**
+
+用户必须能够标记待办事项为完成状态。
+```
+
+这些测试数据将用于测试 `parse_tags.py`, `build_graph.py` 等脚本。
+
+---
+
+### **0.5 Environment Cleanup**
+
+**[ID: TEST-ENV-005]**
+
+测试完成后，可以选择清理测试环境：
+
+```powershell
+# 删除整个测试项目
+cd D:\test_workspace\
+rm -r -Force TestProject-TodoApp
+```
+
+或保留测试项目用于回归测试。
+
+---
+
 ## **一、Test Strategy**
 
 ### **1.1 Overall Approach**

@@ -20,56 +20,86 @@ SpecGovernor 是一个专为**超级个体** (Super Individuals) 设计的综合
 
 | 组件 | 要求 | 说明 |
 |------|------|------|
-| **操作系统** | Windows 10/11 | 当前版本专为 Windows 设计 |
-| **Shell** | PowerShell 5.1+ | 命令行环境 |
+| **操作系统** | Windows / Linux / macOS | 跨平台支持 |
+| **Shell** | PowerShell 5.1+ / Bash 4.0+ | 命令行环境 |
 | **Python** | 3.8+ | 运行 helper scripts |
 | **AI 助手** | Claude Code | 配合 prompt templates 使用 |
 | **版本控制** | Git 2.x+ | 用于影响分析功能 |
 
 验证环境：
 
+**Windows (PowerShell)**:
 \`\`\`powershell
-# 验证 Python
 python --version
-
-# 验证 Git
 git --version
-
-# 验证 PowerShell
 $PSVersionTable.PSVersion
+\`\`\`
+
+**Linux/Mac (Bash)**:
+\`\`\`bash
+python3 --version
+git --version
+bash --version
 \`\`\`
 
 ---
 
 ## 🚀 快速开始
 
-### 1. 下载 SpecGovernor
+### 1. 下载安装脚本
 
+**Windows (PowerShell)**:
 \`\`\`powershell
-git clone https://github.com/yourname/SpecGovernor.git
-cd SpecGovernor
+# 在您的项目根目录
+cd your-project
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1"
 \`\`\`
 
-### 2. 初始化项目（在您的项目目录中）
-
-\`\`\`powershell
-# 进入您的项目目录
-cd path/to/your/project
-
-# 运行初始化脚本
-python path/to/SpecGovernor/scripts/init_project.py
+**Linux/Mac (Bash)**:
+\`\`\`bash
+# 在您的项目根目录
+cd your-project
+curl -O https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.sh
+chmod +x install-specgov.sh
 \`\`\`
 
-这将创建 `.specgov/` 目录结构和初始文档模板。
+### 2. 运行安装脚本
+
+**Windows**:
+\`\`\`powershell
+powershell -ExecutionPolicy Bypass -File install-specgov.ps1
+\`\`\`
+
+**Linux/Mac**:
+\`\`\`bash
+./install-specgov.sh
+\`\`\`
+
+安装脚本会自动下载所有必要文件并运行 `init_project.py`。
 
 ### 3. 开始使用
 
-查看生成的工作流文档：
+查看快速开始指南：
 
 \`\`\`powershell
-# 阅读整体流程概览
-type .specgov/workflows/workflow-overview.md
+# Windows
+type QUICK-START.md
+
+# Linux/Mac
+cat QUICK-START.md
 \`\`\`
+
+或阅读工作流概览：
+
+\`\`\`powershell
+# Windows
+type .specgov/workflows/workflow-overview.md
+
+# Linux/Mac
+cat .specgov/workflows/workflow-overview.md
+\`\`\`
+
+> 📖 **完整安装指南**: [INSTALLATION.md](INSTALLATION.md)
 
 ---
 
@@ -255,10 +285,10 @@ MIT License
 
 ## 📚 文档
 
-- [Requirements Document (RD.md)](./RD.md)
-- [Product Requirements Document (PRD.md)](./PRD.md)
-- [Design Document](./Design-Document.md)
-- [Test Plan](./Test-Plan.md)
+- [安装指南 (INSTALLATION.md)](./INSTALLATION.md)
+- [快速开始 (QUICK-START.md)](./QUICK-START.md)
+- [项目指南 (CLAUDE.md)](./CLAUDE.md)
+- [GitHub Issues](https://github.com/yourname/SpecGovernor/issues)
 
 ---
 
