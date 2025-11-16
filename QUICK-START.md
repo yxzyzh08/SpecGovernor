@@ -35,6 +35,69 @@
 
 ---
 
+## 📏 项目规模与命令选择
+
+SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文档组织方式。
+
+### 小项目（< 10 万行代码）- 单层文档结构
+
+**使用命令**：
+- `/specgov-rd-gen` - 生成 RD.md（所有需求在一个文件）
+- `/specgov-prd-gen` - 生成 PRD.md（所有功能在一个文件）
+- `/specgov-design-gen` - 生成 Design-Document.md（所有设计在一个文件）
+- `/specgov-test-gen` - 生成 Test-Plan.md（所有测试用例在一个文件）
+
+**特点**：
+- ✅ 一个命令生成完整文档
+- ✅ 所有内容集中在一个文件中
+- ✅ 适合 5-50 个需求项的项目
+- ✅ **本快速开始指南使用小项目示例**
+
+---
+
+### 大项目（≥ 10 万行代码）- 双层文档结构
+
+**两步生成流程**：
+
+**第 1 步：生成 Overview 文档**（每个阶段调用一次）
+- `/specgov-rd-overview` - 生成 RD-Overview.md（项目整体需求概览）
+- `/specgov-prd-overview` - 生成 PRD-Overview.md（项目整体产品概览）
+- `/specgov-design-overview` - 生成 Design-Overview.md（项目整体架构概览）
+- `/specgov-test-overview` - 生成 Test-Overview.md（项目整体测试策略）
+
+**第 2 步：生成 Module 文档**（每个模块调用一次）
+- `/specgov-rd-module` - 生成 RD-{Module}.md（模块具体需求）
+- `/specgov-prd-module` - 生成 PRD-{Module}.md（模块具体功能）
+- `/specgov-design-module` - 生成 Design-{Module}.md（模块具体设计）
+- `/specgov-test-module` - 生成 Test-{Module}.md（模块具体测试用例）
+
+**特点**：
+- ✅ 文档分层管理（Overview + 多个 Module）
+- ✅ 适合 50+ 需求项、多个子系统/模块的项目
+- ✅ 每个模块独立文档，便于团队协作
+- ✅ 详见 `.specgov/workflows/workflow-large-project.md`
+
+---
+
+### 如何选择？
+
+**在运行 `python .specgov/scripts/init_project.py` 时，您会被询问项目规模**：
+
+```
+请选择项目规模:
+1. 小项目（< 10 万行代码，使用单层文档结构）
+2. 大项目（≥ 10 万行代码，使用双层文档结构）
+```
+
+**初始化脚本会根据您的选择显示对应的命令列表**：
+
+- 小项目：显示 `/specgov-rd-gen`, `/specgov-prd-gen` 等单层命令
+- 大项目：显示 `/specgov-rd-overview` + `/specgov-rd-module` 等两步命令
+
+> **提示**：您生成的 `CLAUDE.md` 文件中也会包含您项目规模对应的命令列表，随时可查阅。
+
+---
+
 ## 📋 前提条件
 
 - ✅ 已完成 SpecGovernor 安装（参见 [INSTALLATION.md](INSTALLATION.md)）
@@ -446,7 +509,7 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 5. **双重质量保证**：始终使用 Generator + Reviewer 模式（生成 + 审查）
 6. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
 
-**可用的 Claude 斜杠命令**：
+**可用的 Claude 斜杠命令（小项目）**：
 - `/specgov-rd-gen` - 生成 RD
 - `/specgov-rd-review` - 审查 RD
 - `/specgov-prd-gen` - 生成 PRD
@@ -459,7 +522,10 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 - `/specgov-code-review` - 审查代码
 - `/specgov-consistency` - 检查一致性
 - `/specgov-impact` - 分析变更影响
-- 更多命令见 `.claude/commands/` 目录
+
+> **注意**：大项目使用不同的命令集（Overview + Module 两步流程），详见 [📏 项目规模与命令选择](#-项目规模与命令选择) 章节。
+
+> **完整命令列表**：查看 `.claude/commands/` 目录或您的 `CLAUDE.md` 文件。
 
 ---
 
@@ -493,12 +559,14 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 
 ### Q5: 如何处理大项目？
 
-**A**: 对于 ≥ 10 万行代码的大项目，使用大项目变体命令：
-- `/specgov-rd-overview` - 生成 RD Overview
-- `/specgov-rd-module` - 生成 RD Module
-- `/specgov-prd-overview` - 生成 PRD Overview
-- `/specgov-prd-module` - 生成 PRD Module
-- 详见 `.specgov/workflows/workflow-large-project.md`
+**A**: 对于 ≥ 10 万行代码的大项目，SpecGovernor 使用双层文档结构（Overview + Module）。
+
+在运行 `python .specgov/scripts/init_project.py` 时选择"大项目"，初始化脚本会为您显示正确的命令列表。
+
+**详细说明**：
+- 参见本文档的 [📏 项目规模与命令选择](#-项目规模与命令选择) 章节
+- 工作流文档：`.specgov/workflows/workflow-large-project.md`
+- 您的 `CLAUDE.md` 文件中也包含大项目专用命令列表
 
 ---
 
