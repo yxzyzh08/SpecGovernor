@@ -248,9 +248,104 @@ ls .specgov/scripts/ | wc -l
 
 ---
 
-### **0.5 Environment Cleanup**
+### **0.5 VS Code Workspace Setup (Recommended)**
 
 **[ID: TEST-ENV-005]**
+
+为了提高测试效率，**强烈建议**使用 VS Code 工作区（Workspace）同时打开 SpecGovernor 开发项目和测试项目。
+
+#### **为什么使用工作区？**
+
+- ✅ 快速在两个项目之间切换
+- ✅ 并排对比文件（开发项目 vs. 测试项目）
+- ✅ 跨项目搜索
+- ✅ 统一的集成终端管理
+- ✅ 修复问题时无需切换窗口
+
+#### **创建工作区**
+
+**方式1：使用提供的工作区文件**
+
+SpecGovernor 项目根目录提供了 `SpecGovernor-Testing.code-workspace` 工作区配置文件。
+
+```powershell
+# 打开工作区
+code D:\test_workspace\SpecGovernor\SpecGovernor-Testing.code-workspace
+```
+
+**注意**：打开前请先创建测试项目（`TestProject-TodoApp`），否则工作区会显示文件夹缺失。
+
+**方式2：手动创建工作区**
+
+1. 打开 SpecGovernor 项目
+2. **File** → **Add Folder to Workspace...**
+3. 选择 `TestProject-TodoApp` 目录
+4. **File** → **Save Workspace As...** → 保存为 `SpecGovernor-Testing.code-workspace`
+
+#### **工作区界面**
+
+打开后，VS Code 侧边栏会显示两个项目根目录：
+
+```
+📁 SPECGOVERNOR (DEV)
+  ├── templates/prompts/
+  │   ├── rd-generator.md          ← 开发中的模板
+  │   └── ...
+  ├── scripts/
+  │   ├── parse_tags.py            ← 开发中的脚本
+  │   └── ...
+  └── docs/
+      ├── RD.md                     ← SpecGovernor 的需求文档
+      └── ...
+
+📁 TESTPROJECT-TODOAPP
+  ├── .specgov/prompts/
+  │   ├── rd-generator.md          ← 安装的模板（副本）
+  │   └── ...
+  ├── .specgov/scripts/
+  │   ├── parse_tags.py            ← 安装的脚本（副本）
+  │   └── ...
+  └── docs/
+      ├── RD.md                     ← 测试生成的文档
+      └── ...
+```
+
+#### **典型测试流程（使用工作区）**
+
+```
+1. 在 TestProject 中打开 Claude Code
+2. 使用 .specgov/prompts/rd-generator.md 生成 RD.md
+3. 发现生成的 RD.md 有问题 ❌
+4. 在同一个 VS Code 窗口中：
+   - 切换到 SpecGovernor (Dev) 项目
+   - 修改 templates/prompts/rd-generator.md
+   - 保存
+5. 重新安装工具包到 TestProject：
+   cd TestProject
+   powershell -ExecutionPolicy Bypass -File ..\SpecGovernor\install-specgov-local.ps1
+6. 在 TestProject 中重新生成 RD.md
+7. 验证修复 ✅
+```
+
+#### **工作区终端管理**
+
+在 VS Code 集成终端中：
+
+```
+终端1 (SpecGovernor 开发):
+  PS D:\test_workspace\SpecGovernor>
+  # 修改代码、运行单元测试
+
+终端2 (TestProject 测试):
+  PS D:\test_workspace\TestProject-TodoApp>
+  # 运行测试用例、生成文档
+```
+
+---
+
+### **0.6 Environment Cleanup**
+
+**[ID: TEST-ENV-006]**
 
 测试完成后，可以选择清理测试环境：
 

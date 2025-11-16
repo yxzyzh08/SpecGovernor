@@ -1,0 +1,30 @@
+{
+	"folders": [
+		{
+			"name": "SpecGovernor (Dev)",
+			"path": "."
+		},
+		{
+			"name": "TestProject-TodoApp",
+			"path": "../TestProject-TodoApp"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/__pycache__": true,
+			"**/*.pyc": true
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/.specgov/index": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"yzhang.markdown-all-in-one",
+			"bierner.markdown-mermaid"
+		]
+	}
+}
