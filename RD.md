@@ -47,6 +47,9 @@
 | **Traceability Tag** | 可追溯性标记 | 在文档或代码中嵌入的结构化标记，如 `[ID: RD-REQ-005]` |
 | **Workflow** | 工作流程 | 标准化的开发流程步骤 |
 | **Helper Script** | 辅助脚本 | 自动化处理某些任务的小型脚本 |
+| **Epic** | Epic | 高层级任务，由项目经理管理 |
+| **Module** | 模块 | 大型项目中的功能模块（如用户模块、支付模块） |
+| **Project Size** | 项目规模 | 小项目（单层文档）或大项目（双层文档） |
 
 ---
 
@@ -100,7 +103,193 @@
 
 ---
 
-## **四、功能需求 (Functional Requirements)**
+## **四、项目规模与文档结构策略 (Project Size & Document Structure)**
+
+### **4.1 项目初始化**
+
+**[ID: RD-INIT-001]**
+
+在项目开始时，需要**初始化** SpecGovernor 结构，并让人类开发者选择项目规模。
+
+**初始化流程**：
+
+1. 创建 `.specgov/` 目录结构
+2. 提示用户选择项目规模：
+   ```
+   请选择项目规模：
+   1. 小项目（< 10 万行代码，单层文档结构）
+   2. 大项目（≥ 10 万行代码，双层文档结构）
+
+   您的选择：_
+   ```
+3. 根据选择创建相应的文档模板和目录结构
+4. 生成 `.specgov/project-config.json` 记录项目配置
+
+**配置文件示例**：
+```json
+{
+  "project_name": "my-project",
+  "project_size": "small",
+  "document_structure": "single-tier",
+  "created_at": "2025-11-16",
+  "modules": []
+}
+```
+
+或
+
+```json
+{
+  "project_name": "large-e-commerce",
+  "project_size": "large",
+  "document_structure": "two-tier",
+  "created_at": "2025-11-16",
+  "modules": ["user", "order", "payment", "product", "cart"]
+}
+```
+
+### **4.2 项目规模分类**
+
+**[ID: RD-SIZE-001]**
+
+| 项目规模 | 代码量 | 模块数 | 文档结构 | 适用场景 |
+| :---- | :---- | :---- | :---- | :---- |
+| **小项目** | < 10 万行 | 1-3 个 | 单层文档 | 单体应用、小型工具、原型项目 |
+| **大项目** | ≥ 10 万行 | 4+ 个 | 双层文档 | 企业级应用、微服务系统、复杂业务系统 |
+
+### **4.3 文档结构策略**
+
+#### **4.3.1 小项目：单层文档结构**
+
+**[ID: RD-STRUCTURE-SMALL-001]**
+
+所有需求、设计、测试都写在单个文档中：
+
+```
+docs/
+├── RD.md                    # 所有需求
+├── PRD.md                   # 所有产品功能
+├── Design-Document.md       # 所有设计
+└── Test-Plan.md             # 所有测试用例
+```
+
+**优点**：
+- 简单直接，易于导航
+- 适合 AI 一次性处理（< 10K tokens）
+- 无需管理模块间关系
+
+#### **4.3.2 大项目：双层文档结构**
+
+**[ID: RD-STRUCTURE-LARGE-001]**
+
+每个文档类型都有两层：**Overview**（总览）+ **Module**（模块详细）
+
+**RD 层面**：
+```
+docs/RD/
+├── RD-Overview.md           # High-level 需求总览
+├── RD-User-Module.md        # 用户模块需求详细
+├── RD-Order-Module.md       # 订单模块需求详细
+├── RD-Payment-Module.md     # 支付模块需求详细
+└── RD-Product-Module.md     # 产品模块需求详细
+```
+
+**PRD 层面**：
+```
+docs/PRD/
+├── PRD-Overview.md          # 产品功能总览
+├── PRD-User-Module.md       # 用户模块产品设计
+├── PRD-Order-Module.md      # 订单模块产品设计
+└── ...
+```
+
+**Design Document 层面**：
+```
+docs/Design/
+├── Design-Overview.md       # 架构总览
+├── Design-User-Module.md    # 用户模块设计
+├── Design-Order-Module.md   # 订单模块设计
+└── ...
+```
+
+**Test Plan 层面**：
+```
+docs/Test/
+├── Test-Overview.md         # 测试策略总览
+├── Test-User-Module.md      # 用户模块测试
+├── Test-Order-Module.md     # 订单模块测试
+└── ...
+```
+
+**优点**：
+- 避免单个文档过大（每个模块 < 10K tokens）
+- 模块化管理，职责清晰
+- 支持模块并行开发
+- AI 可以分别处理每个模块
+
+### **4.4 文档生成策略**
+
+**[ID: RD-GEN-STRATEGY-001]**
+
+#### **小项目生成流程**
+
+1. 使用 `rd-generator.md` 生成单个 `RD.md`
+2. 使用 `prd-generator.md` 生成单个 `PRD.md`
+3. 依此类推...
+
+#### **大项目生成流程**
+
+**两步生成**：
+
+**Step 1: 生成 Overview**
+1. 使用 `rd-overview-generator.md` 生成 `RD-Overview.md`（High-level）
+2. Overview 定义：
+   - 项目整体目标
+   - 模块划分和职责
+   - 模块间依赖关系
+   - 整体约束和非功能需求
+
+**Step 2: 生成各模块详细文档**
+1. 使用 `rd-module-generator.md` 逐个生成：
+   - `RD-User-Module.md`
+   - `RD-Order-Module.md`
+   - ...
+2. 每个模块文档包含：
+   - 模块内的详细需求
+   - 嵌入 `[Module: User]` 标记
+   - 引用 Overview 中的模块定义
+
+**PRD/Design Document/Test Plan 同样采用两步生成**。
+
+### **4.5 可追溯性标记扩展（大项目）**
+
+**[ID: RD-TRACE-MODULE-001]**
+
+大项目的标记需要包含**模块信息**：
+
+```markdown
+## 用户登录需求
+**[ID: RD-User-REQ-001]** **[Module: User]**
+
+系统需支持用户通过 OAuth2 登录。
+```
+
+**标记格式**：
+- `[ID: RD-{Module}-REQ-{Number}]` - 需求 ID 包含模块名
+- `[Module: {ModuleName}]` - 明确模块归属
+- `[Implements: RD-User-REQ-001]` - 跨模块引用
+
+**示例依赖链（大项目）**：
+```
+RD-User-REQ-001 (用户模块需求)
+  └─ PRD-User-FEAT-001 (用户模块产品功能)
+      └─ DESIGN-User-API-001 (用户模块 API 设计)
+          └─ CODE-User-API-001 (用户模块代码)
+```
+
+---
+
+## **五、功能需求 (Functional Requirements)**
 
 ### **4.1 提示词模板 (Prompt Templates)**
 
