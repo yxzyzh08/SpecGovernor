@@ -7,10 +7,8 @@
 """
 import os
 import json
-import shutil
 import sys
 from datetime import datetime
-from pathlib import Path
 
 # 设置 Windows 控制台编码为 UTF-8
 if sys.platform == 'win32':
@@ -76,28 +74,8 @@ def create_directory_structure(project_size, project_info):
     # 创建 reviews 目录用于保存审查报告
     os.makedirs('reviews', exist_ok=True)
 
-    # 获取脚本所在目录（SpecGovernor 根目录）
-    script_dir = Path(__file__).parent.parent
-    templates_dir = script_dir / 'templates'
-
-    # 从 templates/ 复制 prompts 和 workflows
-    if (templates_dir / 'prompts').exists():
-        shutil.copytree(
-            templates_dir / 'prompts',
-            '.specgov/prompts',
-            dirs_exist_ok=True
-        )
-    else:
-        print(f"⚠️  警告：未找到 {templates_dir / 'prompts'} 目录")
-
-    if (templates_dir / 'workflows').exists():
-        shutil.copytree(
-            templates_dir / 'workflows',
-            '.specgov/workflows',
-            dirs_exist_ok=True
-        )
-    else:
-        print(f"⚠️  警告：未找到 {templates_dir / 'workflows'} 目录")
+    # 注意：prompts 和 workflows 由安装脚本（install-specgov.ps1/sh）下载
+    # 已经存在于 .specgov/prompts/ 和 .specgov/workflows/，无需复制
 
     # 创建任务文件
     task_files = [
@@ -466,51 +444,15 @@ python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 ---
 
-## 🏗️ 项目技术栈
+## 📝 文档归属说明
 
-> 请在此处填写您的项目技术栈信息
+为了避免信息重复和混淆，以下内容请在对应的文档中填写：
 
-### 前端技术栈
-- （请填写，如 React, Vue, Angular 等）
+- **项目技术栈、架构约束、设计原则** → 请在 `docs/Design-Document.md` 中定义（由 Architect 角色负责）
+- **团队协作规范、Git 提交规范、Code Review 流程** → 请创建 `CONTRIBUTING.md` 或在团队 Wiki 中定义
+- **非功能性需求（性能、安全、兼容性等）** → 请在 `docs/PRD.md` 的 Non-Functional Requirements 章节定义（由 Product Manager 角色负责）
 
-### 后端技术栈
-- （请填写，如 Node.js, Python, Java 等）
-
-### 数据库
-- （请填写，如 PostgreSQL, MongoDB, Redis 等）
-
-### 部署环境
-- （请填写，如 Docker, Kubernetes, AWS 等）
-
----
-
-## 📐 架构约束
-
-> 请在此处填写项目的架构约束、设计原则等
-
-### 设计原则
-- （请填写项目的设计原则）
-
-### 技术约束
-- （请填写技术约束，如性能要求、兼容性要求等）
-
-### 安全要求
-- （请填写安全要求）
-
----
-
-## 👥 团队协作规范
-
-> 请在此处填写团队的协作规范
-
-### Git 提交规范
-- （请填写 Git commit message 规范）
-
-### Code Review 流程
-- （请填写 Code Review 流程）
-
-### 文档更新规范
-- （请填写文档更新规范）
+> 💡 **设计原则**：CLAUDE.md 只包含项目级的、稳定的、高层次的上下文信息。具体的技术决策、团队规范应该在各自负责的文档中维护。
 
 ---
 
