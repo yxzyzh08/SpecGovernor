@@ -56,6 +56,7 @@ $directories = @(
     ".specgov/workflows",
     ".specgov/tasks",
     ".specgov/index",
+    ".specgov/raw-requirements",
     "docs"
 )
 
@@ -95,10 +96,8 @@ foreach ($script in $scripts) {
 
 Write-Host "`n[4/6] Downloading prompt templates..." -ForegroundColor Green
 
-# Download prompt templates
+# Download prompt templates (v3.0: 14 templates total)
 $prompts = @(
-    "rd-generator.md",
-    "rd-reviewer.md",
     "prd-generator.md",
     "prd-reviewer.md",
     "design-generator.md",
@@ -109,8 +108,6 @@ $prompts = @(
     "code-reviewer.md",
     "consistency-checker.md",
     "impact-analyzer.md",
-    "rd-overview-generator.md",
-    "rd-module-generator.md",
     "prd-overview-generator.md",
     "prd-module-generator.md",
     "design-overview-generator.md",
@@ -139,10 +136,9 @@ Write-Host "  [INFO] Downloaded $promptCount/$promptTotal prompt templates" -For
 
 Write-Host "`n[5/6] Downloading workflow documentation..." -ForegroundColor Green
 
-# Download workflow documentation
+# Download workflow documentation (v3.0: 6 workflows total)
 $workflows = @(
     "workflow-overview.md",
-    "workflow-rd.md",
     "workflow-prd.md",
     "workflow-design.md",
     "workflow-test-plan.md",

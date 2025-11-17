@@ -109,10 +109,8 @@ done
 echo
 echo "[4/6] Downloading prompt templates..."
 
-# Download prompt templates
+# Download prompt templates (v3.0: 14 templates total)
 prompts=(
-    "rd-generator.md"
-    "rd-reviewer.md"
     "prd-generator.md"
     "prd-reviewer.md"
     "design-generator.md"
@@ -123,8 +121,6 @@ prompts=(
     "code-reviewer.md"
     "consistency-checker.md"
     "impact-analyzer.md"
-    "rd-overview-generator.md"
-    "rd-module-generator.md"
     "prd-overview-generator.md"
     "prd-module-generator.md"
     "design-overview-generator.md"
@@ -152,10 +148,9 @@ echo "  [INFO] Downloaded $prompt_count/$prompt_total prompt templates"
 echo
 echo "[5/6] Downloading workflow documentation..."
 
-# Download workflow documentation
+# Download workflow documentation (v3.0: 6 workflows total)
 workflows=(
     "workflow-overview.md"
-    "workflow-rd.md"
     "workflow-prd.md"
     "workflow-design.md"
     "workflow-test-plan.md"
