@@ -98,7 +98,7 @@
 
 ## Output Format
 
-输出结构化的审查报告：
+生成结构化的审查报告，并写入文件 `reviews/PRD-Review-Report-[YYYY-MM-DD].md`：
 
 ```markdown
 # PRD Review Report
@@ -432,4 +432,24 @@
 
 ---
 
-**Ready to review?** 请提供 PRD.md 和 RD.md 完整内容，我将进行全面审查并输出详细的审查报告！
+## File Output Instructions
+
+**重要**：审查完成后，请执行以下操作：
+
+1. **创建 reviews 目录**（如果不存在）：
+   ```bash
+   mkdir -p reviews
+   ```
+
+2. **保存审查报告**：
+   将生成的审查报告保存为：`reviews/PRD-Review-Report-[YYYY-MM-DD].md`
+
+3. **添加到版本控制**：
+   ```bash
+   git add reviews/PRD-Review-Report-*.md
+   git commit -m "Add PRD review report [YYYY-MM-DD]"
+   ```
+
+---
+
+**Ready to review?** 请提供 PRD.md 和 RD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/PRD-Review-Report-[今天日期].md` 文件中。

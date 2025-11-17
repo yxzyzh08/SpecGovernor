@@ -39,6 +39,9 @@ def create_directory_structure(project_size):
     os.makedirs('.specgov/workflows', exist_ok=True)
     os.makedirs('.specgov/tasks', exist_ok=True)
     os.makedirs('.specgov/index', exist_ok=True)
+    
+    # 创建 reviews 目录用于保存审查报告
+    os.makedirs('reviews', exist_ok=True)
 
     # 获取脚本所在目录（SpecGovernor 根目录）
     script_dir = Path(__file__).parent.parent
@@ -462,6 +465,7 @@ def main():
         print("  .claude/")
         print("    └── commands/     (20 个斜杠命令)")
         print("  docs/             (项目文档目录)")
+        print("  reviews/          (审查报告目录)")
         print("  CLAUDE.md         (项目指南，请根据实际情况填写)")
         print()
         print("=" * 60)

@@ -338,7 +338,30 @@ Claude Code 将输出审查报告，例如：
 ...
 ```
 
-### 2.3 根据审查反馈修改 RD（如需要）
+### 2.3 保存审查报告
+
+**重要**：将审查报告保存为文件，以便追溯质量保证过程：
+
+```bash
+# 创建 reviews 目录
+mkdir -p reviews
+
+# 将 Claude Code 输出的报告保存为文件（替换为当前日期）
+# 复制粘贴 Claude Code 的完整输出到文件中
+echo "# RD Review Report
+[粘贴 Claude Code 的完整审查报告内容]" > reviews/RD-Review-Report-2025-11-17.md
+
+# 添加到版本控制
+git add reviews/RD-Review-Report-*.md
+git commit -m "Add RD review report 2025-11-17"
+```
+
+> **💡 提示**：保存审查报告有助于：
+> - 追踪质量改进历史
+> - 为团队提供审查参考
+> - 支持后续的影响分析
+
+### 2.4 根据审查反馈修改 RD（如需要）
 
 如果有问题，再次使用 `/specgov-rd-gen` 修改：
 
@@ -590,6 +613,8 @@ your-project/
 │   └── commands/             # 20 个斜杠命令
 ├── docs/
 │   └── RD.md                 # ✅ 您生成的需求文档
+├── reviews/                  # ✅ 审查报告（质量保证）
+│   └── RD-Review-Report-2025-11-17.md  # ✅ 您保存的审查报告
 └── CLAUDE.md                 # 项目指南（请填写）
 ```
 

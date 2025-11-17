@@ -162,6 +162,11 @@ your-project/
 │   ├── Design-Document.md
 │   └── Test-Plan.md
 │
+├── reviews/                  # 审查报告（质量保证）
+│   ├── RD-Review-Report-YYYY-MM-DD.md
+│   ├── PRD-Review-Report-YYYY-MM-DD.md
+│   └── Design-Review-Report-YYYY-MM-DD.md
+│
 └── src/                      # 您的源代码
 \`\`\`
 
