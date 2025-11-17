@@ -569,32 +569,46 @@ def create_claude_commands(project_size, project_info):
 
             if is_reviewer:
                 # 为 reviewer 提供文档路径和评审报告保存路径
+                # 审查报告保存在文档同级目录
+                if project_size == 'small':
+                    review_report_path = f"docs/{{DocumentType}}-Review-Report-{{YYYY-MM-DD}}.md"
+                    review_report_example = f"{doc_path.replace('.md', '')}-Review-Report-2025-01-17.md"
+                else:
+                    # 大项目：在文档所在子目录中
+                    review_report_path = f"{doc_path.rsplit('/', 1)[0]}/{{DocumentName}}-Review-Report-{{YYYY-MM-DD}}.md"
+                    review_report_example = f"{doc_path.replace('.md', '')}-Review-Report-2025-01-17.md"
+
                 context_section += f"""
 ## Document Paths
 
 - **Document to Review**: `{doc_path}`
-- **Review Report**: Save to `reviews/` directory with format `{{DocumentType}}-Review-Report-{{YYYY-MM-DD}}.md`
-  - Example: `reviews/RD-Review-Report-2025-01-17.md`
+- **Review Report**: Save to document's directory with format `{{DocumentName}}-Review-Report-{{YYYY-MM-DD}}.md`
+  - Example: `{review_report_example}`
 
 **Instructions**:
 1. Read the document from `{doc_path}`
 2. Do NOT search for the document - use the path above directly
 3. Generate review report following the template format
-4. Save the report to `reviews/` directory with today's date
+4. Save the report to the same directory as the document with today's date
 """
             elif is_generator:
                 # 为 generator 提供文档路径和可能的评审报告位置
+                if project_size == 'small':
+                    review_reports_pattern = f"docs/*Review-Report-*.md"
+                else:
+                    review_reports_pattern = f"{doc_path.rsplit('/', 1)[0]}/*Review-Report-*.md"
+
                 context_section += f"""
 ## Document Paths
 
 - **Target Document**: `{doc_path}`
-- **Review Reports**: Check `reviews/` directory for previous review reports
-  - Pattern: `reviews/{{DocumentType}}-Review-Report-*.md`
+- **Review Reports**: Check document's directory for previous review reports
+  - Pattern: `{review_reports_pattern}`
 
 **Instructions**:
 1. If creating new document: Write to `{doc_path}`
 2. If updating existing document: Read from `{doc_path}`, then update it
-3. Check `reviews/` directory for latest review report (if any)
+3. Check document's directory for latest review report (if any)
 4. Do NOT search for documents - use the paths above directly
 """
         else:
@@ -606,7 +620,7 @@ def create_claude_commands(project_size, project_info):
 - **Design Document**: `{"docs/Design-Document.md" if project_size == 'small' else "docs/Design-Document/"}`
 - **Test Plan**: `{"docs/Test-Plan.md" if project_size == 'small' else "docs/Test-Plan/"}`
 - **Source Code**: `src/`
-- **Review Reports**: `reviews/`
+- **Review Reports**: In document directories (e.g., `docs/*Review-Report-*.md`)
 - **Traceability Index**: `.specgov/index/tags.json`
 - **Dependency Graph**: `.specgov/index/dependency-graph.json`
 """
@@ -685,8 +699,7 @@ def main():
         print("    └── project-config.json")
         print("  .claude/")
         print(f"    └── commands/     ({command_count} 个斜杠命令)")
-        print("  docs/             (项目文档目录)")
-        print("  reviews/          (审查报告目录)")
+        print("  docs/             (项目文档目录，审查报告也保存在此)")
         print("  CLAUDE.md         (项目指南，请根据实际情况填写)")
         print()
         print("=" * 60)
