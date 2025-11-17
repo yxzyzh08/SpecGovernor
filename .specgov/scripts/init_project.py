@@ -71,11 +71,11 @@ def create_directory_structure(project_size, project_info):
     os.makedirs('.specgov/index', exist_ok=True)
     os.makedirs('.specgov/raw-requirements', exist_ok=True)  # 原始需求目录
 
-    # 创建 reviews 目录用于保存审查报告
-    os.makedirs('reviews', exist_ok=True)
-
     # 注意：prompts 和 workflows 由安装脚本（install-specgov.ps1/sh）下载
     # 已经存在于 .specgov/prompts/ 和 .specgov/workflows/，无需复制
+
+    # 注意：审查报告不需要专门的 reviews/ 目录
+    # 由 reviewer 保存到文档同级目录，如 docs/PRD-Review-Report-YYYY-MM-DD.md
 
     # 创建任务文件
     task_files = [

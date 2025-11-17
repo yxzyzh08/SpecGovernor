@@ -90,7 +90,7 @@
 
 ## Output Format
 
-生成结构化的审查报告，并写入文件 `reviews/Design-Review-Report-[YYYY-MM-DD].md`：
+生成结构化的审查报告，并写入文件到文档同级目录（见下方"保存位置规则"）：
 
 ```markdown
 # Design Document Review Report
@@ -237,22 +237,31 @@
 
 ## File Output Instructions
 
-**重要**：审查完成后，请执行以下操作：
+**重要**：审查完成后，请将报告保存到被审查文档的同级目录。
 
-1. **创建 reviews 目录**（如果不存在）：
+### 保存位置规则
+
+- **小项目**：
+  - Design Document 审查报告 → `docs/Design-Document-Review-Report-[YYYY-MM-DD].md`（与 `docs/Design-Document.md` 同级）
+
+- **大项目**：
+  - Design Overview 审查报告 → `docs/Design-Document/Design-Overview-Review-Report-[YYYY-MM-DD].md`
+  - Design Module 审查报告 → `docs/Design-Document/Design-[Module]-Review-Report-[YYYY-MM-DD].md`
+
+### 保存步骤
+
+1. **使用 Write 工具保存审查报告**到上述对应路径
+2. **添加到版本控制**（可选）：
    ```bash
-   mkdir -p reviews
-   ```
-
-2. **保存审查报告**：
-   将生成的审查报告保存为：`reviews/Design-Review-Report-[YYYY-MM-DD].md`
-
-3. **添加到版本控制**：
-   ```bash
-   git add reviews/Design-Review-Report-*.md
+   git add docs/*Review-Report-*.md
    git commit -m "Add Design Document review report [YYYY-MM-DD]"
    ```
 
+> 💡 **维护建议**：审查报告的保留和删除由用户决定。通常建议：
+> - 保留最近 2-3 次的审查报告作为质量改进参考
+> - 删除过期报告以保持目录整洁
+> - 重要里程碑的审查报告可以长期保留
+
 ---
 
-**Ready to review?** 请提供 Design-Document.md 和 PPRD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/Design-Review-Report-[今天日期].md` 文件中。
+**Ready to review?** 请提供 Design-Document 和 PRD 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，我会自动将报告保存到文档同级目录。

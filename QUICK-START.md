@@ -354,17 +354,11 @@ Claude Code 将输出审查报告，例如：
 
 **重要**：将审查报告保存为文件，以便追溯质量保证过程：
 
+> **说明**：Reviewer 会自动使用 Write 工具将报告保存到文档同级目录（`docs/PRD-Review-Report-2025-11-17.md`）。
+
+**添加到版本控制**（可选）：
 ```bash
-# 创建 reviews 目录
-mkdir -p reviews
-
-# 将 Claude Code 输出的报告保存为文件（替换为当前日期）
-# 复制粘贴 Claude Code 的完整输出到文件中
-echo "# PRD Review Report
-[粘贴 Claude Code 的完整审查报告内容]" > reviews/PRD-Review-Report-2025-11-17.md
-
-# 添加到版本控制
-git add reviews/PRD-Review-Report-*.md
+git add docs/PRD-Review-Report-*.md
 git commit -m "Add PRD review report 2025-11-17"
 ```
 
@@ -604,9 +598,8 @@ your-project/
 ├── .claude/
 │   └── commands/             # 小项目：10 个斜杠命令，大项目：13 个斜杠命令
 ├── docs/
-│   └── PRD.md                 # ✅ 您生成的产品需求文档
-├── reviews/                  # ✅ 审查报告（质量保证）
-│   └── PRD-Review-Report-2025-11-17.md  # ✅ 您保存的审查报告
+│   ├── PRD.md                            # ✅ 您生成的产品需求文档
+│   └── PRD-Review-Report-2025-11-17.md  # ✅ Reviewer 自动保存的审查报告
 └── CLAUDE.md                 # 项目指南（请填写）
 ```
 
