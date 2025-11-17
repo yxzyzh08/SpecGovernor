@@ -124,12 +124,13 @@ def create_directory_structure(project_size, project_info):
         create_placeholder('docs/Design-Document/Design-Overview.md', 'Design Overview')
         create_placeholder('docs/Test-Plan/Test-Overview.md', 'Test Plan Overview')
 
-    # 创建原始需求收集文档
+    # 创建原始需求收集文档（放在 docs/raw-requirements 更显眼）
     if project_size == 'small':
-        create_raw_requirements_template('.specgov/raw-requirements/inputs.md', project_size)
+        os.makedirs('docs/raw-requirements', exist_ok=True)
+        create_raw_requirements_template('docs/raw-requirements/inputs.md', project_size)
     else:  # large
-        os.makedirs('.specgov/raw-requirements/modules', exist_ok=True)
-        create_raw_requirements_template('.specgov/raw-requirements/overview.md', project_size, is_overview=True)
+        os.makedirs('docs/raw-requirements/modules', exist_ok=True)
+        create_raw_requirements_template('docs/raw-requirements/overview.md', project_size, is_overview=True)
         # 模块文档将在后续按需创建
 
     # 创建项目配置
@@ -411,7 +412,7 @@ def create_claude_md(project_name, project_size, project_info):
 **目标用户**: {project_info['target_users']}
 **核心业务**: {project_info['core_business']}
 
-> 💡 **产品经理提示**：生成 PRD 时，请基于以上行业背景和业务场景，设计符合行业特点的功能和需求。
+> 💡 **上下文说明**：以上信息描述了项目的行业背景和核心业务，在生成各阶段文档（PRD、设计、测试）时，请参考这些信息以确保方案符合行业特点和业务需求。
 
 ---
 
@@ -454,58 +455,14 @@ python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 ---
 
-## 📋 文档命名与版本管理规范
+## 📖 文档规范参考
 
-### 1. 文档命名规范
+本项目的文档生成遵循 SpecGovernor v3.0 规范。详细的文档格式、命名、版本管理、可追溯性标记等规范，请参考：
 
-**重要原则：所有文档文件名必须使用英文命名**
+- **工作流程**: `.specgov/workflows/workflow-overview.md`
+- **Prompt 模板**: `.specgov/prompts/` 目录下的各个模板文件
 
-- ✅ 正确示例：`PRD.md`, `Design-Document.md`, `Test-Plan.md`
-- ❌ 错误示例：`产品需求.md`, `设计文档.md`, `DD.md`, `TD.md`
-
-### 2. 文档内容语言规范
-
-**混合语言原则：**
-- **中文为主**：文档正文、说明、描述使用中文
-- **英文使用场景**：
-  - 章节标题（如 Product Overview, Architecture Design）
-  - 专业术语（如 OAuth2, API, Database）
-  - 代码片段（变量名、函数名、类名）
-  - 技术栈名称（如 React, PostgreSQL, Docker）
-
-### 3. 版本管理规范
-
-**单一版本原则：所有文档只保留最新版本**
-
-- ✅ 只保留一个产品需求文档：`PRD.md`
-- ❌ 不要创建：`PRD-v1.md`, `PRD-v2.md`, `需求补充.md`
-- ✅ 新需求直接更新到 `PRD.md` 中
-- ✅ 使用 Git 版本控制来追踪历史变更
-
-### 4. 可追溯性标记规范
-
-文档中的可追溯性标记使用英文标识符：
-
-```markdown
-[ID: PRD-REQ-001]           # Product Requirements Document - Business Requirements
-[ID: PRD-FEAT-012]          # Product Requirements Document - Product Features
-[ID: DESIGN-API-008]        # Design Document
-[ID: TEST-CASE-015]         # Test Plan
-
-[Implements: PRD-REQ-001]   # PRD Feature 实现 PRD Business Requirement
-[Designs-for: PRD-FEAT-012] # Design Document 设计 PRD 功能
-[Tests-for: DESIGN-API-008] # Test Plan 测试 Design
-```
-
-### 5. 术语强制规范
-
-**CRITICAL：必须使用完整英文术语，禁止缩写**
-
-- ✅ **正确**: "Design Document"
-- ❌ **错误**: "DD", "设计文档"
-
-- ✅ **正确**: "Test Plan"
-- ❌ **错误**: "TD", "TP", "测试文档"
+> 💡 这些规范由 SpecGovernor 的 prompt 模板统一管理，确保在生成各阶段文档时自动遵循。如果您的项目需要特殊的命名或格式约定，请在下方"项目特殊要求"章节中说明。
 
 ---
 
@@ -554,6 +511,21 @@ python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 ### 文档更新规范
 - （请填写文档更新规范）
+
+---
+
+## ⚙️ 项目特殊要求
+
+> 如果您的项目需要覆盖 SpecGovernor 的默认规范，请在此处说明
+
+### 文档命名约定
+- （如有特殊要求，请在此说明。默认遵循 SpecGovernor 规范）
+
+### 可追溯性标记自定义
+- （如需自定义标记格式，请在此说明。默认使用 `[ID: XXX-YYY-###]` 格式）
+
+### 其他特殊约定
+- （请填写项目特有的其他约定）
 
 ---
 

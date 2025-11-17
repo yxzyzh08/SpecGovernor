@@ -30,7 +30,7 @@
    - 跨模块的功能需求？
    - 整体架构要求？
 
-2. **记录到 `.specgov/raw-requirements/overview.md`**：
+2. **记录到 `docs/raw-requirements/overview.md`**：
    ```markdown
    ### Entry XXX - YYYY-MM-DD HH:MM
 
@@ -53,7 +53,7 @@
 
 ### Step 2: 基于原始需求生成正式 PRD Overview
 
-读取 `.specgov/raw-requirements/overview.md`，然后生成正式的 PRD Overview。
+读取 `docs/raw-requirements/overview.md`，然后生成正式的 PRD Overview。
 
 ---
 

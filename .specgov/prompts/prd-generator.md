@@ -47,9 +47,9 @@ PRD 包含：
    您可以用口语化的方式描述，不需要太正式。
    ```
 
-2. **记录原始需求到 `.specgov/raw-requirements/` 文档**：
-   - **小项目**：记录到 `.specgov/raw-requirements/inputs.md`
-   - **大项目**：记录到 `.specgov/raw-requirements/overview.md`（项目级）或 `.specgov/raw-requirements/modules/{module}.md`（模块级）
+2. **记录原始需求到 `docs/raw-requirements/` 文档**：
+   - **小项目**：记录到 `docs/raw-requirements/inputs.md`
+   - **大项目**：记录到 `docs/raw-requirements/overview.md`（项目级）或 `docs/raw-requirements/modules/{module}.md`（模块级）
 
 3. **Entry 格式**：
    ```markdown

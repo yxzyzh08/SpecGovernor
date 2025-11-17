@@ -29,7 +29,7 @@
    - 用户如何使用这个模块？
    - 有什么特殊要求？
 
-2. **记录到 `.specgov/raw-requirements/modules/{module-name}.md`**：
+2. **记录到 `docs/raw-requirements/modules/{module-name}.md`**：
    ```markdown
    ### Entry XXX - YYYY-MM-DD HH:MM
 
@@ -52,7 +52,7 @@
 
 ### Step 2: 基于原始需求生成正式 PRD Module
 
-读取 `.specgov/raw-requirements/modules/{module-name}.md`，然后生成该模块的正式 PRD。
+读取 `docs/raw-requirements/modules/{module-name}.md`，然后生成该模块的正式 PRD。
 
 ---
 

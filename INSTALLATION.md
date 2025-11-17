@@ -158,9 +158,6 @@ your-project/                   # 您的项目根目录
 │   │   ├── architect.md
 │   │   ├── test-manager.md
 │   │   └── developer.md
-│   ├── raw-requirements/       # 原始需求收集
-│   │   └── inputs.md           # 小项目：单个文件
-│   │                           # 大项目：overview.md + modules/*.md
 │   ├── index/                  # 索引数据（由脚本生成）
 │   │   ├── tags.json           # 可追溯性标记索引
 │   │   └── dependency-graph.json   # 依赖图谱
@@ -181,6 +178,9 @@ your-project/                   # 您的项目根目录
 │       └── ...                 # 大项目还有 overview/module 命令
 │
 ├── docs/                       # ✨ 您的项目文档目录
+│   ├── raw-requirements/        # 原始需求收集
+│   │   └── inputs.md           # 小项目：单个文件
+│   │                           # 大项目：overview.md + modules/*.md
 │   ├── PRD.md                   # 您的 Product Requirements Document
 │   ├── Design-Document.md      # 您的 Design Document
 │   └── Test-Plan.md            # 您的 Test Plan

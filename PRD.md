@@ -396,7 +396,7 @@ docs/Test-Plan/
 用户: （口语化描述需求）
   ↓
 产品经理:
-  ├─ 记录到 .specgov/raw-requirements/inputs.md
+  ├─ 记录到 docs/raw-requirements/inputs.md
   └─ 生成 docs/PRD.md
   ↓
 完成
@@ -411,7 +411,7 @@ docs/Test-Plan/
 用户: （口语化描述需求）
   ↓
 产品经理:
-  ├─ 记录到 .specgov/raw-requirements/overview.md 或 modules/{module}.md
+  ├─ 记录到 docs/raw-requirements/overview.md 或 modules/{module}.md
   └─ 生成 docs/PRD/PRD-Overview.md 或 PRD-{Module}.md
   ↓
 完成
@@ -480,7 +480,7 @@ docs/Test-Plan/
 **[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
 **[Raw-Req: Entry-003, Entry-007]**
 
-基于用户的原始需求（见 .specgov/raw-requirements/inputs.md Entry-003）...
+基于用户的原始需求（见 docs/raw-requirements/inputs.md Entry-003）...
 ```
 
 ---

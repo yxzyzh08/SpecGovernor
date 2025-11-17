@@ -56,8 +56,8 @@ $directories = @(
     ".specgov/workflows",
     ".specgov/tasks",
     ".specgov/index",
-    ".specgov/raw-requirements",
-    "docs"
+    "docs",
+    "docs/raw-requirements"
 )
 
 foreach ($dir in $directories) {

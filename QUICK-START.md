@@ -229,7 +229,7 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 
 Claude Code 将：
 1. ✅ 询问您的原始需求（口语化输入）
-2. ✅ 记录原始需求到 `.specgov/raw-requirements/inputs.md`
+2. ✅ 记录原始需求到 `docs/raw-requirements/inputs.md`
 3. ✅ 加载 `.specgov/prompts/prd-generator.md` 模板
 4. ✅ 根据您的需求生成完整的 PRD.md（包含可追溯性标记）
 5. ✅ 自动写入 `docs/PRD.md` 文件

@@ -69,8 +69,8 @@ directories=(
     ".specgov/workflows"
     ".specgov/tasks"
     ".specgov/index"
-    ".specgov/raw-requirements"
     "docs"
+    "docs/raw-requirements"
 )
 
 for dir in "${directories[@]}"; do
