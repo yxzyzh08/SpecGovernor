@@ -156,7 +156,10 @@ Design-Document.md、PPRD.md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Test-Plan/Test-Overview.md`**（Overview），包含：
+生成 **`docs/Test-Plan/Test-Overview.md`**（Windows 系统为 `docs\Test-Plan\Test-Overview.md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
 1. **Test Strategy** - 项目整体测试策略、测试类型、测试环境
 2. **Module Test Scope** - 模块测试范围和优先级
 3. **Cross-Module Integration Tests** - 跨模块集成测试场景

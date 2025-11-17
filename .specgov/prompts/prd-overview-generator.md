@@ -30,7 +30,10 @@
    - 跨模块的功能需求？
    - 整体架构要求？
 
-2. **记录到 `docs/raw-requirements/overview.md`**：
+2. **记录到项目级原始需求文档**（`docs/raw-requirements/overview.md`）：
+
+   > **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动显示为 `docs\raw-requirements\overview.md`。请使用实际文件路径编辑文件。
+
    ```markdown
    ### Entry XXX - YYYY-MM-DD HH:MM
 
@@ -53,7 +56,7 @@
 
 ### Step 2: 基于原始需求生成正式 PRD Overview
 
-读取 `docs/raw-requirements/overview.md`，然后生成正式的 PRD Overview。
+读取项目级原始需求文档（`docs/raw-requirements/overview.md`，Windows 系统为 `docs\raw-requirements\overview.md`），然后生成正式的 PRD Overview。
 
 ---
 
@@ -198,7 +201,10 @@ PRD.md（Overview）内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/PRD/PRD-Overview.md`**（Overview），包含：
+生成 **`docs/PRD/PRD-Overview.md`**（Windows 系统为 `docs\PRD\PRD-Overview.md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
 1. **Product Overview** - 产品整体愿景
 2. **Module Product Goals** - 模块产品目标和核心用户价值
 3. **Cross-Module User Experience** - 跨模块用户体验

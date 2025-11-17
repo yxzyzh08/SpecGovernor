@@ -153,7 +153,10 @@ PPRD.md 和 PRD.md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Design-Document/Design-Overview.md`**（Overview），包含：
+生成 **`docs/Design-Document/Design-Overview.md`**（Windows 系统为 `docs\Design-Document\Design-Overview.md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
 1. **System Architecture** - 项目整体架构、技术栈、部署架构
 2. **Module Architecture** - 模块架构和模块间交互
 3. **Cross-Module Design** - 跨模块设计决策

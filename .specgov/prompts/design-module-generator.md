@@ -169,7 +169,10 @@ PRD-[Module].md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Design-Document-[Module].md`**，包含：
+生成 **`docs/Design-Document/Design-[Module].md`**（Windows 系统为 `docs\Design-Document\Design-[Module].md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
 1. **Module Design Overview** - 模块设计概述，引用 Design-Overview.md 和 PRD-[Module].md
 2. **API Design** - API 端点定义、请求/响应、错误处理
 3. **Database Design** - 数据库表、字段、索引、关系

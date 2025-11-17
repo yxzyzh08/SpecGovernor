@@ -47,9 +47,11 @@ PRD 包含：
    您可以用口语化的方式描述，不需要太正式。
    ```
 
-2. **记录原始需求到 `docs/raw-requirements/` 文档**：
+2. **记录原始需求到原始需求文档**：
    - **小项目**：记录到 `docs/raw-requirements/inputs.md`
    - **大项目**：记录到 `docs/raw-requirements/overview.md`（项目级）或 `docs/raw-requirements/modules/{module}.md`（模块级）
+
+   > **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动显示为 `docs\raw-requirements\inputs.md`。请使用实际文件路径编辑文件。
 
 3. **Entry 格式**：
    ```markdown

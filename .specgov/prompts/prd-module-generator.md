@@ -10,9 +10,9 @@
 你是一位经验丰富的 Product Manager，负责大型项目特定模块的详细产品功能设计。
 
 ## Task
-为大型项目（≥ 10 万行代码）生成或修改特定模块的 Product Requirements Document **`docs/PRD/docs/PRD/PRD-[Module].md`**。
+为大型项目（≥ 10 万行代码）生成或修改特定模块的 Product Requirements Document **`docs/PRD/PRD-[Module].md`**。
 
-**重要说明**：此模板用于生成 **模块级别的详细产品功能文档**（如 `PRD-User.md`, `PRD-Order.md`），基于 `PRD-Overview.md`（Overview）中定义的模块产品目标和 `RD-[Module].md` 中定义的模块需求。
+**重要说明**：此模板用于生成 **模块级别的详细产品功能文档**（如 `PRD-User.md`, `PRD-Order.md`），基于 `PRD-Overview.md`（Overview）中定义的模块产品目标。
 
 ---
 
@@ -29,7 +29,10 @@
    - 用户如何使用这个模块？
    - 有什么特殊要求？
 
-2. **记录到 `docs/raw-requirements/modules/{module-name}.md`**：
+2. **记录到模块级原始需求文档**（`docs/raw-requirements/modules/{module-name}.md`）：
+
+   > **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动显示为 `docs\raw-requirements\modules\{module-name}.md`。请使用实际文件路径编辑文件。
+
    ```markdown
    ### Entry XXX - YYYY-MM-DD HH:MM
 
@@ -52,7 +55,7 @@
 
 ### Step 2: 基于原始需求生成正式 PRD Module
 
-读取 `docs/raw-requirements/modules/{module-name}.md`，然后生成该模块的正式 PRD。
+读取模块级原始需求文档（`docs/raw-requirements/modules/{module-name}.md`，Windows 系统为 `docs\raw-requirements\modules\{module-name}.md`），然后生成该模块的正式 PRD。
 
 ---
 
@@ -220,8 +223,11 @@ RD-[Module].md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/PRD/docs/PRD/PRD-[Module].md`**，包含：
-1. **Module Overview** - 模块产品概述，引用 PRD-Overview.md 和 RD-[Module].md
+生成 **`docs/PRD/PRD-[Module].md`**（Windows 系统为 `docs\PRD\PRD-[Module].md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
+1. **Module Overview** - 模块产品概述，引用 PRD-Overview.md
 2. **Detailed Features** - 模块详细产品功能，按类别组织
 3. **User Stories** - 所有功能都有 As/I want/So that 格式的用户故事
 4. **Acceptance Criteria** - 可测试的验收标准（从用户角度）

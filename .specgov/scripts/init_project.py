@@ -69,7 +69,6 @@ def create_directory_structure(project_size, project_info):
     os.makedirs('.specgov/workflows', exist_ok=True)
     os.makedirs('.specgov/tasks', exist_ok=True)
     os.makedirs('.specgov/index', exist_ok=True)
-    os.makedirs('.specgov/raw-requirements', exist_ok=True)  # 原始需求目录
 
     # 注意：prompts 和 workflows 由安装脚本（install-specgov.ps1/sh）下载
     # 已经存在于 .specgov/prompts/ 和 .specgov/workflows/，无需复制

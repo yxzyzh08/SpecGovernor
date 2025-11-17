@@ -183,8 +183,11 @@ Design-Document-[Module].md 内容（用于验证一致性）：
 
 ## Output Format
 
-生成 **`docs/Test-Plan-[Module].md`**，包含：
-1. **Module Test Overview** - 模块测试概述，引用 Test-Overview.md 和 Design-Document-[Module].md
+生成 **`docs/Test-Plan/Test-[Module].md`**（Windows 系统为 `docs\Test-Plan\Test-[Module].md`），包含：
+
+> **路径说明**：路径示例使用 Unix 风格（`/`），Windows 系统会自动转换为反斜杠（`\`）。
+
+1. **Module Test Overview** - 模块测试概述，引用 Test-Overview.md 和 Design-[Module].md
 2. **Detailed Test Cases** - 模块详细测试用例，按功能分类组织
 3. **Preconditions, Steps, Expected Results** - 每个测试用例包含前置条件、步骤、预期结果
 4. **Test Data** - 测试数据示例（如适用）
