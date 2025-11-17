@@ -1,13 +1,12 @@
 {
-    "python.defaultInterpreterPath": "d:\\miniconda3\\envs\\specgovernor\\python.exe",
-    "terminal.integrated.defaultProfile.windows": "specgovernor",
-    "terminal.integrated.profiles.windows": {
+    "python.defaultInterpreterPath": "~/miniconda3/envs/specgovernor/bin/python",
+    "terminal.integrated.defaultProfile.linux": "specgovernor",
+    "terminal.integrated.profiles.linux": {
         "specgovernor": {
-            "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "path": "/usr/bin/bash",
             "args": [
-                "-NoExit",
-                "-Command",
-                "& { & 'd:\\miniconda3\\shell\\condabin\\conda-hook.ps1' ; conda activate 'specgovernor' }"
+                "-c",
+                "source ~/miniconda3/etc/profile.d/conda.sh && conda activate specgovernor && exec bash"
             ]
         }
     }

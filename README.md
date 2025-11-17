@@ -117,16 +117,25 @@ SpecGovernor 提供 5 个 Python helper scripts：
 ### 典型工作流
 
 \`\`\`powershell
-# 1. 生成文档后，解析标记
+# 0. 项目规划（Project Manager 角色）
+# 编辑 .specgov/tasks/project-manager.md 创建 Epic
+
+# 1. 生成文档（切换到相应角色，如 Requirements Analyst）
+# 在 Claude Code 中使用 /specgov-rd-gen 等命令
+
+# 2. 生成文档后，解析标记
 python scripts/parse_tags.py
 
-# 2. 构建依赖图谱
+# 3. 构建依赖图谱
 python scripts/build_graph.py
 
-# 3. 修改文档后，分析影响
+# 4. 更新任务进度（更新角色任务文件和项目经理 Epic）
+# 编辑 .specgov/tasks/rd-analyst.md 和 project-manager.md
+
+# 5. 修改文档后，分析影响
 python scripts/impact_analysis.py --changed=docs/RD.md
 
-# 4. 检查特定需求的一致性
+# 6. 检查特定需求的一致性
 python scripts/check_consistency.py --scope=RD-REQ-005 --output=context.md
 \`\`\`
 
