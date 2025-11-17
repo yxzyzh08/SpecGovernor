@@ -16,7 +16,7 @@
 
 1. **运行脚本生成上下文**：
    ```powershell
-   python scripts/check_consistency.py --scope RD-REQ-005 --output context.md
+   python scripts/check_consistency.py --scope PRD-REQ-005 --output context.md
    ```
 
 2. **加载此 template 到 Claude Code**：
@@ -125,7 +125,7 @@
 ## Next Steps
 
 1. 修复识别出的问题
-2. 更新相关文档（RD.md、PRD.md、Design-Document.md 等）
+2. 更新相关文档（PRD.md、PPRD.md、Design-Document.md 等）
 3. 重新运行 `check_consistency.py`
 4. 重新审查一致性
 ```
@@ -153,31 +153,31 @@
 
 ## Example
 
-### Input: Context for RD-REQ-005 (OAuth2 Login)
+### Input: Context for PRD-REQ-005 (OAuth2 Login)
 
 ```markdown
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# Consistency Check Context for RD-REQ-005
+# Consistency Check Context for PRD-REQ-005
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ## Upstream Dependencies (What this implements)
 
 ### 1. RD-AUTH-001 (requirement)
-**Source**: docs/RD.md#L15
-**Relation**: RD-REQ-005 decomposes RD-AUTH-001
+**Source**: docs/PRD.md#L15
+**Relation**: PRD-REQ-005 decomposes RD-AUTH-001
 
 ## 1. User Authentication Requirements
-**[ID: RD-AUTH-001]**
+**[ID: PPRD-REQ-AUTH-001]**
 
 本节定义所有身份验证和授权需求。系统必须支持多种身份验证方式...
 
 ---
 
-## Current Node: RD-REQ-005 (requirement)
-**Source**: docs/RD.md#L25
+## Current Node: PRD-REQ-005 (requirement)
+**Source**: docs/PRD.md#L25
 
 ### 1.1 OAuth2 Login Support
-**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+**[ID: PPRD-REQ-REQ-005] [Decomposes: PPRD-REQ-AUTH-001]**
 
 系统必须支持通过 OAuth2 协议进行用户身份验证。
 
@@ -196,11 +196,11 @@
 ## Downstream Dependencies (What implements this)
 
 ### 1. PRD-FEAT-012 (feature)
-**Source**: docs/PRD.md#L120
-**Relation**: PRD-FEAT-012 implements RD-REQ-005
+**Source**: docs/PPRD.md#L120
+**Relation**: PRD-FEAT-012 implements PRD-REQ-005
 
 ### 2.1 OAuth2 Social Login
-**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+**[ID: PRD-FEAT-012] [Implements: PPRD-REQ-REQ-005]**
 
 使用户能够使用其现有社交媒体账户登录...
 
@@ -221,7 +221,7 @@
 ### Output: Consistency Check Report
 
 ```markdown
-# Consistency Check Report for RD-REQ-005
+# Consistency Check Report for PRD-REQ-005
 
 ## Summary
 ✓ 总体一致性：良好
@@ -234,7 +234,7 @@
 ### 1. [下游遗漏] PRD-FEAT-012 缺少错误处理场景
 
 - **类型**：下游遗漏
-- **问题**：RD-REQ-005 的验收标准包含 "系统优雅地处理登录失败"，但 PRD-FEAT-012 的验收标准中未提及错误处理场景
+- **问题**：PRD-REQ-005 的验收标准包含 "系统优雅地处理登录失败"，但 PRD-FEAT-012 的验收标准中未提及错误处理场景
 - **影响**：产品需求不完整，可能导致测试用例遗漏
 - **建议**：在 PRD-FEAT-012 的验收标准中添加：
   ```markdown
@@ -242,15 +242,15 @@
   - ✅ 如果授权被拒绝，系统引导用户重试或使用其他方式登录
   ```
 
-### 2. [下游遗漏] RD-REQ-005 要求支持 token 刷新，但下游未实现
+### 2. [下游遗漏] PRD-REQ-005 要求支持 token 刷新，但下游未实现
 
 - **类型**：下游遗漏
-- **问题**：RD-REQ-005 验收标准包含 "系统处理 token 过期并刷新 token"，但在 PRD 和 Design Document 中未找到 refresh token 的实现
+- **问题**：PRD-REQ-005 验收标准包含 "系统处理 token 过期并刷新 token"，但在 PRD 和 Design Document 中未找到 refresh token 的实现
 - **影响**：关键功能缺失，用户在 access_token 过期后需要重新登录
 - **建议**：
   1. 在 PRD-FEAT-012 中添加 refresh token 功能说明
   2. 在 DESIGN-API-008 中添加 refresh token 端点设计
-  3. 或者，如果不需要 refresh token，更新 RD-REQ-005 移除此验收标准
+  3. 或者，如果不需要 refresh token，更新 PRD-REQ-005 移除此验收标准
 
 ---
 
@@ -271,17 +271,17 @@
 
 ## Upstream Consistency Check
 
-**检查 RD-REQ-005 是否正确实现了 RD-AUTH-001：**
+**检查 PRD-REQ-005 是否正确实现了 RD-AUTH-001：**
 
-✓ RD-REQ-005 正确分解了 RD-AUTH-001
-✓ 使用 `[Decomposes: RD-AUTH-001]` 标记
+✓ PRD-REQ-005 正确分解了 RD-AUTH-001
+✓ 使用 `[Decomposes: PPRD-REQ-AUTH-001]` 标记
 ✓ 内容与上游需求一致
 
 ---
 
 ## Downstream Consistency Check
 
-**检查下游是否正确实现了 RD-REQ-005：**
+**检查下游是否正确实现了 PRD-REQ-005：**
 
 ✓ PRD-FEAT-012 正确实现了基本功能
 ✗ PRD-FEAT-012 缺少错误处理场景（重要问题 #1）
@@ -289,7 +289,7 @@
 
 **详细分析：**
 
-1. **PRD-FEAT-012 vs RD-REQ-005**：
+1. **PRD-FEAT-012 vs PRD-REQ-005**：
    - ✓ 支持的提供商一致（Google、GitHub、Microsoft）
    - ✓ 用户个人资料获取功能一致
    - ✗ 错误处理场景未完全覆盖
@@ -304,7 +304,7 @@
 
 ## Completeness Check
 
-**检查 RD-REQ-005 是否完整：**
+**检查 PRD-REQ-005 是否完整：**
 
 ✓ 有清晰的描述
 ✓ 列出了支持的提供商
@@ -321,7 +321,7 @@
 1. 在 PRD-FEAT-012 中添加错误处理场景的验收标准
 2. 确认是否需要 refresh token 功能：
    - 如果需要，添加到 PRD 和 Design Document
-   - 如果不需要，更新 RD-REQ-005 移除相关验收标准
+   - 如果不需要，更新 PRD-REQ-005 移除相关验收标准
 3. 考虑在 RD-AUTH-001 中添加更多上下文说明
 
 ---
@@ -329,9 +329,9 @@
 ## Next Steps
 
 1. 与产品团队确认 refresh token 功能需求
-2. 更新 PRD.md 添加错误处理场景
+2. 更新 PPRD.md 添加错误处理场景
 3. 如果需要 refresh token，更新 Design-Document.md 添加 API 设计
-4. 重新运行 `python scripts/check_consistency.py --scope RD-REQ-005`
+4. 重新运行 `python scripts/check_consistency.py --scope PRD-REQ-005`
 5. 重新审查一致性
 ```
 

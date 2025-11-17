@@ -62,7 +62,7 @@
 > **Version**: X.X
 > **Project**: [项目名称]
 > **Scope**: Overview（整体架构概览）
-> **Based on**: PRD.md (v1.0), RD.md (v1.0)
+> **Based on**: PPRD.md (v1.0), PRD.md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. System Architecture
@@ -115,11 +115,11 @@
 
 **必需输入：**
 ```
+PPRD.md（Overview）内容：
+[粘贴 docs/PPRD.md 完整内容]
+
 PRD.md（Overview）内容：
 [粘贴 docs/PRD.md 完整内容]
-
-RD.md（Overview）内容：
-[粘贴 docs/RD.md 完整内容]
 
 技术约束：
 - 编程语言：[语言]
@@ -128,7 +128,7 @@ RD.md（Overview）内容：
 - 部署：[部署环境]
 - 其他约束：[列出]
 
-模块列表（从 RD.md）：
+模块列表（从 PRD.md）：
 1. [Module1] - [描述]
 2. [Module2] - [描述]
 ...
@@ -141,7 +141,7 @@ RD.md（Overview）内容：
 现有 Design-Document.md（Overview）内容：
 [粘贴完整内容]
 
-PRD.md 和 RD.md 内容（用于验证一致性）：
+PPRD.md 和 PRD.md 内容（用于验证一致性）：
 [粘贴相关内容]
 
 变更请求：
@@ -168,7 +168,7 @@ PRD.md 和 RD.md 内容（用于验证一致性）：
 
 **Input:**
 ```
-PRD.md, RD.md 内容：
+PPRD.md, PRD.md 内容：
 [从之前的示例复制...]
 
 技术约束：
@@ -187,7 +187,7 @@ PRD.md, RD.md 内容：
 > **Version**: 1.0
 > **Project**: 电商平台
 > **Scope**: Overview（整体架构概览）
-> **Based on**: PRD.md (v1.0), RD.md (v1.0)
+> **Based on**: PPRD.md (v1.0), PRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. System Architecture
@@ -545,7 +545,7 @@ async def verify_token(request: Request):
 ✅ Design-Document.md（Overview）完成后：
 1. 使用 `design-module-generator.md` 为每个模块生成 `Design-Document-[Module].md`
 2. 审查所有模块设计文档
-3. 验证与 PRD.md 和 RD.md 的一致性
+3. 验证与 PPRD.md 和 PRD.md 的一致性
 4. 进入 Test Plan 阶段
 
 ---

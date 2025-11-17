@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- ✅ RD.md 已完成并审查
+- ✅ PRD.md 已完成并审查
 - ✅ 已定义产品愿景和目标用户
 - ✅ Project Manager 已分配 PRD 生成任务
 
@@ -17,7 +17,7 @@
 ### Step 1: Review RD and Define Product Vision
 
 1. 打开 `.specgov/tasks/product-manager.md` 查看分配的任务
-2. 仔细阅读 `docs/RD.md`，理解所有需求
+2. 仔细阅读 `docs/PRD.md`，理解所有需求
 3. 定义产品愿景：
    - 产品目标
    - 目标用户群体
@@ -49,8 +49,8 @@
 ```
 请生成 Product Requirements Document (PRD)。
 
-RD.md 内容：
-[粘贴 docs/RD.md 完整内容]
+PRD.md 内容：
+[粘贴 docs/PRD.md 完整内容]
 
 产品愿景：
 [粘贴步骤 1 定义的产品愿景]
@@ -67,22 +67,22 @@ RD.md 内容：
 
 ### Step 4: Generate Product Requirements Document
 
-Claude Code 将生成 PRD.md，包含：
+Claude Code 将生成 PPRD.md，包含：
 - Product Overview
 - 产品功能，带 `[ID: PRD-FEAT-XXX]`
 - 用户故事，遵循 As/I want/So that 格式
 - 验收标准（可测试、可衡量）
-- `[Implements: RD-REQ-XXX]` 将每个功能链接到需求
+- `[Implements: PRD-REQ-XXX]` 将每个功能链接到需求
 - UI/UX Notes（如适用）
 
-保存输出到 `docs/PRD.md`。
+保存输出到 `docs/PPRD.md`。
 
 **Example Output:**
 ```markdown
 # Product Requirements Document (PRD)
 
 > **Version**: 1.0
-> **Based on**: RD.md (v1.0)
+> **Based on**: PRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. Product Overview
@@ -101,7 +101,7 @@ Claude Code 将生成 PRD.md，包含：
 ## 2. Authentication Features
 
 ### 2.1 OAuth2 Social Login
-**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+**[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
 
 使用户能够使用其现有社交媒体账户登录，而无需创建新密码。支持 Google、GitHub 和 Microsoft 三种主流 OAuth2 提供商。
 
@@ -136,11 +136,11 @@ Claude Code 将生成 PRD.md，包含：
    ```
    请审查以下 Product Requirements Document (PRD)：
 
-   PRD.md 内容：
-   [粘贴 docs/PRD.md 完整内容]
+   PPRD.md 内容：
+   [粘贴 docs/PPRD.md 完整内容]
 
-   RD.md 内容（用于验证可追溯性）：
-   [粘贴 docs/RD.md 完整内容]
+   PRD.md 内容（用于验证可追溯性）：
+   [粘贴 docs/PRD.md 完整内容]
 
    项目上下文：
    - 项目规模：小项目
@@ -156,16 +156,16 @@ Claude Code 将生成 PRD.md，包含：
    ```
    请修改现有 Product Requirements Document (PRD)。
 
-   RD.md 内容：
-   [粘贴 docs/RD.md]
-
-   现有 PRD.md 内容：
+   PRD.md 内容：
    [粘贴 docs/PRD.md]
+
+   现有 PPRD.md 内容：
+   [粘贴 docs/PPRD.md]
 
    审查反馈：
    [粘贴审查报告中的关键问题和重要问题]
 
-   请根据审查反馈修改 PRD.md。
+   请根据审查反馈修改 PPRD.md。
    ```
 3. Claude Code 修改文档
 4. 如需要，重复审查
@@ -191,8 +191,8 @@ python scripts/build_graph.py
 2. 将 PRD 生成任务标记为完成：
    ```markdown
    ## Completed Tasks
-   - ✅ 生成 PRD.md v1.0 - 定义用户身份验证功能
-   - ✅ 审查 PRD.md，处理反馈
+   - ✅ 生成 PPRD.md v1.0 - 定义用户身份验证功能
+   - ✅ 审查 PPRD.md，处理反馈
    ```
 3. 切换到 Project Manager 视角
 4. 打开 `.specgov/tasks/project-manager.md`
@@ -202,19 +202,19 @@ python scripts/build_graph.py
 
    ### Epic 1: 用户身份验证系统
    - 进度：40% → 60%
-   - ✅ RD.md 完成
    - ✅ PRD.md 完成
+   - ✅ PPRD.md 完成
    - ⏳ Design Document 待生成
    ```
 6. 提交到 Git：
    ```powershell
-   git add docs/PRD.md .specgov/tasks/
-   git commit -m "Add authentication features to PRD.md"
+   git add docs/PPRD.md .specgov/tasks/
+   git commit -m "Add authentication features to PPRD.md"
    ```
 
 ## Common Pitfalls
 
-- ❌ 忘记添加 `[Implements: RD-REQ-XXX]` 标记
+- ❌ 忘记添加 `[Implements: PRD-REQ-XXX]` 标记
 - ❌ 用户故事不遵循 "As/I want/So that" 格式
 - ❌ 验收标准从技术角度描述，而非用户角度
 - ❌ 验收标准不可测试（如 "界面美观"）
@@ -227,7 +227,7 @@ python scripts/build_graph.py
 进入 Design Document 阶段前，验证：
 
 - [ ] 每个功能都有 `[ID: PRD-FEAT-XXX]` 标记
-- [ ] 每个功能都通过 `[Implements: RD-REQ-XXX]` 链接到 RD
+- [ ] 每个功能都通过 `[Implements: PRD-REQ-XXX]` 链接到 RD
 - [ ] RD 中的所有需求都被 PRD 覆盖（需求覆盖率 100%）
 - [ ] 用户故事遵循 "As/I want/So that" 格式
 - [ ] 验收标准可测试且从用户角度描述
@@ -246,16 +246,16 @@ python scripts/parse_tags.py
 python scripts/build_graph.py
 
 # 检查一致性（可选）
-python scripts/check_consistency.py --scope RD-REQ-005
+python scripts/check_consistency.py --scope PRD-REQ-005
 
 # 提交到 Git
-git add docs/PRD.md .specgov/tasks/
-git commit -m "Add features to PRD.md"
+git add docs/PPRD.md .specgov/tasks/
+git commit -m "Add features to PPRD.md"
 ```
 
 ## Next Steps
 
-✅ PRD.md 完成后，进入下一阶段：
+✅ PPRD.md 完成后，进入下一阶段：
 - 查看 [Design Document Workflow](workflow-design.md)
 - 切换到 Architect 角色
 - 准备技术约束（语言、框架、部署环境等）

@@ -100,14 +100,14 @@ Project Manager 的任务文件包含：
 **Example:**
 ```markdown
 Epic 1 任务分解：
-- Requirements Analyst：
-  - 收集用户故事和业务需求
-  - 生成 RD.md
-  - 审查 RD.md
 - Product Manager：
-  - 定义产品愿景
+  - 收集用户故事和业务需求
   - 生成 PRD.md
   - 审查 PRD.md
+- Product Manager：
+  - 定义产品愿景
+  - 生成 PPRD.md
+  - 审查 PPRD.md
 - Architect：
   - 识别技术约束
   - 生成 Design-Document.md
@@ -134,19 +134,19 @@ Epic 1 任务分解：
 - **Epic**：Epic 1 - 用户身份验证系统
 - **描述**：
   - 收集用户故事和业务需求
-  - 使用 rd-generator.md 生成 RD.md
-  - 使用 rd-reviewer.md 审查 RD.md
-  - 根据审查反馈修改 RD.md
+  - 使用 rd-generator.md 生成 PRD.md
+  - 使用 rd-reviewer.md 审查 PRD.md
+  - 根据审查反馈修改 PRD.md
 - **状态**：待开始
 - **预估时间**：3 小时
-- **输出**：docs/RD.md
+- **输出**：docs/PRD.md
 ```
 
 ### Phase 2: Execute Tasks (As Individual Roles)
 
 #### Step 1: Switch to Role Perspective
 
-1. 切换到分配的角色（如 Requirements Analyst）
+1. 切换到分配的角色（如 Product Manager）
 2. 打开 `.specgov/tasks/rd-analyst.md`
 3. 查看 "Active Tasks"
 
@@ -179,7 +179,7 @@ Epic 1 任务分解：
 ### Task 1: 生成用户身份验证需求文档
 - **完成日期**：2025-11-16
 - **Epic**：Epic 1 - 用户身份验证系统
-- **成果**：docs/RD.md v1.0（定义了 5 个身份验证需求）
+- **成果**：docs/PRD.md v1.0（定义了 5 个身份验证需求）
 - **实际时间**：3.5 小时（略超预估）
 - **备注**：审查发现 2 个问题，已修复
 ```
@@ -268,8 +268,8 @@ python scripts/check_consistency.py --scope RD-AUTH-001
 ### Epic 1: 用户身份验证系统
 - **完成日期**：2025-11-20
 - **成果**：
-  - docs/RD.md v1.0（5 个身份验证需求）
-  - docs/PRD.md v1.0（3 个产品功能）
+  - docs/PRD.md v1.0（5 个身份验证需求）
+  - docs/PPRD.md v1.0（3 个产品功能）
   - docs/Design-Document.md v1.0（API、数据库、服务设计）
   - docs/Test-Plan.md v1.0（23 个测试用例）
   - src/ 代码实现（全部测试通过）
@@ -329,7 +329,7 @@ git commit -m "Update task status: RD generation completed"
 # 查看 Project Manager 任务
 cat .specgov/tasks/project-manager.md
 
-# 查看 Requirements Analyst 任务
+# 查看 Product Manager 任务
 cat .specgov/tasks/rd-analyst.md
 
 # 提交任务更新

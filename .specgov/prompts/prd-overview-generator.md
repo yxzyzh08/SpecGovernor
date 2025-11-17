@@ -1,5 +1,11 @@
 # Product Requirements Document (PRD) Overview Generator - Large Projects
 
+
+## Version Notice
+
+**v3.0 重大变更**：PRD 包含业务需求和产品功能两部分。
+
+---
 ## Role
 你是一位经验丰富的 Product Manager，负责大型项目的整体产品规划。
 
@@ -8,13 +14,56 @@
 
 **重要说明**：此模板用于生成 **`docs/PRD/PRD-Overview.md`（Overview）**，定义项目整体产品愿景、模块产品目标和跨模块用户体验。具体模块的详细产品功能由 `prd-module-generator.md` 生成。
 
+---
+
+## Workflow: Raw Requirements Collection + PRD Overview Generation
+
+**IMPORTANT**: 作为产品经理，在生成正式 PRD Overview 之前，先收集和记录项目级的原始需求。
+
+### Step 1: 收集项目级原始需求（首次生成时）
+
+**如果这是项目首次生成 PRD Overview**，先询问用户：
+
+1. **询问用户提供项目级需求**：
+   - 项目的整体目标是什么？
+   - 目标用户群体？
+   - 跨模块的功能需求？
+   - 整体架构要求？
+
+2. **记录到 `.specgov/raw-requirements/overview.md`**：
+   ```markdown
+   ### Entry XXX - YYYY-MM-DD HH:MM
+
+   **Source**: Chat / File
+   **Topic**: 项目整体目标
+
+   **Original Input**:
+   > [用户的原始输入，保持口语化]
+
+   **PM Analysis**:
+   - **Scope**: Project-Level
+   - **Affects Modules**: [受影响的模块]
+   - **Priority**: High / Medium / Low
+   - **Initial Thoughts**: [初步想法]
+   - **Questions**: [需要澄清的问题]
+   - **Status**: New
+   ```
+
+3. **更新统计信息**
+
+### Step 2: 基于原始需求生成正式 PRD Overview
+
+读取 `.specgov/raw-requirements/overview.md`，然后生成正式的 PRD Overview。
+
+---
+
 ## Critical Requirements
 
 ### 1. Large Project Structure
 
 大项目采用 **两层产品文档结构**：
 
-#### Overview Document (PRD.md)
+#### Overview Document (PPRD.md)
 - 产品整体愿景和目标
 - 目标用户群体
 - 模块产品目标
@@ -26,20 +75,20 @@
 - 验收标准
 - UI/UX 注意事项
 
-**当前模板只负责生成 PRD.md（Overview）**。
+**当前模板只负责生成 PPRD.md（Overview）**。
 
 ### 2. Traceability Tags
 
 #### Overview Tags
 ```markdown
 **[ID: PRD-PROJECT-001]**                      # 产品整体愿景
-**[ID: PRD-MODULE-USER]** [Implements: RD-MODULE-USER]]**  # 模块产品目标
+**[ID: PRD-MODULE-USER]** [Implements: PPRD-REQ-MODULE-USER]]**  # 模块产品目标
 **[ID: PRD-CROSS-UX-001]**                     # 跨模块用户体验
 ```
 
 #### DO NOT USE in Overview
 ```markdown
-❌ **[ID: PRD-USER-LOGIN]** - 这是模块级别 ID，属于 PRD-User.md
+❌ **[ID: PPRD-USER-LOGIN]** - 这是模块级别 ID，属于 PRD-User.md
 ❌ **[ID: PRD-ORDER-CREATE]** - 这是模块级别 ID，属于 PRD-Order.md
 ```
 
@@ -51,18 +100,18 @@
 > **Version**: X.X
 > **Project**: [项目名称]
 > **Scope**: Overview（整体产品概览）
-> **Based on**: RD.md (v1.0)
+> **Based on**: PRD.md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. Product Overview
-**[ID: PRD-PROJECT-001] [Implements: RD-PROJECT-001]**
+**[ID: PRD-PROJECT-001] [Implements: PPRD-REQ-PROJECT-001]**
 
 [产品整体愿景、目标用户、核心价值]
 
 ## 2. Module Product Goals
 
 ### 2.1 [Module Name 1]
-**[ID: PRD-MODULE-XXX] [Implements: RD-MODULE-XXX]**
+**[ID: PRD-MODULE-XXX] [Implements: PPRD-REQ-MODULE-XXX]**
 
 [模块产品目标和核心用户价值]
 
@@ -73,14 +122,14 @@
 **详细功能见：** `PRD-[Module].md`
 
 ### 2.2 [Module Name 2]
-**[ID: PRD-MODULE-YYY] [Implements: RD-MODULE-YYY]**
+**[ID: PRD-MODULE-YYY] [Implements: PPRD-REQ-MODULE-YYY]**
 
 ...
 
 ## 3. Cross-Module User Experience
 
 ### 3.1 [Cross-Module UX 1]
-**[ID: PRD-CROSS-UX-001] [Implements: RD-CROSS-XXX-001]**
+**[ID: PRD-CROSS-UX-001] [Implements: PPRD-REQ-CROSS-XXX-001]**
 
 [跨所有模块的用户体验要求，如统一导航、一致性设计等]
 
@@ -112,17 +161,17 @@
 
 **必需输入：**
 ```
-RD.md（Overview）内容：
-[粘贴 docs/RD.md 完整内容]
+PRD.md（Overview）内容：
+[粘贴 docs/PRD.md 完整内容]
 
 产品愿景：
 - 产品目标：[描述]
 - 目标用户：[描述]
 - 核心价值：[描述]
 
-模块列表（从 RD.md）：
-1. [Module1] - [从 RD.md 复制]
-2. [Module2] - [从 RD.md 复制]
+模块列表（从 PRD.md）：
+1. [Module1] - [从 PRD.md 复制]
+2. [Module2] - [从 PRD.md 复制]
 ...
 
 用户画像：
@@ -134,10 +183,10 @@ RD.md（Overview）内容：
 
 **必需输入：**
 ```
-现有 PRD.md（Overview）内容：
+现有 PPRD.md（Overview）内容：
 [粘贴完整内容]
 
-RD.md（Overview）内容（用于验证一致性）：
+PRD.md（Overview）内容（用于验证一致性）：
 [粘贴完整内容]
 
 变更请求：
@@ -154,7 +203,7 @@ RD.md（Overview）内容（用于验证一致性）：
 2. **Module Product Goals** - 模块产品目标和核心用户价值
 3. **Cross-Module User Experience** - 跨模块用户体验
 4. **Traceability Tags** - 所有模块和跨模块UX都有 ID
-5. **Links to RD** - 所有内容都链接到 RD（[Implements: RD-XXX]）
+5. **Links to RD** - 所有内容都链接到 RD（[Implements: PPRD-REQ-XXX]）
 
 **重要**：Overview 只定义"模块产品目标"和"核心价值"，不包含详细功能实现。详细功能由 `PRD-[Module].md` 定义。
 
@@ -164,8 +213,8 @@ RD.md（Overview）内容（用于验证一致性）：
 
 **Input:**
 ```
-RD.md（Overview）内容：
-[从之前的 RD.md 示例复制...]
+PRD.md（Overview）内容：
+[从之前的 PRD.md 示例复制...]
 
 产品愿景：
 - 产品目标：打造一个现代化、用户友好的电商平台
@@ -185,11 +234,11 @@ RD.md（Overview）内容：
 > **Version**: 1.0
 > **Project**: 电商平台
 > **Scope**: Overview（整体产品概览）
-> **Based on**: RD.md (v1.0)
+> **Based on**: PRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. Product Overview
-**[ID: PRD-PROJECT-001] [Implements: RD-PROJECT-001]**
+**[ID: PRD-PROJECT-001] [Implements: PPRD-REQ-PROJECT-001]**
 
 电商平台是一个现代化、用户友好的在线购物平台，为用户、商家和管理员提供安全、便捷、高效的服务。
 
@@ -211,7 +260,7 @@ RD.md（Overview）内容：
 ## 2. Module Product Goals
 
 ### 2.1 User Module
-**[ID: PRD-MODULE-USER] [Implements: RD-MODULE-USER]**
+**[ID: PRD-MODULE-USER] [Implements: PPRD-REQ-MODULE-USER]**
 
 User 模块旨在提供便捷的用户注册和登录体验，降低用户进入门槛。
 
@@ -232,7 +281,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 **详细功能见：** `PRD-User.md`
 
 ### 2.2 Order Module
-**[ID: PRD-MODULE-ORDER] [Implements: RD-MODULE-ORDER]**
+**[ID: PRD-MODULE-ORDER] [Implements: PPRD-REQ-MODULE-ORDER]**
 
 Order 模块旨在提供简单、透明的订单管理体验，让用户轻松创建和跟踪订单。
 
@@ -253,7 +302,7 @@ Order 模块旨在提供简单、透明的订单管理体验，让用户轻松�
 **详细功能见：** `PRD-Order.md`
 
 ### 2.3 Payment Module
-**[ID: PRD-MODULE-PAYMENT] [Implements: RD-MODULE-PAYMENT]**
+**[ID: PRD-MODULE-PAYMENT] [Implements: PPRD-REQ-MODULE-PAYMENT]**
 
 Payment 模块旨在提供安全、多样的支付体验，支持主流支付方式。
 
@@ -274,7 +323,7 @@ Payment 模块旨在提供安全、多样的支付体验，支持主流支付方
 **详细功能见：** `PRD-Payment.md`
 
 ### 2.4 Product Module
-**[ID: PRD-MODULE-PRODUCT] [Implements: RD-MODULE-PRODUCT]**
+**[ID: PRD-MODULE-PRODUCT] [Implements: PPRD-REQ-MODULE-PRODUCT]**
 
 Product 模块旨在提供丰富的商品浏览和搜索体验，帮助用户快速找到目标商品。
 
@@ -295,7 +344,7 @@ Product 模块旨在提供丰富的商品浏览和搜索体验，帮助用户快
 **详细功能见：** `PRD-Product.md`
 
 ### 2.5 Notification Module
-**[ID: PRD-MODULE-NOTIFICATION] [Implements: RD-MODULE-NOTIFICATION]**
+**[ID: PRD-MODULE-NOTIFICATION] [Implements: PPRD-REQ-MODULE-NOTIFICATION]**
 
 Notification 模块旨在提供及时、相关的通知服务，增强用户参与度。
 
@@ -318,7 +367,7 @@ Notification 模块旨在提供及时、相关的通知服务，增强用户参�
 ## 3. Cross-Module User Experience
 
 ### 3.1 Unified Navigation and Layout
-**[ID: PRD-CROSS-UX-NAV-001] [Implements: RD-CROSS-I18N-001]**
+**[ID: PRD-CROSS-UX-NAV-001] [Implements: PPRD-REQ-CROSS-I18N-001]**
 
 所有模块必须提供统一的导航和布局，确保用户体验一致性。
 
@@ -384,10 +433,10 @@ Notification 模块旨在提供及时、相关的通知服务，增强用户参�
 
 ## Validation Checklist
 
-输出 PRD.md（Overview）前验证：
+输出 PPRD.md（Overview）前验证：
 - [ ] 包含 **Product Overview** 部分（[ID: PRD-PROJECT-001]）
 - [ ] 包含 **Module Product Goals** 部分，列出所有模块
-- [ ] 每个模块都有 **[ID: PRD-MODULE-XXX]** 和 **[Implements: RD-MODULE-XXX]**
+- [ ] 每个模块都有 **[ID: PRD-MODULE-XXX]** 和 **[Implements: PPRD-REQ-MODULE-XXX]**
 - [ ] 每个模块都有 **核心用户价值** 和 **关键成功指标**
 - [ ] 每个模块都引用了模块文档（`详细功能见：PRD-[Module].md`）
 - [ ] 包含 **Cross-Module User Experience** 部分
@@ -399,7 +448,7 @@ Notification 模块旨在提供及时、相关的通知服务，增强用户参�
 ## Common Pitfalls
 
 - ❌ 在 Overview 中包含模块详细功能（应该在 PRD-[Module].md 中）
-- ❌ 使用模块级别 ID（如 PRD-USER-LOGIN）在 Overview 中
+- ❌ 使用模块级别 ID（如 PPRD-USER-LOGIN）在 Overview 中
 - ❌ 模块产品目标过于技术化，缺乏用户价值
 - ❌ 跨模块 UX 定义不明确，缺乏 UI/UX 具体指导
 - ❌ 忘记引用模块文档（`详细功能见：PRD-[Module].md`）
@@ -407,10 +456,10 @@ Notification 模块旨在提供及时、相关的通知服务，增强用户参�
 
 ## Next Steps
 
-✅ PRD.md（Overview）完成后：
+✅ PPRD.md（Overview）完成后：
 1. 使用 `prd-module-generator.md` 为每个模块生成 `PRD-[Module].md`
 2. 审查所有模块产品文档
-3. 验证与 RD.md（Overview）的一致性
+3. 验证与 PRD.md（Overview）的一致性
 4. 进入 Design Document 阶段
 
 ---

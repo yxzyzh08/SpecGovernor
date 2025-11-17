@@ -17,29 +17,29 @@ SpecGovernor 是一个使用 Claude Code 和 prompt templates 的结构化 SDLC 
 SpecGovernor 定义了 5 个 SDLC 阶段：
 
 ```
-RD → PRD → Design Document → Test Plan → Code
+PRD → Design Document → Test Plan → Code
 ```
 
 ### 2.1 RD (Requirements Document)
 **目标**：定义需要构建什么
 
 - **输入**：用户故事、业务需求、项目上下文
-- **输出**：`docs/RD.md`（小项目）或 `docs/RD/RD-Overview.md`（大项目）
-- **标记格式**：`[ID: RD-REQ-XXX]`, `[Decomposes: RD-CATEGORY-XXX]`
-- **负责角色**：Requirements Analyst
+- **输出**：`docs/PRD.md`（小项目）或 `docs/RD/RD-Overview.md`（大项目）
+- **标记格式**：`[ID: PRD-REQ-XXX]`, `[Decomposes: RD-CATEGORY-XXX]`
+- **负责角色**：Product Manager
 
 ### 2.2 PRD (Product Requirements Document)
 **目标**：定义产品功能和用户故事
 
-- **输入**：RD.md、产品愿景
-- **输出**：`docs/PRD.md`（小项目）或 `docs/PRD/PRD-Overview.md`（大项目）
-- **标记格式**：`[ID: PRD-FEAT-XXX]`, `[Implements: RD-REQ-XXX]`
+- **输入**：PRD.md、产品愿景
+- **输出**：`docs/PPRD.md`（小项目）或 `docs/PRD/PRD-Overview.md`（大项目）
+- **标记格式**：`[ID: PRD-FEAT-XXX]`, `[Implements: PRD-REQ-XXX]`
 - **负责角色**：Product Manager
 
 ### 2.3 Design Document
 **目标**：定义技术架构和设计
 
-- **输入**：PRD.md、技术约束
+- **输入**：PPRD.md、技术约束
 - **输出**：`docs/Design-Document.md`（小项目）或 `docs/Design-Document/Design-Overview.md`（大项目）
 - **标记格式**：`[ID: DESIGN-API-XXX]`, `[Designs-for: PRD-FEAT-XXX]`
 - **负责角色**：Architect
@@ -48,7 +48,7 @@ RD → PRD → Design Document → Test Plan → Code
 ### 2.4 Test Plan
 **目标**：定义测试策略和用例
 
-- **输入**：Design-Document.md、PRD.md
+- **输入**：Design-Document.md、PPRD.md
 - **输出**：`docs/Test-Plan.md`（小项目）或 `docs/Test-Plan/Test-Overview.md`（大项目）
 - **标记格式**：`[ID: TEST-CASE-XXX]`, `[Tests-for: DESIGN-API-XXX]`
 - **负责角色**：Test Manager
@@ -81,11 +81,11 @@ RD → PRD → Design Document → Test Plan → Code
 - 分配任务到各角色
 - 监控进度和风险
 
-### 3.2 Requirements Analyst
+### 3.2 Product Manager
 **职责**：
 - 收集和分析需求
-- 生成 RD.md
-- 审查 RD.md
+- 生成 PRD.md
+- 审查 PRD.md
 
 **任务文件**：`.specgov/tasks/rd-analyst.md`
 
@@ -97,8 +97,8 @@ RD → PRD → Design Document → Test Plan → Code
 **职责**：
 - 定义产品功能
 - 编写用户故事
-- 生成 PRD.md
-- 审查 PRD.md
+- 生成 PPRD.md
+- 审查 PPRD.md
 
 **任务文件**：`.specgov/tasks/product-manager.md`
 
@@ -155,8 +155,8 @@ RD → PRD → Design Document → Test Plan → Code
 
 ### Step 3: Provide Context
 提供上游文档和额外的需求或约束：
-- 生成 PRD：提供 RD.md
-- 生成 Design Document：提供 PRD.md + 技术约束
+- 生成 PRD：提供 PRD.md
+- 生成 Design Document：提供 PPRD.md + 技术约束
 - 生成 Test Plan：提供 Design-Document.md
 - 生成 Code：提供 Design-Document.md
 
@@ -177,8 +177,8 @@ Claude Code 生成带有嵌入式可追溯性标记的文档。
 ### Step 8: Run Helper Scripts (Optional)
 - **解析标记**：`python scripts/parse_tags.py`
 - **构建图谱**：`python scripts/build_graph.py`
-- **影响分析**：`python scripts/impact_analysis.py --changed docs/RD.md`
-- **一致性检查**：`python scripts/check_consistency.py --scope RD-REQ-005`
+- **影响分析**：`python scripts/impact_analysis.py --changed docs/PRD.md`
+- **一致性检查**：`python scripts/check_consistency.py --scope PRD-REQ-005`
 
 ## 5. Key Principles
 
@@ -246,7 +246,7 @@ python scripts/build_graph.py
 
 **用法**：
 ```powershell
-python scripts/impact_analysis.py --changed docs/RD.md
+python scripts/impact_analysis.py --changed docs/PRD.md
 ```
 
 **输出**：控制台输出影响分析报告
@@ -256,7 +256,7 @@ python scripts/impact_analysis.py --changed docs/RD.md
 
 **用法**：
 ```powershell
-python scripts/check_consistency.py --scope RD-REQ-005 --output context.md
+python scripts/check_consistency.py --scope PRD-REQ-005 --output context.md
 ```
 
 **输出**：`context.md` 上下文文件（供 Claude Code 使用）
@@ -269,23 +269,23 @@ python scripts/check_consistency.py --scope RD-REQ-005 --output context.md
 3. **As Project Manager**：分解 Epic 为任务，分配到各角色
 
 ### Phase 2: Requirements Analysis
-1. **As Requirements Analyst**：收集用户故事和业务需求
-2. **As Requirements Analyst**：在 Claude Code 中加载 `rd-generator.md`
-3. **As Requirements Analyst**：提供输入，生成 `RD.md`
-4. **As Requirements Analyst**：加载 `rd-reviewer.md`，审查 `RD.md`
-5. **As Requirements Analyst**：根据审查反馈修改 `RD.md`
-6. **As Requirements Analyst**：更新 `.specgov/tasks/rd-analyst.md`
+1. **As Product Manager**：收集用户故事和业务需求
+2. **As Product Manager**：在 Claude Code 中加载 `rd-generator.md`
+3. **As Product Manager**：提供输入，生成 `PRD.md`
+4. **As Product Manager**：加载 `rd-reviewer.md`，审查 `PRD.md`
+5. **As Product Manager**：根据审查反馈修改 `PRD.md`
+6. **As Product Manager**：更新 `.specgov/tasks/rd-analyst.md`
 
 ### Phase 3: Product Planning
 1. **As Product Manager**：加载 `prd-generator.md`
-2. **As Product Manager**：提供 `RD.md` 和产品愿景，生成 `PRD.md`
-3. **As Product Manager**：加载 `prd-reviewer.md`，审查 `PRD.md`
-4. **As Product Manager**：根据审查反馈修改 `PRD.md`
+2. **As Product Manager**：提供 `PRD.md` 和产品愿景，生成 `PPRD.md`
+3. **As Product Manager**：加载 `prd-reviewer.md`，审查 `PPRD.md`
+4. **As Product Manager**：根据审查反馈修改 `PPRD.md`
 5. **As Product Manager**：更新 `.specgov/tasks/product-manager.md`
 
 ### Phase 4: Technical Design
 1. **As Architect**：加载 `design-generator.md`
-2. **As Architect**：提供 `PRD.md` 和技术约束，生成 `Design-Document.md`
+2. **As Architect**：提供 `PPRD.md` 和技术约束，生成 `Design-Document.md`
 3. **As Architect**：加载 `design-reviewer.md`，审查 `Design-Document.md`
 4. **As Architect**：根据审查反馈修改 `Design-Document.md`
 5. **As Architect**：更新 `.specgov/tasks/architect.md`
@@ -310,10 +310,10 @@ python scripts/check_consistency.py --scope RD-REQ-005 --output context.md
    - `python scripts/parse_tags.py`
    - `python scripts/build_graph.py`
 2. **Check Consistency**：
-   - `python scripts/check_consistency.py --scope RD-REQ-005`
+   - `python scripts/check_consistency.py --scope PRD-REQ-005`
    - 在 Claude Code 中加载 `consistency-checker.md`，审查一致性
 3. **Analyze Impact**（当有变更时）：
-   - `python scripts/impact_analysis.py --changed docs/RD.md`
+   - `python scripts/impact_analysis.py --changed docs/PRD.md`
    - 在 Claude Code 中加载 `impact-analyzer.md`，获得详细分析
 
 ## 8. Tips for Success

@@ -42,8 +42,8 @@ SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文�
 ### 小项目（< 10 万行代码）- 单层文档结构
 
 **使用命令**：
-- `/specgov-rd-gen` - 生成 RD.md（所有需求在一个文件）
-- `/specgov-prd-gen` - 生成 PRD.md（所有功能在一个文件）
+- `/specgov-prd-gen` - 生成 PRD.md（所有需求在一个文件）
+- `/specgov-prd-gen` - 生成 PPRD.md（所有功能在一个文件）
 - `/specgov-design-gen` - 生成 Design-Document.md（所有设计在一个文件）
 - `/specgov-test-gen` - 生成 Test-Plan.md（所有测试用例在一个文件）
 
@@ -91,7 +91,7 @@ SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文�
 
 **初始化脚本会根据您的选择显示对应的命令列表**：
 
-- 小项目：显示 `/specgov-rd-gen`, `/specgov-prd-gen` 等单层命令
+- 小项目：显示 `/specgov-prd-gen`, `/specgov-prd-gen` 等单层命令
 - 大项目：显示 `/specgov-rd-overview` + `/specgov-rd-module` 等两步命令
 
 > **提示**：您生成的 `CLAUDE.md` 文件中也会包含您项目规模对应的命令列表，随时可查阅。
@@ -183,7 +183,7 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 - **描述**：基于用户故事和业务需求生成 Requirements Document
 - **状态**：进行中
 - **预估时间**：1 小时
-- **输出**：docs/RD.md
+- **输出**：docs/PRD.md
 - **开始时间**：[当前时间]
 ```
 
@@ -194,7 +194,7 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 **在 Claude Code 对话框中，复制粘贴以下完整内容**（一次性发送）：
 
 ```
-/specgov-rd-gen
+/specgov-prd-gen
 
 请生成待办事项管理应用（To-Do List App）的需求文档。
 
@@ -232,11 +232,11 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 
 Claude Code 将：
 1. ✅ 加载 `.specgov/prompts/rd-generator.md` 模板
-2. ✅ 根据您的需求生成完整的 RD.md（包含可追溯性标记）
-3. ✅ 自动写入 `docs/RD.md` 文件
+2. ✅ 根据您的需求生成完整的 PRD.md（包含可追溯性标记）
+3. ✅ 自动写入 `docs/PRD.md` 文件
 4. ✅ 显示生成的文档内容
 
-**生成的 RD.md 示例片段**：
+**生成的 PRD.md 示例片段**：
 
 ```markdown
 # Requirements Document (RD)
@@ -250,7 +250,7 @@ Claude Code 将：
 本章节定义待办事项管理的核心需求。
 
 ### 1.1 Create Task
-**[ID: RD-REQ-001] [Decomposes: RD-TASK-001]**
+**[ID: PRD-REQ-001] [Decomposes: RD-TASK-001]**
 
 系统必须允许用户创建新的待办任务。
 
@@ -261,7 +261,7 @@ Claude Code 将：
 - ✅ 任务状态默认为 "active"（未完成）
 
 ### 1.2 Mark Task as Completed
-**[ID: RD-REQ-002] [Decomposes: RD-TASK-001]**
+**[ID: PRD-REQ-002] [Decomposes: RD-TASK-001]**
 
 系统必须允许用户标记任务为完成状态。
 
@@ -277,15 +277,15 @@ Claude Code 将：
 
 检查生成的文档：
 ```bash
-# 查看 RD.md
-cat docs/RD.md
+# 查看 PRD.md
+cat docs/PRD.md
 
 # 验证文件已创建
 ls docs/
 ```
 
 您应该看到：
-- ✅ `docs/RD.md` 文件已创建
+- ✅ `docs/PRD.md` 文件已创建
 - ✅ 包含所有需求（6 个用户故事 → 6-8 个需求）
 - ✅ 每个需求都有 `[ID: RD-XXX-XXX]` 标记
 - ✅ 使用 `[Decomposes: XXX]` 表示层级关系
@@ -303,12 +303,12 @@ ls docs/
 
 请审查以下 Requirements Document (RD)：
 
-[粘贴 docs/RD.md 的完整内容]
+[粘贴 docs/PRD.md 的完整内容]
 
 项目规模：小项目
 ```
 
-> **提示**：您可以使用 `cat docs/RD.md` 查看文档内容，然后复制粘贴到 Claude Code。
+> **提示**：您可以使用 `cat docs/PRD.md` 查看文档内容，然后复制粘贴到 Claude Code。
 
 ### 2.2 Claude Code 输出审查报告
 
@@ -326,7 +326,7 @@ Claude Code 将输出审查报告，例如：
 ## Important Issues
 
 ### 1. [重要-可追溯性] 缺少分层标记
-- **位置**: RD-REQ-006（编辑任务）
+- **位置**: PRD-REQ-006（编辑任务）
 - **问题**: 没有 [Decomposes: RD-TASK-001] 标记
 - **建议**: 添加 [Decomposes: RD-TASK-001]，因为它属于 Task Management Requirements
 
@@ -363,20 +363,20 @@ git commit -m "Add RD review report 2025-11-17"
 
 ### 2.4 根据审查反馈修改 RD（如需要）
 
-如果有问题，再次使用 `/specgov-rd-gen` 修改：
+如果有问题，再次使用 `/specgov-prd-gen` 修改：
 
 ```
-/specgov-rd-gen
+/specgov-prd-gen
 
 请修改现有 Requirements Document (RD)。
 
-现有 RD.md 内容：
-[粘贴 docs/RD.md 内容]
+现有 PRD.md 内容：
+[粘贴 docs/PRD.md 内容]
 
 审查反馈：
-- RD-REQ-006 缺少 [Decomposes: RD-TASK-001] 标记
+- PRD-REQ-006 缺少 [Decomposes: RD-TASK-001] 标记
 
-请根据审查反馈修改 RD.md。
+请根据审查反馈修改 PRD.md。
 ```
 
 ---
@@ -396,7 +396,7 @@ RD 生成和审查完成后，更新任务状态：
 ### Task 1: 生成 To-Do List App 需求文档
 - **完成日期**：[当前日期]
 - **Epic**：Epic 1 - To-Do List App 核心功能开发
-- **成果**：docs/RD.md v1.0（定义了 6 个核心需求）
+- **成果**：docs/PRD.md v1.0（定义了 6 个核心需求）
 - **实际时间**：[实际花费时间]
 - **备注**：已通过审查，质量良好
 ```
@@ -433,21 +433,21 @@ RD 生成和审查完成后，更新任务状态：
 ### 4.1 解析可追溯性标记
 
 ```bash
-# 解析 RD.md 中的标记
+# 解析 PRD.md 中的标记
 python .specgov/scripts/parse_tags.py
 ```
 
 **输出示例（小项目）**：
 ```
-Parsing docs/RD.md...
+Parsing docs/PRD.md...
 Found 9 tags:
 - RD-TASK-001 (section)
-- RD-REQ-001 (requirement, decomposes: RD-TASK-001)
-- RD-REQ-002 (requirement, decomposes: RD-TASK-001)
-- RD-REQ-003 (requirement, decomposes: RD-TASK-001)
-- RD-REQ-004 (requirement, decomposes: RD-TASK-001)
-- RD-REQ-005 (requirement, decomposes: RD-TASK-001)
-- RD-REQ-006 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-001 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-002 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-003 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-004 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-005 (requirement, decomposes: RD-TASK-001)
+- PRD-REQ-006 (requirement, decomposes: RD-TASK-001)
 - RD-NFR-001 (non-functional requirement)
 - RD-NFR-002 (non-functional requirement)
 
@@ -502,13 +502,13 @@ cat .specgov/index/dependency-graph.json
 ```json
 {
   "nodes": [
-    {"id": "RD-TASK-001", "type": "section", "label": "Task Management Requirements", "location": "docs/RD.md:10"},
-    {"id": "RD-REQ-001", "type": "requirement", "label": "Create Task", "location": "docs/RD.md:15"},
-    {"id": "RD-REQ-002", "type": "requirement", "label": "Mark Task as Completed", "location": "docs/RD.md:25"}
+    {"id": "RD-TASK-001", "type": "section", "label": "Task Management Requirements", "location": "docs/PRD.md:10"},
+    {"id": "PRD-REQ-001", "type": "requirement", "label": "Create Task", "location": "docs/PRD.md:15"},
+    {"id": "PRD-REQ-002", "type": "requirement", "label": "Mark Task as Completed", "location": "docs/PRD.md:25"}
   ],
   "edges": [
-    {"from": "RD-REQ-001", "to": "RD-TASK-001", "type": "decomposes"},
-    {"from": "RD-REQ-002", "to": "RD-TASK-001", "type": "decomposes"}
+    {"from": "PRD-REQ-001", "to": "RD-TASK-001", "type": "decomposes"},
+    {"from": "PRD-REQ-002", "to": "RD-TASK-001", "type": "decomposes"}
   ]
 }
 ```
@@ -527,7 +527,7 @@ cat .specgov/index/dependency-graph.json
 请基于以下 RD 生成 PRD。
 
 RD 内容：
-[粘贴 docs/RD.md 内容]
+[粘贴 docs/PRD.md 内容]
 
 项目信息：
 - 项目名称：To-Do List App
@@ -545,7 +545,7 @@ RD 内容：
 请基于以下 PRD 生成 Design Document。
 
 PRD 内容：
-[粘贴 docs/PRD.md 内容]
+[粘贴 docs/PPRD.md 内容]
 
 技术选型：
 - 前端：React 18 + TypeScript + Vite
@@ -584,7 +584,7 @@ Design Document 内容：
 
 - ✅ **项目规划**：作为 Project Manager 创建 Epic 和任务分解
 - ✅ **角色切换**：在不同视角间切换（Project Manager → Requirements Analyst → Project Manager）
-- ✅ 使用 Claude Code 斜杠命令（`/specgov-rd-gen`、`/specgov-rd-review`）
+- ✅ 使用 Claude Code 斜杠命令（`/specgov-prd-gen`、`/specgov-rd-review`）
 - ✅ 生成带可追溯性标记的需求文档
 - ✅ 使用 Reviewer 审查文档质量
 - ✅ **任务管理**：更新任务状态和 Epic 进度
@@ -612,7 +612,7 @@ your-project/
 ├── .claude/
 │   └── commands/             # 20 个斜杠命令
 ├── docs/
-│   └── RD.md                 # ✅ 您生成的需求文档
+│   └── PRD.md                 # ✅ 您生成的需求文档
 ├── reviews/                  # ✅ 审查报告（质量保证）
 │   └── RD-Review-Report-2025-11-17.md  # ✅ 您保存的审查报告
 └── CLAUDE.md                 # 项目指南（请填写）
@@ -655,10 +655,10 @@ your-project/
 
 ```bash
 # 影响分析：修改 RD 后运行
-python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
+python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 # 一致性检查：验证可追溯性链
-python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
+python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001
 ```
 
 ---
@@ -674,7 +674,7 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 7. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
 
 **可用的 Claude 斜杠命令（小项目）**：
-- `/specgov-rd-gen` - 生成 RD
+- `/specgov-prd-gen` - 生成 RD
 - `/specgov-rd-review` - 审查 RD
 - `/specgov-prd-gen` - 生成 PRD
 - `/specgov-prd-review` - 审查 PRD
@@ -705,7 +705,7 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 ### Q2: 生成的文档没有可追溯性标记怎么办？
 
 **A**: 检查：
-- 是否使用了正确的 prompt 模板（`/specgov-rd-gen`）
+- 是否使用了正确的 prompt 模板（`/specgov-prd-gen`）
 - 是否在提示中明确要求包含标记
 - 使用 `/specgov-rd-review` 审查，它会检测缺失的标记
 
@@ -714,7 +714,7 @@ python .specgov/scripts/check_consistency.py --scope=RD-REQ-001
 **A**: 检查：
 - Python 版本是否 ≥ 3.8
 - 是否在项目根目录运行（包含 `.specgov/` 目录）
-- 文档中的标记格式是否正确（如 `[ID: RD-REQ-001]`）
+- 文档中的标记格式是否正确（如 `[ID: PRD-REQ-001]`）
 - 查看错误消息，根据提示修复
 
 ### Q3a: 大项目中 project-config.json 的 modules 字段为什么是空的？

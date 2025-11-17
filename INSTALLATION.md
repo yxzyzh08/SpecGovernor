@@ -177,8 +177,8 @@ your-project/                   # 您的项目根目录
 │       └── ...                 # 其他 17 个命令
 │
 ├── docs/                       # ✨ 您的项目文档目录
-│   ├── RD.md                   # 您的 Requirements Document
-│   ├── PRD.md                  # 您的 Product Requirements Document
+│   ├── PRD.md                   # 您的 Requirements Document
+│   ├── PPRD.md                  # 您的 Product Requirements Document
 │   ├── Design-Document.md      # 您的 Design Document
 │   └── Test-Plan.md            # 您的 Test Plan
 │
@@ -286,8 +286,8 @@ python .specgov/scripts/build_graph.py
 ### 4. 检查文档模板
 
 ```powershell
-# 检查 RD.md 模板
-type docs/RD.md
+# 检查 PRD.md 模板
+type docs/PRD.md
 
 # 应该看到 RD 模板内容
 ```

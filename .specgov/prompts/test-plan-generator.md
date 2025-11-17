@@ -52,7 +52,7 @@ Test Plan 必须遵循以下结构：
 # Test Plan
 
 > **Version**: X.X
-> **Based on**: Design-Document.md (vX.X), PRD.md (vX.X)
+> **Based on**: Design-Document.md (vX.X), PPRD.md (vX.X)
 > **Created**: YYYY-MM-DD
 > **Updated**: YYYY-MM-DD
 
@@ -126,7 +126,7 @@ Test Plan 必须遵循以下结构：
 **请提供以下输入：**
 
 1. **Design-Document.md 完整内容**（技术设计）
-2. **PRD.md 完整内容**（产品需求，供参考）
+2. **PPRD.md 完整内容**（产品需求，供参考）
 3. **测试环境说明**：
    - 操作系统、浏览器
    - 数据库类型和版本
@@ -372,7 +372,7 @@ Test Plan 必须遵循以下结构：
 ## 7. Performance Tests
 
 ### 7.1 API Response Time Tests
-**[ID: TEST-PERF-001] [Tests-for: PRD-NFR-001]**
+**[ID: TEST-PERF-001] [Tests-for: PPRD-NFR-001]**
 
 测试 API 端点的响应时间是否满足性能要求。
 
@@ -548,4 +548,4 @@ Test Plan 必须遵循以下结构：
 
 ---
 
-**Ready to generate your Test Plan?** 请提供 Design-Document.md、PRD.md 和测试环境说明，我将帮助你生成 Test Plan！
+**Ready to generate your Test Plan?** 请提供 Design-Document.md、PPRD.md 和测试环境说明，我将帮助你生成 Test Plan！

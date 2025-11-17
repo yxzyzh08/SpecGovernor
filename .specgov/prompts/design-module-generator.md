@@ -27,7 +27,7 @@
 所有模块设计必须使用模块特定的 ID 前缀：
 
 ```markdown
-**[ID: DESIGN-USER-API-LOGIN] [Module: User] [Designs-for: PRD-USER-LOGIN-PASSWORD]**
+**[ID: DESIGN-USER-API-LOGIN] [Module: User] [Designs-for: PPRD-USER-LOGIN-PASSWORD]**
 **[ID: DESIGN-ORDER-DB-ORDERS] [Module: Order] [Designs-for: PRD-ORDER-CREATE-CART]**
 **[ID: DESIGN-PAYMENT-SERVICE-STRIPE] [Module: Payment] [Designs-for: PRD-PAYMENT-PROCESS]**
 ```
@@ -191,7 +191,7 @@ PRD-[Module].md 内容（用于验证一致性）：
 > **Created**: 2025-11-16
 
 ## 1. User Module Design Overview
-**[ID: DESIGN-USER-OVERVIEW] [Module: User] [Designs-for: PRD-USER-OVERVIEW]**
+**[ID: DESIGN-USER-OVERVIEW] [Module: User] [Designs-for: PPRD-USER-OVERVIEW]**
 
 User 模块负责用户认证、授权和个人资料管理。
 
@@ -210,7 +210,7 @@ User 模块负责用户认证、授权和个人资料管理。
 ## 2. API Design
 
 ### 2.1 User Registration Endpoint
-**[ID: DESIGN-USER-API-REGISTER] [Module: User] [Designs-for: PRD-USER-REG-EMAIL]**
+**[ID: DESIGN-USER-API-REGISTER] [Module: User] [Designs-for: PPRD-USER-REG-EMAIL]**
 
 处理用户使用邮箱和密码注册账户。
 
@@ -255,7 +255,7 @@ User 模块负责用户认证、授权和个人资料管理。
 8. 返回用户信息（不包含密码）
 
 ### 2.2 OAuth2 Callback Endpoint
-**[ID: DESIGN-USER-API-OAUTH-CALLBACK] [Module: User] [Designs-for: PRD-USER-LOGIN-OAUTH]**
+**[ID: DESIGN-USER-API-OAUTH-CALLBACK] [Module: User] [Designs-for: PPRD-USER-LOGIN-OAUTH]**
 
 处理用户授权应用后的 OAuth2 回调。
 
@@ -303,7 +303,7 @@ User 模块负责用户认证、授权和个人资料管理。
 6. 返回 JWT 和用户信息
 
 ### 2.3 Password Login Endpoint
-**[ID: DESIGN-USER-API-LOGIN] [Module: User] [Designs-for: PRD-USER-LOGIN-PASSWORD]**
+**[ID: DESIGN-USER-API-LOGIN] [Module: User] [Designs-for: PPRD-USER-LOGIN-PASSWORD]**
 
 处理用户使用邮箱和密码登录。
 
@@ -365,7 +365,7 @@ User 模块负责用户认证、授权和个人资料管理。
 ## 3. Database Design
 
 ### 3.1 Users Table
-**[ID: DESIGN-USER-DB-USERS] [Module: User] [Designs-for: PRD-USER-REG-EMAIL, PRD-USER-LOGIN-PASSWORD]**
+**[ID: DESIGN-USER-DB-USERS] [Module: User] [Designs-for: PPRD-USER-REG-EMAIL, PPRD-USER-LOGIN-PASSWORD]**
 
 存储用户账户信息。
 
@@ -410,7 +410,7 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 - `users` 1:N `user_roles` (一个用户可以有多个角色)
 
 ### 3.2 OAuth Accounts Table
-**[ID: DESIGN-USER-DB-OAUTH] [Module: User] [Designs-for: PRD-USER-LOGIN-OAUTH]**
+**[ID: DESIGN-USER-DB-OAUTH] [Module: User] [Designs-for: PPRD-USER-LOGIN-OAUTH]**
 
 存储用户的 OAuth2 账户关联信息。
 
@@ -454,7 +454,7 @@ CREATE UNIQUE INDEX idx_oauth_provider_user ON oauth_accounts(provider, provider
 - `updated_at`: 更新时间
 
 ### 3.3 User Roles Table
-**[ID: DESIGN-USER-DB-ROLES] [Module: User] [Designs-for: RD-USER-RBAC-001]**
+**[ID: DESIGN-USER-DB-ROLES] [Module: User] [Designs-for: PRD-USER-RBAC-001]**
 
 存储用户角色关联（RBAC）。
 
@@ -483,7 +483,7 @@ CREATE INDEX idx_user_roles_role ON user_roles(role);
 - 新用户注册时自动分配 'user' 角色
 
 ### 3.4 Login Attempts Table
-**[ID: DESIGN-USER-DB-LOGIN-ATTEMPTS] [Module: User] [Designs-for: PRD-USER-LOGIN-PASSWORD]**
+**[ID: DESIGN-USER-DB-LOGIN-ATTEMPTS] [Module: User] [Designs-for: PPRD-USER-LOGIN-PASSWORD]**
 
 存储登录失败次数（用于账户锁定）。
 
@@ -516,7 +516,7 @@ CREATE INDEX idx_login_attempts_locked_until ON login_attempts(locked_until) WHE
 ## 4. Service Design
 
 ### 4.1 OAuth2 Service
-**[ID: DESIGN-USER-SERVICE-OAUTH] [Module: User] [Designs-for: PRD-USER-LOGIN-OAUTH]**
+**[ID: DESIGN-USER-SERVICE-OAUTH] [Module: User] [Designs-for: PPRD-USER-LOGIN-OAUTH]**
 
 处理 OAuth2 提供商的交互（交换 code、获取用户信息）。
 
@@ -635,7 +635,7 @@ def verify_password(password: str, hashed: str) -> bool:
 ```
 
 ### 5.2 Account Lockout Protection
-**[ID: DESIGN-USER-SECURITY-LOCKOUT] [Module: User] [Designs-for: RD-USER-LOGIN-001]**
+**[ID: DESIGN-USER-SECURITY-LOCKOUT] [Module: User] [Designs-for: PRD-USER-LOGIN-001]**
 
 防止暴力破解攻击，连续 5 次登录失败后锁定账户 15 分钟。
 
@@ -645,7 +645,7 @@ def verify_password(password: str, hashed: str) -> bool:
 - 发送邮件通知用户账户被锁定
 
 ### 5.3 Email Verification Token Security
-**[ID: DESIGN-USER-SECURITY-EMAIL-TOKEN] [Module: User] [Designs-for: RD-USER-REG-001]**
+**[ID: DESIGN-USER-SECURITY-EMAIL-TOKEN] [Module: User] [Designs-for: PRD-USER-REG-001]**
 
 邮箱验证 token 使用随机生成的安全 token，24 小时有效。
 

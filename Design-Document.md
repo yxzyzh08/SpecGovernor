@@ -170,7 +170,7 @@ SpecGovernor Repository/
 ## Critical Requirements
 
 ### 1. Traceability Tags
-- 每个需求必须有：**[ID: RD-REQ-XXX]** 或 **[ID: RD-{CATEGORY}-XXX]**
+- 每个需求必须有：**[ID: PRD-REQ-XXX]** 或 **[ID: RD-{CATEGORY}-XXX]**
 - 分层需求使用：**[Decomposes: PARENT-ID]**
 
 ### 2. Document Structure
@@ -184,7 +184,7 @@ SpecGovernor Repository/
 **[ID: RD-CATEGORY-001]**
 
 ### 1.1 [Specific Requirement]
-**[ID: RD-REQ-001] [Decomposes: RD-CATEGORY-001]**
+**[ID: PRD-REQ-001] [Decomposes: PRD-REQ-CATEGORY-001]**
 
 [需求描述，附带清晰的验收标准]
 
@@ -221,7 +221,7 @@ Markdown 文件，包含：
 本节定义所有身份验证和授权需求。
 
 ### 1.1 OAuth2 Login Support
-**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+**[ID: PRD-REQ-005] [Decomposes: PRD-REQ-AUTH-001]**
 
 系统必须支持通过 OAuth2 协议进行用户身份验证。
 
@@ -269,7 +269,7 @@ Markdown 文件，包含：
 ### 1. Traceability Tags
 - 每个功能必须有：**[ID: PRD-FEAT-XXX]**
 - 每个用户故事必须有：**[ID: PRD-US-XXX]**
-- 必须链接到 RD：**[Implements: RD-REQ-XXX]**
+- 必须链接到 RD：**[Implements: PRD-REQ-REQ-XXX]**
 
 ### 2. Document Structure
 # Product Requirements Document (PRD)
@@ -280,7 +280,7 @@ Markdown 文件，包含：
 ## 1. Product Features
 
 ### 1.1 [Feature Name]
-**[ID: PRD-FEAT-XXX] [Implements: RD-REQ-XXX]**
+**[ID: PRD-FEAT-XXX] [Implements: PRD-REQ-REQ-XXX]**
 
 #### User Story
 > **As** [用户类型]
@@ -301,7 +301,7 @@ Markdown 文件，包含：
 Markdown 文件，包含：
 - 产品功能，带 [ID: PRD-FEAT-XXX]
 - 用户故事，带 [ID: PRD-US-XXX]
-- [Implements: RD-REQ-XXX] 将每个功能链接到需求
+- [Implements: PRD-REQ-REQ-XXX] 将每个功能链接到需求
 
 ## Examples
 
@@ -310,7 +310,7 @@ Markdown 文件，包含：
 ## 2. Authentication Features
 
 ### 2.1 OAuth2 Social Login
-**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+**[ID: PRD-FEAT-012] [Implements: PRD-REQ-REQ-005]**
 
 使用户能够使用其现有社交媒体账户登录。
 
@@ -328,7 +328,7 @@ Markdown 文件，包含：
 
 ## Validation Checklist
 - [ ] 每个功能都有 [ID: PRD-FEAT-XXX]
-- [ ] 每个功能都通过 [Implements: RD-REQ-XXX] 链接到 RD
+- [ ] 每个功能都通过 [Implements: PRD-REQ-REQ-XXX] 链接到 RD
 - [ ] 用户故事遵循 As/I want/So that 格式
 - [ ] 验收标准可测试
 ```

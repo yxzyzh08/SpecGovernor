@@ -39,7 +39,8 @@ def create_directory_structure(project_size):
     os.makedirs('.specgov/workflows', exist_ok=True)
     os.makedirs('.specgov/tasks', exist_ok=True)
     os.makedirs('.specgov/index', exist_ok=True)
-    
+    os.makedirs('.specgov/raw-requirements', exist_ok=True)  # 原始需求目录
+
     # 创建 reviews 目录用于保存审查报告
     os.makedirs('reviews', exist_ok=True)
 
@@ -95,6 +96,14 @@ def create_directory_structure(project_size):
         create_placeholder('docs/Design-Document/Design-Overview.md', 'Design Overview')
         create_placeholder('docs/Test-Plan/Test-Overview.md', 'Test Overview')
 
+    # 创建原始需求收集文档
+    if project_size == 'small':
+        create_raw_requirements_template('.specgov/raw-requirements/inputs.md', project_size)
+    else:  # large
+        os.makedirs('.specgov/raw-requirements/modules', exist_ok=True)
+        create_raw_requirements_template('.specgov/raw-requirements/overview.md', project_size, is_overview=True)
+        # 模块文档将在后续按需创建
+
     # 创建项目配置
     config = {
         "project_name": os.path.basename(os.getcwd()),
@@ -131,6 +140,187 @@ def create_placeholder(filepath, doc_type):
 
 （此文档将使用 SpecGovernor prompt templates 生成）
 """
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+
+def create_raw_requirements_template(filepath, project_size, is_overview=False):
+    """创建原始需求收集文档模板。"""
+    project_name = os.path.basename(os.getcwd())
+    today = datetime.now().strftime('%Y-%m-%d')
+
+    if project_size == 'small':
+        # 小项目：单个汇总文档
+        content = f"""# Raw Requirements - {project_name}
+
+**Project Type**: Small Project
+**Created**: {today}
+**Last Updated**: {today}
+
+> **用途**：记录人类提供的原始需求输入（口语化、零散）
+>
+> 此文档仅供产品经理整理思路和后期追溯使用，不影响项目构建流程。
+
+---
+
+## 📝 Input Log
+
+### 使用说明
+
+使用 `/specgov-prd-gen` 命令生成 PRD 时，产品经理会自动询问并记录原始需求。
+
+每个条目包含：
+- 时间戳和来源（聊天、文件、邮件等）
+- 原始输入（保持口语化，不修改）
+- 产品经理的初步分析（分类、优先级、疑问）
+
+---
+
+### Entry 001 - {today} (示例)
+
+**Source**: Chat
+**Topic**: 示例需求
+
+**Original Input**:
+> （此处记录用户的原始输入，保持口语化表达）
+
+**PM Analysis**:
+- **Category**: Functional Requirement / Non-Functional Requirement / UI/UX / Performance / Security
+- **Priority**: High / Medium / Low
+- **Related Modules**: [相关模块]
+- **Initial Thoughts**: [产品经理的初步想法]
+- **Questions**: [需要澄清的问题]
+- **Status**: New / Under Review / Converted to PRD / Rejected
+
+---
+
+## 📊 Summary Statistics
+
+**Last Updated**: {today}
+
+- **Total Entries**: 1 (示例)
+- **By Priority**:
+  - High: 0
+  - Medium: 0
+  - Low: 0
+- **By Status**:
+  - New: 1
+  - Under Review: 0
+  - Converted to PRD: 0
+  - Rejected: 0
+
+---
+
+## 🔗 Related Documents
+
+- **PRD**: docs/PRD.md (将基于这些原始需求生成)
+- **Design**: docs/Design-Document.md
+- **Workflow**: `.specgov/workflows/workflow-prd.md`
+
+---
+
+**提示**：使用 `/specgov-prd-gen` 命令基于这些原始需求生成正式的 PRD 文档。
+"""
+    elif is_overview:
+        # 大项目：总览文档
+        content = f"""# Raw Requirements Overview - {project_name}
+
+**Project Type**: Large Project (Two-Tier)
+**Created**: {today}
+**Last Updated**: {today}
+
+> **用途**：记录项目级别的原始需求（跨模块、整体架构）
+>
+> 模块级需求记录在 `modules/` 目录下的各模块文档中。
+
+---
+
+## 📋 Project-Level Requirements
+
+### 使用说明
+
+使用 `/specgov-prd-overview` 命令生成项目级 PRD 时，产品经理会自动询问并记录项目级原始需求。
+
+跨模块需求、整体架构需求、全局非功能需求应记录在此文档。
+
+---
+
+### Entry 001 - {today} (示例)
+
+**Source**: Chat
+**Topic**: 项目整体目标
+
+**Original Input**:
+> （此处记录跨模块的原始需求）
+
+**PM Analysis**:
+- **Scope**: Project-Level
+- **Affects Modules**: [受影响的模块列表]
+- **Priority**: High / Medium / Low
+- **Initial Thoughts**: [产品经理的初步想法]
+- **Questions**: [需要澄清的问题]
+- **Status**: New
+
+---
+
+## 📦 Module-Specific Requirements
+
+模块级需求请记录到各模块文档：
+
+- `modules/[module-name].md` - 各模块的原始需求
+
+使用 `/specgov-prd-module` 命令时，产品经理会自动选择或创建对应的模块文档并记录需求。
+
+---
+
+## 🔗 Related Documents
+
+- **PRD Overview**: docs/PRD/PRD-Overview.md
+- **Module PRDs**: docs/PRD/*.md
+- **Workflow**: `.specgov/workflows/workflow-large-project.md`
+
+---
+
+**提示**：使用 `/specgov-prd-overview` 命令基于这些原始需求生成正式的 PRD Overview 文档。
+"""
+    else:
+        # 大项目：模块文档
+        module_name = os.path.basename(filepath).replace('.md', '').replace('-', ' ').title()
+        content = f"""# Raw Requirements - {module_name}
+
+**Module**: {module_name}
+**Created**: {today}
+**Last Updated**: {today}
+
+> **用途**：记录 {module_name} 模块的原始需求输入
+
+---
+
+## 📝 Input Log
+
+### Entry 001 - {today} (示例)
+
+**Source**: Chat
+**Topic**: [主题]
+
+**Original Input**:
+> （此处记录用户的原始输入）
+
+**PM Analysis**:
+- **Category**: Functional Requirement / Non-Functional Requirement / UI/UX
+- **Priority**: High / Medium / Low
+- **Related PRD Tag**: [待生成，如 PRD-{module_name}-FEAT-001]
+- **Initial Thoughts**: [产品经理的初步想法]
+- **Questions**: [需要澄清的问题]
+- **Status**: New
+
+---
+
+## 🔗 Related Documents
+
+- **Module PRD**: docs/PRD/PRD-{module_name}-Module.md
+"""
+
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
 
@@ -356,50 +546,137 @@ def create_claude_commands(project_size):
     """创建 Claude Code 斜杠命令。"""
     os.makedirs('.claude/commands', exist_ok=True)
 
+    # 定义文档路径映射（小项目：单层结构）
+    small_project_paths = {
+        'rd': 'docs/RD.md',
+        'prd': 'docs/PRD.md',
+        'design': 'docs/Design-Document.md',
+        'test-plan': 'docs/Test-Plan.md',
+    }
+
+    # 定义文档路径映射（大项目：双层结构）
+    large_project_paths = {
+        'rd-overview': 'docs/RD/RD-Overview.md',
+        'rd-module': 'docs/RD/RD-{MODULE}.md (replace {MODULE} with actual module name)',
+        'prd-overview': 'docs/PRD/PRD-Overview.md',
+        'prd-module': 'docs/PRD/PRD-{MODULE}.md',
+        'design-overview': 'docs/Design-Document/Design-Overview.md',
+        'design-module': 'docs/Design-Document/Design-{MODULE}.md',
+        'test-overview': 'docs/Test-Plan/Test-Overview.md',
+        'test-module': 'docs/Test-Plan/Test-{MODULE}.md',
+    }
+
     # 定义小项目模板（单层文档结构）
     small_project_commands = {
-        'rd-generator.md': ('specgov-rd-gen', 'Generate Requirements Document (RD)'),
-        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)'),
-        'prd-generator.md': ('specgov-prd-gen', 'Generate Product Requirements Document (PRD)'),
-        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)'),
-        'design-generator.md': ('specgov-design-gen', 'Generate Design Document'),
-        'design-reviewer.md': ('specgov-design-review', 'Review Design Document'),
-        'test-plan-generator.md': ('specgov-test-gen', 'Generate Test Plan'),
-        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan'),
-        'code-generator.md': ('specgov-code-gen', 'Generate code implementation'),
-        'code-reviewer.md': ('specgov-code-review', 'Review code implementation'),
-        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency'),
-        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact'),
+        'rd-generator.md': ('specgov-rd-gen', 'Generate Requirements Document (RD)', 'rd'),
+        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)', 'rd'),
+        'prd-generator.md': ('specgov-prd-gen', 'Generate Product Requirements Document (PRD)', 'prd'),
+        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)', 'prd'),
+        'design-generator.md': ('specgov-design-gen', 'Generate Design Document', 'design'),
+        'design-reviewer.md': ('specgov-design-review', 'Review Design Document', 'design'),
+        'test-plan-generator.md': ('specgov-test-gen', 'Generate Test Plan', 'test-plan'),
+        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan', 'test-plan'),
+        'code-generator.md': ('specgov-code-gen', 'Generate code implementation', None),
+        'code-reviewer.md': ('specgov-code-review', 'Review code implementation', None),
+        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency', None),
+        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact', None),
     }
 
     # 定义大项目模板（双层文档结构：Overview + Module）
     large_project_commands = {
-        'rd-overview-generator.md': ('specgov-rd-overview', 'Generate RD Overview (large project)'),
-        'rd-module-generator.md': ('specgov-rd-module', 'Generate RD Module (large project)'),
-        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)'),
-        'prd-overview-generator.md': ('specgov-prd-overview', 'Generate PRD Overview (large project)'),
-        'prd-module-generator.md': ('specgov-prd-module', 'Generate PRD Module (large project)'),
-        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)'),
-        'design-overview-generator.md': ('specgov-design-overview', 'Generate Design Overview (large project)'),
-        'design-module-generator.md': ('specgov-design-module', 'Generate Design Module (large project)'),
-        'design-reviewer.md': ('specgov-design-review', 'Review Design Document'),
-        'test-plan-overview-generator.md': ('specgov-test-overview', 'Generate Test Plan Overview (large project)'),
-        'test-plan-module-generator.md': ('specgov-test-module', 'Generate Test Plan Module (large project)'),
-        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan'),
-        'code-generator.md': ('specgov-code-gen', 'Generate code implementation'),
-        'code-reviewer.md': ('specgov-code-review', 'Review code implementation'),
-        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency'),
-        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact'),
+        'rd-overview-generator.md': ('specgov-rd-overview', 'Generate RD Overview (large project)', 'rd-overview'),
+        'rd-module-generator.md': ('specgov-rd-module', 'Generate RD Module (large project)', 'rd-module'),
+        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)', 'rd-overview'),
+        'prd-overview-generator.md': ('specgov-prd-overview', 'Generate PRD Overview (large project)', 'prd-overview'),
+        'prd-module-generator.md': ('specgov-prd-module', 'Generate PRD Module (large project)', 'prd-module'),
+        'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)', 'prd-overview'),
+        'design-overview-generator.md': ('specgov-design-overview', 'Generate Design Overview (large project)', 'design-overview'),
+        'design-module-generator.md': ('specgov-design-module', 'Generate Design Module (large project)', 'design-module'),
+        'design-reviewer.md': ('specgov-design-review', 'Review Design Document', 'design-overview'),
+        'test-plan-overview-generator.md': ('specgov-test-overview', 'Generate Test Plan Overview (large project)', 'test-overview'),
+        'test-plan-module-generator.md': ('specgov-test-module', 'Generate Test Plan Module (large project)', 'test-module'),
+        'test-plan-reviewer.md': ('specgov-test-review', 'Review Test Plan', 'test-overview'),
+        'code-generator.md': ('specgov-code-gen', 'Generate code implementation', None),
+        'code-reviewer.md': ('specgov-code-review', 'Review code implementation', None),
+        'consistency-checker.md': ('specgov-consistency', 'Check traceability consistency', None),
+        'impact-analyzer.md': ('specgov-impact', 'Analyze change impact', None),
     }
 
-    # 根据项目规模选择命令集
+    # 根据项目规模选择命令集和路径映射
     prompt_commands = small_project_commands if project_size == 'small' else large_project_commands
+    doc_paths = small_project_paths if project_size == 'small' else large_project_paths
 
     command_count = 0
-    for prompt_file, (command_name, description) in prompt_commands.items():
+    for prompt_file, command_info in prompt_commands.items():
+        command_name, description, doc_type = command_info
+
+        # 构建项目上下文信息
+        context_section = f"""
+## Project Context
+
+- **Project Size**: {project_size} project
+- **Document Structure**: {"Single-tier (one file per document type)" if project_size == 'small' else "Two-tier (Overview + Module files)"}
+- **Configuration**: `.specgov/project-config.json`
+"""
+
+        # 添加文档路径信息
+        if doc_type and doc_type in doc_paths:
+            doc_path = doc_paths[doc_type]
+            is_reviewer = 'reviewer' in prompt_file
+            is_generator = 'generator' in prompt_file
+
+            if is_reviewer:
+                # 为 reviewer 提供文档路径和评审报告保存路径
+                context_section += f"""
+## Document Paths
+
+- **Document to Review**: `{doc_path}`
+- **Review Report**: Save to `reviews/` directory with format `{{DocumentType}}-Review-Report-{{YYYY-MM-DD}}.md`
+  - Example: `reviews/RD-Review-Report-2025-01-17.md`
+
+**Instructions**:
+1. Read the document from `{doc_path}`
+2. Do NOT search for the document - use the path above directly
+3. Generate review report following the template format
+4. Save the report to `reviews/` directory with today's date
+"""
+            elif is_generator:
+                # 为 generator 提供文档路径和可能的评审报告位置
+                context_section += f"""
+## Document Paths
+
+- **Target Document**: `{doc_path}`
+- **Review Reports**: Check `reviews/` directory for previous review reports
+  - Pattern: `reviews/{{DocumentType}}-Review-Report-*.md`
+
+**Instructions**:
+1. If creating new document: Write to `{doc_path}`
+2. If updating existing document: Read from `{doc_path}`, then update it
+3. Check `reviews/` directory for latest review report (if any)
+4. Do NOT search for documents - use the paths above directly
+"""
+        else:
+            # 对于通用命令（如 consistency-checker, impact-analyzer）
+            context_section += f"""
+## Document Locations
+
+- **RD**: `{"docs/RD.md" if project_size == 'small' else "docs/RD/"}`
+- **PRD**: `{"docs/PRD.md" if project_size == 'small' else "docs/PRD/"}`
+- **Design Document**: `{"docs/Design-Document.md" if project_size == 'small' else "docs/Design-Document/"}`
+- **Test Plan**: `{"docs/Test-Plan.md" if project_size == 'small' else "docs/Test-Plan/"}`
+- **Source Code**: `src/`
+- **Review Reports**: `reviews/`
+- **Traceability Index**: `.specgov/index/tags.json`
+- **Dependency Graph**: `.specgov/index/dependency-graph.json`
+"""
+
         command_content = f"""---
 description: {description}
 ---
+{context_section}
+---
+
+## Prompt Template
 
 Please load and use the SpecGovernor prompt template: `.specgov/prompts/{prompt_file}`
 

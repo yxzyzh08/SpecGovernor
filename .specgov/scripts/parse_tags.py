@@ -29,17 +29,35 @@ TAG_PATTERNS = {
 def scan_files(root_dirs=None):
     """扫描所有 Markdown 和代码文件。"""
     if root_dirs is None:
-        root_dirs = ['docs', 'src']
+        # 默认扫描根目录、docs 和 src
+        root_dirs = ['.']
+
+    # 排除目录列表
+    exclude_dirs = ['archives', 'v2-backup', '.git', 'node_modules', '__pycache__', '.specgov', '.claude', 'reviews']
 
     files = []
     for root_dir in root_dirs:
         if not os.path.exists(root_dir):
             continue
+
+        # 如果是根目录，先添加根目录下的直接 .md 文件
+        if root_dir == '.':
+            for filepath in Path(root_dir).glob('*.md'):
+                if filepath.is_file():
+                    files.append(str(filepath))
+
+        # 然后递归扫描子目录
         for filepath in Path(root_dir).rglob('*'):
+            # 跳过排除的目录
+            if any(exclude_dir in filepath.parts for exclude_dir in exclude_dirs):
+                continue
             if filepath.is_file() and (
                 filepath.suffix in ['.md', '.py', '.ts', '.tsx', '.js', '.jsx', '.java', '.go', '.c', '.cpp', '.h']
             ):
-                files.append(str(filepath))
+                # 避免重复添加根目录的 .md 文件
+                filepath_str = str(filepath)
+                if filepath_str not in files:
+                    files.append(filepath_str)
     return files
 
 
@@ -83,16 +101,38 @@ def parse_file(filepath):
 
 def infer_type(tag_id):
     """从 ID 前缀推断标记类型。"""
-    if tag_id.startswith('RD-MODULE-'):
+    # v3.0: PRD 标记（业务需求和产品功能）
+    if tag_id.startswith('PRD-MODULE-'):
         return 'module'
-    elif tag_id.startswith('RD-'):
-        return 'requirement'
-    elif tag_id.startswith('PRD-MODULE-'):
-        return 'module'
+    elif tag_id.startswith('PRD-GOAL-'):
+        return 'goal'
+    elif tag_id.startswith('PRD-USER-'):
+        return 'user'
+    elif tag_id.startswith('PRD-REQ-'):
+        return 'requirement'  # v3.0: 业务需求（原 RD-REQ-XXX）
+    elif tag_id.startswith('PRD-NFR-'):
+        return 'non_functional_requirement'
     elif tag_id.startswith('PRD-FEAT-'):
-        return 'feature'
+        return 'feature'  # 产品功能
     elif tag_id.startswith('PRD-US-'):
         return 'user_story'
+    elif tag_id.startswith('PRD-EPIC-'):
+        return 'epic'
+    elif tag_id.startswith('PRD-SCENARIO-'):
+        return 'scenario'
+    elif tag_id.startswith('PRD-TRACE-'):
+        return 'traceability'
+    elif tag_id.startswith('PRD-STRUCTURE-'):
+        return 'document_structure'
+    elif tag_id.startswith('PRD-SUMMARY-'):
+        return 'summary'
+    elif tag_id.startswith('PRD-METRICS-'):
+        return 'metrics'
+    elif tag_id.startswith('PRD-NEXT-'):
+        return 'next_steps'
+    elif tag_id.startswith('PRD-VISION-'):
+        return 'vision'
+    # Design 标记
     elif tag_id.startswith('DESIGN-ARCH-'):
         return 'architecture'
     elif tag_id.startswith('DESIGN-API-'):
@@ -101,10 +141,14 @@ def infer_type(tag_id):
         return 'database_design'
     elif tag_id.startswith('DESIGN-'):
         return 'design'
+    # Test 标记
     elif tag_id.startswith('TEST-CASE-'):
         return 'test_case'
+    elif tag_id.startswith('TEST-PERF-'):
+        return 'performance_test'
     elif tag_id.startswith('TEST-'):
         return 'test'
+    # Code 标记
     elif tag_id.startswith('CODE-'):
         return 'code'
     else:
@@ -187,8 +231,8 @@ def update_project_modules(all_tags):
     if config.get('document_structure') != 'two-tier':
         return
 
-    # 提取所有模块标记（RD-MODULE-XXX）
-    module_tags = [tag for tag in all_tags if tag.get('type') == 'module' and tag['id'].startswith('RD-MODULE-')]
+    # 提取所有模块标记（PRD-MODULE-XXX）- v3.0 更新
+    module_tags = [tag for tag in all_tags if tag.get('type') == 'module' and tag['id'].startswith('PRD-MODULE-')]
 
     if not module_tags:
         return
@@ -196,8 +240,8 @@ def update_project_modules(all_tags):
     # 构建模块列表
     modules = []
     for tag in module_tags:
-        # 从 RD-MODULE-USER 提取 "USER"
-        module_id = tag['id'].replace('RD-MODULE-', '')
+        # 从 PRD-MODULE-USER 提取 "USER"
+        module_id = tag['id'].replace('PRD-MODULE-', '')
         module_name = module_id.title()  # USER -> User
 
         module_info = {

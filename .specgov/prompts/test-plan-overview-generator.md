@@ -63,7 +63,7 @@
 > **Version**: X.X
 > **Project**: [项目名称]
 > **Scope**: Overview（整体测试策略概览）
-> **Based on**: Design-Document.md (v1.0), PRD.md (v1.0)
+> **Based on**: Design-Document.md (v1.0), PPRD.md (v1.0)
 > **Created**: YYYY-MM-DD
 
 ## 1. Test Strategy
@@ -118,11 +118,11 @@
 Design-Document.md（Overview）内容：
 [粘贴 docs/Design-Document.md 完整内容]
 
+PPRD.md（Overview）内容：
+[粘贴 docs/PPRD.md 完整内容]
+
 PRD.md（Overview）内容：
 [粘贴 docs/PRD.md 完整内容]
-
-RD.md（Overview）内容：
-[粘贴 docs/RD.md 完整内容]
 
 测试环境：
 - 操作系统：[OS]
@@ -144,7 +144,7 @@ RD.md（Overview）内容：
 现有 Test-Plan.md（Overview）内容：
 [粘贴完整内容]
 
-Design-Document.md、PRD.md 内容（用于验证一致性）：
+Design-Document.md、PPRD.md 内容（用于验证一致性）：
 [粘贴相关内容]
 
 变更请求：
@@ -176,7 +176,7 @@ Design-Document.md、PRD.md 内容（用于验证一致性）：
 > **Version**: 1.0
 > **Project**: 电商平台
 > **Scope**: Overview（整体测试策略概览）
-> **Based on**: Design-Document.md (v1.0), PRD.md (v1.0)
+> **Based on**: Design-Document.md (v1.0), PPRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. Test Strategy
@@ -472,7 +472,7 @@ Notification 模块测试覆盖邮件、短信和推送通知服务。
 ✅ Test-Plan.md（Overview）完成后：
 1. 使用 `test-plan-module-generator.md` 为每个模块生成 `Test-Plan-[Module].md`
 2. 审查所有模块测试文档
-3. 验证与 Design-Document.md 和 PRD.md 的一致性
+3. 验证与 Design-Document.md 和 PPRD.md 的一致性
 4. 开始实现测试用例
 
 ---

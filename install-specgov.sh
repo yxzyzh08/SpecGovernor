@@ -69,6 +69,7 @@ directories=(
     ".specgov/workflows"
     ".specgov/tasks"
     ".specgov/index"
+    ".specgov/raw-requirements"
     "docs"
 )
 

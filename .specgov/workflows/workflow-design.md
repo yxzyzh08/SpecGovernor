@@ -4,8 +4,8 @@
 
 ## Prerequisites
 
-- ✅ PRD.md 已完成并审查
-- ✅ RD.md 可供参考
+- ✅ PPRD.md 已完成并审查
+- ✅ PRD.md 可供参考
 - ✅ 已识别技术约束（语言、框架、云等）
 - ✅ Project Manager 已分配 Design Document 生成任务
 
@@ -18,7 +18,7 @@
 ### Step 1: Review PRD and Technical Constraints
 
 1. 打开 `.specgov/tasks/architect.md` 查看分配的任务
-2. 仔细阅读 `docs/PRD.md`，识别所有需要技术设计的功能
+2. 仔细阅读 `docs/PPRD.md`，识别所有需要技术设计的功能
 3. 列出技术约束：
 
 **Example:**
@@ -49,11 +49,11 @@
 ```
 请生成 Design Document。
 
-PRD.md 内容：
-[粘贴 docs/PRD.md 完整内容]
+PPRD.md 内容：
+[粘贴 docs/PPRD.md 完整内容]
 
-RD.md 内容（供参考）：
-[粘贴 docs/RD.md 完整内容]
+PRD.md 内容（供参考）：
+[粘贴 docs/PRD.md 完整内容]
 
 技术约束：
 - 编程语言：Python 3.11
@@ -95,7 +95,7 @@ Claude Code 将生成 Design-Document.md，包含：
 # Design Document
 
 > **Version**: 1.0
-> **Based on**: PRD.md (v1.0)
+> **Based on**: PPRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. Architecture Design
@@ -185,8 +185,8 @@ Claude Code 将生成 Design-Document.md，包含：
    Design-Document.md 内容：
    [粘贴 docs/Design-Document.md 完整内容]
 
-   PRD.md 内容（用于验证可追溯性）：
-   [粘贴 docs/PRD.md 完整内容]
+   PPRD.md 内容（用于验证可追溯性）：
+   [粘贴 docs/PPRD.md 完整内容]
 
    技术约束：
    [粘贴技术约束]
@@ -202,8 +202,8 @@ Claude Code 将生成 Design-Document.md，包含：
    ```
    请修改现有 Design Document。
 
-   PRD.md 内容：
-   [粘贴 docs/PRD.md]
+   PPRD.md 内容：
+   [粘贴 docs/PPRD.md]
 
    现有 Design-Document.md 内容：
    [粘贴 docs/Design-Document.md]
@@ -258,8 +258,8 @@ python scripts/check_consistency.py --scope PRD-FEAT-012
 
    ### Epic 1: 用户身份验证系统
    - 进度：60% → 80%
-   - ✅ RD.md 完成
    - ✅ PRD.md 完成
+   - ✅ PPRD.md 完成
    - ✅ Design Document 完成
    - ⏳ Test Plan 待生成
    ```

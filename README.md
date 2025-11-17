@@ -1,18 +1,21 @@
 # SpecGovernor
 
-**Version**: 1.0.0
+**Version**: 3.0.0 🎉
 **Type**: Toolkit (Prompt Templates + Workflow Documentation + Helper Scripts)
 
 SpecGovernor 是一个专为**超级个体** (Super Individuals) 设计的综合工具包，提供标准化的软件开发流程支持。
+
+> **v3.0 重大更新**：RD 和 PRD 已合并为单一 PRD 文档，简化流程，提高效率！
 
 ---
 
 ## 🎯 核心价值
 
 - **🔄 显式可追溯性**：通过嵌入式标记实现 100% 可靠的追踪
-- **📝 标准化流程**：RD → PRD → Design Document → Test Plan → Code
+- **📝 精简流程**：PRD → Design Document → Test Plan → Code（4 阶段）
 - **🤖 AI 驱动**：配合 Claude Code 使用 prompt templates 生成规范文档
 - **💰 零成本基础**：无需软件许可证，只需 Python 和 Claude Code
+- **⚡ 超级个体优化**：消除 RD→PRD 转换的冗余工作
 
 ---
 
@@ -111,8 +114,8 @@ SpecGovernor 提供 5 个 Python helper scripts：
 | **init_project.py** | 初始化项目结构 | \`python scripts/init_project.py\` |
 | **parse_tags.py** | 解析可追溯性标记 | \`python scripts/parse_tags.py\` |
 | **build_graph.py** | 构建依赖图谱 | \`python scripts/build_graph.py\` |
-| **impact_analysis.py** | 分析变更影响 | \`python scripts/impact_analysis.py --changed=docs/RD.md\` |
-| **check_consistency.py** | 收集一致性检查上下文 | \`python scripts/check_consistency.py --scope=RD-REQ-001\` |
+| **impact_analysis.py** | 分析变更影响 | \`python scripts/impact_analysis.py --changed=docs/PRD.md\` |
+| **check_consistency.py** | 收集一致性检查上下文 | \`python scripts/check_consistency.py --scope=PRD-REQ-001\` |
 
 ### 典型工作流
 
@@ -120,8 +123,8 @@ SpecGovernor 提供 5 个 Python helper scripts：
 # 0. 项目规划（Project Manager 角色）
 # 编辑 .specgov/tasks/project-manager.md 创建 Epic
 
-# 1. 生成文档（切换到相应角色，如 Requirements Analyst）
-# 在 Claude Code 中使用 /specgov-rd-gen 等命令
+# 1. 生成 PRD（Product Manager 角色）
+# 在 Claude Code 中使用 /specgov-prd-gen 命令
 
 # 2. 生成文档后，解析标记
 python scripts/parse_tags.py
@@ -129,14 +132,14 @@ python scripts/parse_tags.py
 # 3. 构建依赖图谱
 python scripts/build_graph.py
 
-# 4. 更新任务进度（更新角色任务文件和项目经理 Epic）
-# 编辑 .specgov/tasks/rd-analyst.md 和 project-manager.md
+# 4. 更新任务进度
+# 编辑 .specgov/tasks/product-manager.md 和 project-manager.md
 
 # 5. 修改文档后，分析影响
-python scripts/impact_analysis.py --changed=docs/RD.md
+python scripts/impact_analysis.py --changed=docs/PRD.md
 
 # 6. 检查特定需求的一致性
-python scripts/check_consistency.py --scope=RD-REQ-005 --output=context.md
+python scripts/check_consistency.py --scope=PRD-REQ-005 --output=context.md
 \`\`\`
 
 ---
@@ -157,15 +160,14 @@ your-project/
 │   └── project-config.json   # 项目配置
 │
 ├── docs/                     # 您的项目文档
-│   ├── RD.md
-│   ├── PRD.md
+│   ├── PRD.md                # 产品需求文档（包含业务需求和产品功能）
 │   ├── Design-Document.md
 │   └── Test-Plan.md
 │
 ├── reviews/                  # 审查报告（质量保证）
-│   ├── RD-Review-Report-YYYY-MM-DD.md
 │   ├── PRD-Review-Report-YYYY-MM-DD.md
-│   └── Design-Review-Report-YYYY-MM-DD.md
+│   ├── Design-Review-Report-YYYY-MM-DD.md
+│   └── Test-Review-Report-YYYY-MM-DD.md
 │
 └── src/                      # 您的源代码
 \`\`\`
@@ -179,20 +181,19 @@ your-project/
 作为超级个体，您需要在以下角色之间切换：
 
 1. **Project Manager** - 创建 Epic，跟踪整体进度
-2. **Requirements Analyst** - 生成和审查 RD
-3. **Product Manager** - 生成和审查 PRD
-4. **Architect** - 生成和审查 Design Document
-5. **Test Manager** - 生成和审查 Test Plan
-6. **Developer** - 实现代码
+2. **Product Manager** - 生成和审查 PRD（包含需求和产品功能）
+3. **Architect** - 生成和审查 Design Document
+4. **Test Manager** - 生成和审查 Test Plan
+5. **Developer** - 实现代码
 
-### SDLC 流程
+### SDLC 流程（v3.0 精简版）
 
 \`\`\`
-RD (需求) → PRD (产品) → Design (设计) → Test Plan (测试) → Code (代码)
-     ↓            ↓            ↓            ↓            ↓
-  rd-generator  prd-generator  design-generator  test-generator  code-generator
-     ↓            ↓            ↓            ↓            ↓
-  rd-reviewer   prd-reviewer  design-reviewer  test-reviewer  code-reviewer
+PRD (需求+产品) → Design (设计) → Test Plan (测试) → Code (代码)
+        ↓               ↓              ↓             ↓
+  prd-generator   design-generator test-generator code-generator
+        ↓               ↓              ↓             ↓
+  prd-reviewer    design-reviewer  test-reviewer  code-reviewer
 \`\`\`
 
 ---
@@ -204,19 +205,20 @@ SpecGovernor 使用嵌入式标记建立文档间的追溯链：
 ### 标记类型
 
 \`\`\`markdown
-[ID: RD-REQ-001]                  # 定义唯一标识
-[Implements: RD-REQ-001]          # 声明实现了上游需求
-[Designs-for: PRD-FEAT-012]       # 声明为某功能设计
-[Tests-for: DESIGN-API-008]       # 声明测试某设计
-[Decomposes: RD-AUTH-001]         # 分解父级需求
+[ID: PRD-REQ-001]                 # 定义业务需求（Part 1）
+[ID: PRD-FEAT-012]                # 定义产品功能（Part 2）
+[Implements: PRD-REQ-001]         # 功能实现需求
+[Designs-for: PRD-FEAT-012]       # 设计某功能
+[Tests-for: DESIGN-API-008]       # 测试某设计
+[Decomposes: PRD-REQ-001]         # 分解父级需求
 \`\`\`
 
 ### ID 前缀规范
 
 | 阶段 | 前缀 | 示例 |
 |------|------|------|
-| RD | RD-REQ-, RD-GOAL- | RD-REQ-001 |
-| PRD | PRD-FEAT-, PRD-US- | PRD-FEAT-012 |
+| PRD (Part 1: 业务需求) | PRD-REQ-, PRD-GOAL-, PRD-USER- | PRD-REQ-001 |
+| PRD (Part 2: 产品功能) | PRD-FEAT-, PRD-US- | PRD-FEAT-012 |
 | Design | DESIGN-API-, DESIGN-DB- | DESIGN-API-008 |
 | Test | TEST-CASE-, TEST-PERF- | TEST-CASE-015 |
 | Code | CODE-API-, CODE-SERVICE- | CODE-API-008 |
@@ -225,25 +227,37 @@ SpecGovernor 使用嵌入式标记建立文档间的追溯链：
 
 ## 💡 示例
 
-### 需求定义 (RD.md)
+### 业务需求 (PRD.md - Part 1)
 
 \`\`\`markdown
-## OAuth2 登录需求
-**[ID: RD-REQ-005]**
+## Part 1: Business Requirements
+
+### OAuth2 Authentication Requirement
+**[ID: PRD-REQ-005]**
 
 系统需支持通过 OAuth2 协议进行用户登录。
+
+**验收标准：**
+- ✅ 支持 Google/GitHub/Microsoft OAuth2
+- ✅ 安全处理 token
 \`\`\`
 
-### 产品功能 (PRD.md)
+### 产品功能 (PRD.md - Part 2)
 
 \`\`\`markdown
-## OAuth2 Social Login
-**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+## Part 2: Product Features
+
+### OAuth2 Social Login Feature
+**[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
 
 #### User Story
 > **As** 新用户
 > **I want** 使用我的 Google 账号登录
 > **So that** 我不需要创建新密码
+
+#### Acceptance Criteria
+- ✅ 显示 OAuth2 登录按钮
+- ✅ 授权后自动登录
 \`\`\`
 
 ### API 设计 (Design-Document.md)
@@ -275,11 +289,11 @@ export class AuthController {
 运行 \`build_graph.py\` 后，会生成依赖图谱：
 
 \`\`\`
-RD-REQ-005
-  └─ PRD-FEAT-012 (implements)
-      └─ DESIGN-API-008 (designs-for)
-          └─ CODE-API-008 (implements)
-              └─ TEST-CASE-015 (tests-for)
+PRD-REQ-005 (业务需求)
+  └─ PRD-FEAT-012 (implements) (产品功能)
+      └─ DESIGN-API-008 (designs-for) (API 设计)
+          └─ TEST-CASE-015 (tests-for) (测试用例)
+              └─ CODE-API-008 (implements) (代码实现)
 \`\`\`
 
 ---

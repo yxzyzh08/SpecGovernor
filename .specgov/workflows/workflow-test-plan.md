@@ -5,7 +5,7 @@
 ## Prerequisites
 
 - ✅ Design-Document.md 已完成并审查
-- ✅ PRD.md 可供参考
+- ✅ PPRD.md 可供参考
 - ✅ 已识别测试环境（操作系统、浏览器、数据库等）
 - ✅ Project Manager 已分配 Test Plan 生成任务
 
@@ -51,8 +51,8 @@
 Design-Document.md 内容：
 [粘贴 docs/Design-Document.md 完整内容]
 
-PRD.md 内容（供参考）：
-[粘贴 docs/PRD.md 完整内容]
+PPRD.md 内容（供参考）：
+[粘贴 docs/PPRD.md 完整内容]
 
 测试环境：
 - 操作系统：Windows 10/11
@@ -87,7 +87,7 @@ Claude Code 将生成 Test-Plan.md，包含：
 # Test Plan
 
 > **Version**: 1.0
-> **Based on**: Design-Document.md (v1.0), PRD.md (v1.0)
+> **Based on**: Design-Document.md (v1.0), PPRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. Test Strategy
@@ -161,8 +161,8 @@ Claude Code 将生成 Test-Plan.md，包含：
    Design-Document.md 内容（用于验证可追溯性）：
    [粘贴 docs/Design-Document.md 完整内容]
 
-   PRD.md 内容（用于验证覆盖度）：
-   [粘贴 docs/PRD.md 完整内容]
+   PPRD.md 内容（用于验证覆盖度）：
+   [粘贴 docs/PPRD.md 完整内容]
    ```
 4. Claude Code 输出审查报告
 
@@ -232,8 +232,8 @@ python scripts/check_consistency.py --scope DESIGN-API-008
 
    ### Epic 1: 用户身份验证系统
    - 进度：80% → 90%
-   - ✅ RD.md 完成
    - ✅ PRD.md 完成
+   - ✅ PPRD.md 完成
    - ✅ Design Document 完成
    - ✅ Test Plan 完成
    - ⏳ 代码实现待开始

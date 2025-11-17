@@ -85,7 +85,7 @@
 请提供以下输入：
 
 1. **Design-Document.md 完整内容**
-2. **PRD.md 完整内容**（用于验证可追溯性）
+2. **PPRD.md 完整内容**（用于验证可追溯性）
 3. **技术约束**（可选，用于验证技术可行性）
 
 ## Output Format
@@ -255,4 +255,4 @@
 
 ---
 
-**Ready to review?** 请提供 Design-Document.md 和 PRD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/Design-Review-Report-[今天日期].md` 文件中。
+**Ready to review?** 请提供 Design-Document.md 和 PPRD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/Design-Review-Report-[今天日期].md` 文件中。

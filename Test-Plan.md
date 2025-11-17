@@ -1,7 +1,7 @@
 # **Test Plan - SpecGovernor**
 
 > **Version**: v2.0
-> **Based on**: Design-Document.md (v2.0) + PRD.md (v2.0)
+> **Based on**: PRD.md (v3.0) + Design-Document.md
 > **Created**: 2025-11-16
 > **Updated**: 2025-11-16
 > **Test Goal**: 工具包组件的综合测试策略
@@ -234,12 +234,12 @@ ls .specgov/scripts/ | wc -l
 **[ID: RD-TODO-001]**
 
 ### 1.1 Create Todo Item
-**[ID: RD-REQ-001] [Decomposes: RD-TODO-001]**
+**[ID: PRD-REQ-001] [Decomposes: PRD-REQ-TODO-001]**
 
 用户必须能够创建待办事项。
 
 ### 1.2 Mark Todo as Complete
-**[ID: RD-REQ-002] [Decomposes: RD-TODO-001]**
+**[ID: PRD-REQ-002] [Decomposes: PRD-REQ-TODO-001]**
 
 用户必须能够标记待办事项为完成状态。
 ```
@@ -424,8 +424,8 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 - ✅ 生成的 RD.md 包含：
   - 正确的文档头（Version, Created date）
   - 身份认证需求章节
-  - OAuth2 需求带 **[ID: RD-REQ-XXX]** 标记
-  - 密码重置需求带 **[ID: RD-REQ-YYY]** 标记
+  - OAuth2 需求带 **[ID: PRD-REQ-XXX]** 标记
+  - 密码重置需求带 **[ID: PRD-REQ-YYY]** 标记
   - 每个需求的验收标准
   - 使用 **[Decomposes: XXX]** 的层级结构（如适用）
 
@@ -456,7 +456,7 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 **预期结果：**
 - ✅ 修改后的 RD.md 包含：
   - 原有需求保留（保持原有 ID）
-  - 新的 2FA 需求添加了新的 **[ID: RD-REQ-ZZZ]** 标记
+  - 新的 2FA 需求添加了新的 **[ID: PRD-REQ-ZZZ]** 标记
   - 正确集成到现有结构中
 
 **验证清单：**
@@ -557,7 +557,7 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 
 #### **PRD Generator Tests:**
 - [ ] 生成带 **[ID: PRD-FEAT-XXX]** 的功能
-- [ ] 使用 **[Implements: RD-REQ-XXX]** 链接到 RD
+- [ ] 使用 **[Implements: PRD-REQ-REQ-XXX]** 链接到 RD
 - [ ] 创建格式正确的用户故事
 - [ ] 使用正确的 "PRD" 术语（不是 product requirements）
 
@@ -689,7 +689,7 @@ SpecGovernor 是一个**工具包**（不是软件），因此测试重点聚焦
 1. 执行完整工作流：RD → PRD → Design Document → Test Plan → Code
 2. 遵循每个阶段的工作流文档
 3. 验证可追溯性链：
-   - PRD 使用 [Implements: RD-XXX] 链接到 RD
+   - PRD 使用 [Implements: PRD-REQ-XXX] 链接到 RD
    - Design Document 使用 [Designs-for: PRD-XXX] 链接到 PRD
    - Test Plan 使用 [Tests-for: DESIGN-XXX] 链接到 Design Document
 
@@ -886,7 +886,7 @@ def test_init_large_project(tmp_path):
 **[ID: RD-AUTH-001]**
 
 ### 1.1 OAuth2 Login
-**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+**[ID: PRD-REQ-005] [Decomposes: PRD-REQ-AUTH-001]**
 
 System must support OAuth2 login.
 ```
@@ -938,7 +938,7 @@ def test_parse_tags_single_file(tmp_path):
 **[ID: RD-AUTH-001]**
 
 ### 1.1 OAuth2 Login
-**[ID: RD-REQ-005] [Decomposes: RD-AUTH-001]**
+**[ID: PRD-REQ-005] [Decomposes: PRD-REQ-AUTH-001]**
 """)
 
     os.chdir(tmp_path)
@@ -964,8 +964,8 @@ def test_parse_tags_single_file(tmp_path):
 **[ID: TEST-CASE-006-002]**
 
 **测试数据：**
-- RD.md 包含 `[ID: RD-REQ-001]`
-- PRD.md 包含 `[ID: PRD-FEAT-001] [Implements: RD-REQ-001]`
+- RD.md 包含 `[ID: PRD-REQ-001]`
+- PRD.md 包含 `[ID: PRD-FEAT-001] [Implements: PRD-REQ-REQ-001]`
 - Design-Document.md 包含 `[ID: DESIGN-API-001] [Designs-for: PRD-FEAT-001]`
 - Test-Plan.md 包含 `[ID: TEST-CASE-001] [Tests-for: DESIGN-API-001]`
 
@@ -1088,7 +1088,7 @@ def test_build_graph(tmp_path):
 - Git 工作目录
 
 **测试步骤：**
-1. 修改 RD.md（更改需求 [ID: RD-REQ-005]）
+1. 修改 RD.md（更改需求 [ID: PRD-REQ-005]）
 2. Git add 并 commit 更改
 3. 运行：`python .specgov/scripts/impact_analysis.py --changed=docs/RD.md`
 4. 验证输出
@@ -1143,7 +1143,7 @@ def test_impact_analysis(tmp_path):
     # Create and commit RD.md
     rd_file = tmp_path / 'docs' / 'RD.md'
     rd_file.parent.mkdir(parents=True)
-    rd_file.write_text("**[ID: RD-REQ-005]** OAuth2 Login")
+    rd_file.write_text("**[ID: PRD-REQ-005]** OAuth2 Login")
     repo.index.add([str(rd_file)])
     repo.index.commit("Initial commit")
 
@@ -1162,7 +1162,7 @@ def test_impact_analysis(tmp_path):
     graph_file.write_text(json.dumps(graph))
 
     # Modify RD.md
-    rd_file.write_text("**[ID: RD-REQ-005]** OAuth2 Login MODIFIED")
+    rd_file.write_text("**[ID: PRD-REQ-005]** OAuth2 Login MODIFIED")
 
     os.chdir(tmp_path)
 

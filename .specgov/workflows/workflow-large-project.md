@@ -8,15 +8,15 @@
 - **项目规模** ≥ 10 万行代码
 - **功能模块** ≥ 5 个独立模块
 - **团队规模** ≥ 3 人（或 Super Individual 管理复杂项目）
-- **文档复杂度**：单一文档难以维护（如 RD.md > 500 行）
+- **文档复杂度**：单一文档难以维护（如 PRD.md > 500 行）
 
 ## Large Project Structure
 
 大项目采用 **两层文档结构**：
 
 ### Overview Documents (概览文档)
-- `RD.md` - 项目整体需求概览
-- `PRD.md` - 项目整体产品概览
+- `PRD.md` - 项目整体需求概览
+- `PPRD.md` - 项目整体产品概览
 - `Design-Document.md` - 项目整体架构概览
 - `Test-Plan.md` - 项目整体测试策略概览
 
@@ -30,11 +30,11 @@
 
 ```
 docs/
-├── RD.md                          # Overview: 整体需求
+├── PRD.md                          # Overview: 整体需求
 ├── RD-User.md                     # Module: 用户模块需求
 ├── RD-Order.md                    # Module: 订单模块需求
 ├── RD-Payment.md                  # Module: 支付模块需求
-├── PRD.md                         # Overview: 整体产品
+├── PPRD.md                         # Overview: 整体产品
 ├── PRD-User.md                    # Module: 用户模块产品功能
 ├── PRD-Order.md                   # Module: 订单模块产品功能
 ├── PRD-Payment.md                 # Module: 支付模块产品功能
@@ -100,14 +100,14 @@ docs/
 
 ### Phase 2: Generate Overview Documents
 
-#### Step 1: Generate RD.md (Overview)
+#### Step 1: Generate PRD.md (Overview)
 
-1. 切换到 Requirements Analyst 角色
+1. 切换到 Product Manager 角色
 2. 加载 `.specgov/prompts/rd-overview-generator.md`（大项目变体）
 3. 提供以下输入：
 
 ```
-请生成 RD.md（项目整体需求概览）。
+请生成 PRD.md（项目整体需求概览）。
 
 项目上下文：
 - 项目名称：电商平台
@@ -127,7 +127,7 @@ docs/
 - 所有模块必须支持国际化（i18n）
 ```
 
-**Output: `docs/RD.md`**
+**Output: `docs/PRD.md`**
 
 ```markdown
 # Requirements Document (RD)
@@ -270,7 +270,7 @@ docs/
 - ✅ 日期、时间、货币格式正确本地化
 ```
 
-#### Step 2: Repeat for PRD.md, Design-Document.md, Test-Plan.md
+#### Step 2: Repeat for PPRD.md, Design-Document.md, Test-Plan.md
 
 遵循相同流程，使用相应的 overview generator prompts：
 - `.specgov/prompts/prd-overview-generator.md`
@@ -281,15 +281,15 @@ docs/
 
 #### Step 1: Generate Module RD (RD-User.md)
 
-1. 切换到 Requirements Analyst 角色
+1. 切换到 Product Manager 角色
 2. 加载 `.specgov/prompts/rd-module-generator.md`（大项目变体）
 3. 提供以下输入：
 
 ```
 请生成 RD-User.md（User 模块需求文档）。
 
-RD.md（Overview）内容：
-[粘贴 docs/RD.md 中关于 User 模块的部分]
+PRD.md（Overview）内容：
+[粘贴 docs/PRD.md 中关于 User 模块的部分]
 
 模块名称：User
 
@@ -313,7 +313,7 @@ RD.md（Overview）内容：
 
 > **Version**: 1.0
 > **Module**: User
-> **Based on**: RD.md (v1.0)
+> **Based on**: PRD.md (v1.0)
 > **Created**: 2025-11-16
 
 ## 1. User Module Overview
@@ -556,7 +556,7 @@ python scripts/impact_analysis.py --id RD-CROSS-AUTH-001 --cross-module
 
 ### 1. Start with Overview Documents
 
-- 首先生成 RD.md, PRD.md, Design-Document.md, Test-Plan.md（Overview）
+- 首先生成 PRD.md, PPRD.md, Design-Document.md, Test-Plan.md（Overview）
 - 定义模块边界和跨模块需求
 - 确保所有模块对整体架构有统一理解
 
@@ -602,7 +602,7 @@ python scripts/impact_analysis.py --id RD-CROSS-AUTH-001 --cross-module
 ## Validation Checklist
 
 - [ ] 已定义所有功能模块
-- [ ] 已生成 Overview 文档（RD.md, PRD.md, Design-Document.md, Test-Plan.md）
+- [ ] 已生成 Overview 文档（PRD.md, PPRD.md, Design-Document.md, Test-Plan.md）
 - [ ] 每个模块都有独立的模块文档（RD-[Module].md 等）
 - [ ] 所有模块内容都有 `[Module: XXX]` 标记
 - [ ] 跨模块依赖已显式声明（`[Depends-on: MODULE:ID]`）
@@ -647,8 +647,8 @@ git commit -m "Add User module requirements and product features"
 
 ### Step 2: Generate Overview Documents
 
-1. 生成 RD.md（整体需求概览）
-2. 生成 PRD.md（整体产品概览）
+1. 生成 PRD.md（整体需求概览）
+2. 生成 PPRD.md（整体产品概览）
 3. 生成 Design-Document.md（整体架构概览）
 4. 生成 Test-Plan.md（整体测试策略）
 

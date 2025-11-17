@@ -15,12 +15,12 @@
 **此 template 与 `impact_analysis.py` 脚本配合使用：**
 
 1. **修改文件但不提交**：
-   - 编辑 RD.md、PRD.md 或其他文档
+   - 编辑 PRD.md、PPRD.md 或其他文档
    - 不要 `git add` 或 `git commit`
 
 2. **运行影响分析脚本**：
    ```powershell
-   python scripts/impact_analysis.py --changed docs/RD.md
+   python scripts/impact_analysis.py --changed docs/PRD.md
    ```
 
 3. **加载此 template 到 Claude Code**：
@@ -213,23 +213,23 @@
 🔍 Impact Analysis Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Analyzing: docs/RD.md
+Analyzing: docs/PRD.md
 
 变更的节点 (2):
-  • RD-REQ-005 (requirement) at docs/RD.md#L25
-  • RD-REQ-006 (requirement) at docs/RD.md#L45
+  • PRD-REQ-005 (requirement) at docs/PRD.md#L25
+  • PRD-REQ-006 (requirement) at docs/PRD.md#L45
 
 受影响的节点 (5):
-  ⚠️  PRD-FEAT-012 (feature) at docs/PRD.md#L120
-      原因：Implements RD-REQ-005
+  ⚠️  PRD-FEAT-012 (feature) at docs/PPRD.md#L120
+      原因：Implements PRD-REQ-005
   ⚠️  DESIGN-API-008 (api_design) at docs/Design-Document.md#L450
       原因：Designs-for PRD-FEAT-012
   ⚠️  TEST-CASE-015 (test_case) at docs/Test-Plan.md#L230
       原因：Tests-for DESIGN-API-008
   ⚠️  CODE-API-008 (code) at src/controllers/auth_controller.ts#L15
       原因：Implements DESIGN-API-008
-  ⚠️  PRD-FEAT-016 (feature) at docs/PRD.md#L180
-      原因：Implements RD-REQ-006
+  ⚠️  PRD-FEAT-016 (feature) at docs/PPRD.md#L180
+      原因：Implements PRD-REQ-006
 
 建议的行动：
   1. Review and update affected documents
@@ -257,15 +257,15 @@ Analyzing: docs/RD.md
 
 ## Changed Nodes Analysis（变更节点分析）
 
-### RD-REQ-005 - OAuth2 Login Support
-- **位置**：docs/RD.md#L25
+### PRD-REQ-005 - OAuth2 Login Support
+- **位置**：docs/PRD.md#L25
 - **变更类型**：修改
 - **变更描述**：添加了新的验收标准 "用户可以关联多个 OAuth2 账户"
 - **影响范围**：模块内（Authentication 模块）
 - **影响评估**：**中** - 这是功能增强，需要修改下游的 PRD、设计和代码
 
-### RD-REQ-006 - Session Management
-- **位置**：docs/RD.md#L45
+### PRD-REQ-006 - Session Management
+- **位置**：docs/PRD.md#L45
 - **变更类型**：修改
 - **变更描述**：会话有效期从 12 小时改为 24 小时
 - **影响范围**：局部（Session 配置）
@@ -278,8 +278,8 @@ Analyzing: docs/RD.md
 ### High Priority（高优先级 - 必须立即处理）
 
 #### 1. PRD-FEAT-012 - OAuth2 Social Login
-- **位置**：docs/PRD.md#L120
-- **影响原因**：实现 RD-REQ-005，需要添加新的验收标准
+- **位置**：docs/PPRD.md#L120
+- **影响原因**：实现 PRD-REQ-005，需要添加新的验收标准
 - **预期变更**：
   - 在验收标准中添加："用户可以关联多个 OAuth2 账户到同一个系统账户"
   - 添加用户故事说明多账户关联的场景
@@ -321,7 +321,7 @@ Analyzing: docs/RD.md
 - **风险**：中 - 代码逻辑变更，需要仔细测试
 
 #### 5. PRD-FEAT-016 - Session Management
-- **位置**：docs/PRD.md#L180
+- **位置**：docs/PPRD.md#L180
 - **影响原因**：会话有效期变更，需要更新 PRD
 - **预期变更**：
   - 更新验收标准：会话有效期从 12 小时改为 24 小时
@@ -410,7 +410,7 @@ Analyzing: docs/RD.md
 **需要通知的利益相关者：**
 
 1. **Product Manager**：
-   - 变更摘要：RD-REQ-005 添加了多账户关联功能，RD-REQ-006 会话有效期延长到 24 小时
+   - 变更摘要：PRD-REQ-005 添加了多账户关联功能，PRD-REQ-006 会话有效期延长到 24 小时
    - 对产品功能的影响：用户现在可以使用多个 OAuth 提供商登录，更灵活
    - 行动：审查更新后的 PRD，确认功能符合产品愿景
 
@@ -455,7 +455,7 @@ Analyzing: docs/RD.md
 5. [ ] Execute Phase 2 (code changes)
 6. [ ] Execute Phase 3 (verification)
 7. [ ] Track progress in `.specgov/tasks/` files
-8. [ ] Re-run impact analysis: `python scripts/impact_analysis.py --changed docs/RD.md`
+8. [ ] Re-run impact analysis: `python scripts/impact_analysis.py --changed docs/PRD.md`
 9. [ ] Commit changes to Git
 ```
 

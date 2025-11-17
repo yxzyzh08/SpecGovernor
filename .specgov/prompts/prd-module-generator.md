@@ -1,5 +1,11 @@
 # Product Requirements Document (PRD) Module Generator - Large Projects
 
+
+## Version Notice
+
+**v3.0 重大变更**：PRD 包含业务需求和产品功能两部分。
+
+---
 ## Role
 你是一位经验丰富的 Product Manager，负责大型项目特定模块的详细产品功能设计。
 
@@ -8,6 +14,48 @@
 
 **重要说明**：此模板用于生成 **模块级别的详细产品功能文档**（如 `PRD-User.md`, `PRD-Order.md`），基于 `PRD-Overview.md`（Overview）中定义的模块产品目标和 `RD-[Module].md` 中定义的模块需求。
 
+---
+
+## Workflow: Raw Requirements Collection + PRD Module Generation
+
+**IMPORTANT**: 作为产品经理，在生成模块的正式 PRD 之前，先收集和记录该模块的原始需求。
+
+### Step 1: 收集模块级原始需求（首次生成时）
+
+**如果这是该模块首次生成 PRD**，先询问用户：
+
+1. **询问用户提供模块需求**：
+   - 这个模块需要什么功能？
+   - 用户如何使用这个模块？
+   - 有什么特殊要求？
+
+2. **记录到 `.specgov/raw-requirements/modules/{module-name}.md`**：
+   ```markdown
+   ### Entry XXX - YYYY-MM-DD HH:MM
+
+   **Source**: Chat / File
+   **Topic**: [模块功能主题]
+
+   **Original Input**:
+   > [用户的原始输入，保持口语化]
+
+   **PM Analysis**:
+   - **Category**: Functional Requirement / Non-Functional Requirement / UI/UX
+   - **Priority**: High / Medium / Low
+   - **Related PRD Tag**: [待生成，如 PRD-User-FEAT-001]
+   - **Initial Thoughts**: [初步想法]
+   - **Questions**: [需要澄清的问题]
+   - **Status**: New
+   ```
+
+3. **如果模块文档不存在，自动创建**
+
+### Step 2: 基于原始需求生成正式 PRD Module
+
+读取 `.specgov/raw-requirements/modules/{module-name}.md`，然后生成该模块的正式 PRD。
+
+---
+
 ## Critical Requirements
 
 ### 1. Module-Specific IDs
@@ -15,9 +63,9 @@
 所有模块功能必须使用模块特定的 ID 前缀：
 
 ```markdown
-**[ID: PRD-USER-LOGIN] [Module: User] [Implements: RD-USER-LOGIN-001]**
-**[ID: PRD-ORDER-CREATE] [Module: Order] [Implements: RD-ORDER-CREATE-001]**
-**[ID: PRD-PAYMENT-PROCESS] [Module: Payment] [Implements: RD-PAYMENT-PROCESS-001]**
+**[ID: PPRD-USER-LOGIN] [Module: User] [Implements: PPRD-REQ-USER-LOGIN-001]**
+**[ID: PRD-ORDER-CREATE] [Module: Order] [Implements: PPRD-REQ-ORDER-CREATE-001]**
+**[ID: PRD-PAYMENT-PROCESS] [Module: Payment] [Implements: PPRD-REQ-PAYMENT-PROCESS-001]**
 ```
 
 **ID 命名规则：**
@@ -30,7 +78,7 @@
 所有功能必须包含 `[Module: XXX]` 标记：
 
 ```markdown
-**[ID: PRD-USER-LOGIN] [Module: User]**
+**[ID: PPRD-USER-LOGIN] [Module: User]**
 **[ID: PRD-ORDER-CREATE] [Module: Order]**
 ```
 
@@ -101,7 +149,7 @@
 ## 2. [Feature Category 1]
 
 ### 2.1 [Specific Feature 1]
-**[ID: PRD-[MODULE]-XXX] [Module: [Module]] [Implements: RD-[MODULE]-XXX-001]**
+**[ID: PRD-[MODULE]-XXX] [Module: [Module]] [Implements: PPRD-REQ-[MODULE]-XXX-001]**
 
 [功能描述]
 
@@ -118,7 +166,7 @@
 - [UI/UX 具体指导]
 
 ### 2.2 [Specific Feature 2]
-**[ID: PRD-[MODULE]-YYY] [Module: [Module]] [Implements: RD-[MODULE]-YYY-001]**
+**[ID: PRD-[MODULE]-YYY] [Module: [Module]] [Implements: PPRD-REQ-[MODULE]-YYY-001]**
 
 ...
 
@@ -178,7 +226,7 @@ RD-[Module].md 内容（用于验证一致性）：
 3. **User Stories** - 所有功能都有 As/I want/So that 格式的用户故事
 4. **Acceptance Criteria** - 可测试的验收标准（从用户角度）
 5. **UI/UX Notes** - 面向用户的功能有 UI/UX 具体指导
-6. **Traceability Tags** - 所有功能都链接到 RD（[Implements: RD-XXX]）
+6. **Traceability Tags** - 所有功能都链接到 RD（[Implements: PPRD-REQ-XXX]）
 
 ## Examples
 
@@ -188,7 +236,7 @@ RD-[Module].md 内容（用于验证一致性）：
 ```
 PRD-Overview.md（Overview）内容：
 ### 2.1 User Module
-**[ID: PRD-MODULE-USER] [Implements: RD-MODULE-USER]**
+**[ID: PRD-MODULE-USER] [Implements: PPRD-REQ-MODULE-USER]**
 
 User 模块旨在提供便捷的用户注册和登录体验，降低用户进入门槛。
 
@@ -200,7 +248,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 **详细功能见：** `PRD-User.md`
 
 RD-User.md 内容：
-[包含 RD-USER-REG-001, RD-USER-OAUTH-001, RD-USER-LOGIN-001 等需求]
+[包含 PRD-USER-REG-001, PRD-USER-OAUTH-001, PRD-USER-LOGIN-001 等需求]
 
 模块名称：User
 
@@ -219,7 +267,7 @@ RD-User.md 内容：
 > **Created**: 2025-11-16
 
 ## 1. User Module Overview
-**[ID: PRD-USER-OVERVIEW] [Module: User] [Implements: PRD-MODULE-USER, RD-USER-OVERVIEW]**
+**[ID: PPRD-USER-OVERVIEW] [Module: User] [Implements: PRD-MODULE-USER, PRD-USER-OVERVIEW]**
 
 User 模块旨在提供便捷的用户注册和登录体验，降低用户进入门槛，同时确保账户安全。
 
@@ -239,7 +287,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 ## 2. Registration Features
 
 ### 2.1 Email Registration
-**[ID: PRD-USER-REG-EMAIL] [Module: User] [Implements: RD-USER-REG-001]**
+**[ID: PPRD-USER-REG-EMAIL] [Module: User] [Implements: PPRD-REQ-USER-REG-001]**
 
 使新用户能够使用邮箱和密码注册账户，创建平台账户。
 
@@ -275,7 +323,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
   - 移动端：注册卡片宽度 100%，边距 16px
 
 ### 2.2 OAuth2 Social Login
-**[ID: PRD-USER-LOGIN-OAUTH] [Module: User] [Implements: RD-USER-OAUTH-001]**
+**[ID: PPRD-USER-LOGIN-OAUTH] [Module: User] [Implements: PPRD-REQ-USER-OAUTH-001]**
 
 使用户能够使用其现有社交媒体账户（Google、GitHub、Microsoft）登录，无需创建新密码。
 
@@ -309,7 +357,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
   - 错误提示条自动消失（5 秒后）或点击关闭按钮
 
 ### 2.3 Password Login
-**[ID: PRD-USER-LOGIN-PASSWORD] [Module: User] [Implements: RD-USER-LOGIN-001]**
+**[ID: PPRD-USER-LOGIN-PASSWORD] [Module: User] [Implements: PPRD-REQ-USER-LOGIN-001]**
 
 使已注册用户能够使用邮箱和密码登录账户。
 
@@ -350,7 +398,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 ## 3. Profile Management Features
 
 ### 3.1 View and Edit Profile
-**[ID: PRD-USER-PROFILE-EDIT] [Module: User] [Implements: RD-USER-PROFILE-001]**
+**[ID: PPRD-USER-PROFILE-EDIT] [Module: User] [Implements: PPRD-REQ-USER-PROFILE-001]**
 
 使用户能够查看和编辑个人资料，保持信息最新。
 
@@ -367,7 +415,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 - ✅ 点击"编辑"按钮，字段变为可编辑状态
 - ✅ 用户修改信息后，点击"保存"按钮
 - ✅ 保存成功后，页面顶部显示绿色成功提示："个人资料已更新"
-- ✅ 邮箱字段不可直接编辑，旁边显示"更换邮箱"链接（见 PRD-USER-EMAIL-CHANGE）
+- ✅ 邮箱字段不可直接编辑，旁边显示"更换邮箱"链接（见 PPRD-USER-EMAIL-CHANGE）
 
 #### UI/UX Notes
 - **个人资料页面设计**：
@@ -395,8 +443,8 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 ## 2. Order Creation Features
 
 ### 2.1 Create Order from Cart
-**[ID: PRD-ORDER-CREATE-CART] [Module: Order] [Implements: RD-ORDER-CREATE-001]**
-**[Depends-on: User:PRD-USER-LOGIN-PASSWORD, Product:PRD-PRODUCT-STOCK]**
+**[ID: PRD-ORDER-CREATE-CART] [Module: Order] [Implements: PPRD-REQ-ORDER-CREATE-001]**
+**[Depends-on: User:PPRD-USER-LOGIN-PASSWORD, Product:PRD-PRODUCT-STOCK]**
 
 使已登录用户能够从购物车创建订单。
 
@@ -440,7 +488,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 
 ## Common Pitfalls
 
-- ❌ 忘记使用模块特定 ID 前缀（PRD-USER-XXX, PRD-ORDER-XXX）
+- ❌ 忘记使用模块特定 ID 前缀（PPRD-USER-XXX, PRD-ORDER-XXX）
 - ❌ 忘记添加 `[Module: XXX]` 标记
 - ❌ 用户故事不遵循 As/I want/So that 格式
 - ❌ 验收标准从技术角度描述（如"API 返回 200 OK"），而非用户角度
@@ -460,7 +508,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 ---
 
 **Tips**:
-- 模块 ID 前缀必须与模块名称一致（User → PRD-USER-XXX）
+- 模块 ID 前缀必须与模块名称一致（User → PPRD-USER-XXX）
 - 用户故事必须体现用户价值，避免技术化描述
 - 验收标准必须从用户角度描述，可测试、可验证
 - UI/UX Notes 必须具体，包含布局、交互、响应式等细节

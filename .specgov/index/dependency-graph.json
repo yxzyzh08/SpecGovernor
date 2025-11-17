@@ -1,4 +1,1691 @@
 {
-  "nodes": [],
-  "edges": []
+  "nodes": [
+    {
+      "id": "RD-REQ-001",
+      "type": "unknown",
+      "location": "CLAUDE.md#L99"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "CLAUDE.md#L100"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "CLAUDE.md#L101"
+    },
+    {
+      "id": "TEST-CASE-015",
+      "type": "test_case",
+      "location": "CLAUDE.md#L102"
+    },
+    {
+      "id": "DESIGN-ARCH-001",
+      "type": "architecture",
+      "location": "Design-Document.md#L26"
+    },
+    {
+      "id": "DESIGN-COMP-001",
+      "type": "design",
+      "location": "Design-Document.md#L92"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-STRUCT-001",
+      "type": "design",
+      "location": "Design-Document.md#L108"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L125"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L145"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-RD-GEN-001",
+      "type": "design",
+      "location": "Design-Document.md#L155"
+    },
+    {
+      "id": "PRD-REQ-XXX",
+      "type": "requirement",
+      "location": "Design-Document.md#L173"
+    },
+    {
+      "id": "RD-CATEGORY-001",
+      "type": "unknown",
+      "location": "Design-Document.md#L184"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "Design-Document.md#L187"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L210"
+    },
+    {
+      "id": "RD-AUTH-001",
+      "type": "unknown",
+      "location": "Design-Document.md#L219"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Design-Document.md#L224"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L241"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-PRD-GEN-001",
+      "type": "design",
+      "location": "Design-Document.md#L252"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "Design-Document.md#L270"
+    },
+    {
+      "id": "PRD-US-XXX",
+      "type": "user_story",
+      "location": "Design-Document.md#L271"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "Design-Document.md#L283"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "Design-Document.md#L302"
+    },
+    {
+      "id": "PRD-US-XXX",
+      "type": "user_story",
+      "location": "Design-Document.md#L303"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "Design-Document.md#L313"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "Design-Document.md#L330"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-DESIGN-GEN-001",
+      "type": "design",
+      "location": "Design-Document.md#L340"
+    },
+    {
+      "id": "DESIGN-ARCH-XXX",
+      "type": "architecture",
+      "location": "Design-Document.md#L358"
+    },
+    {
+      "id": "DESIGN-API-XXX",
+      "type": "api_design",
+      "location": "Design-Document.md#L359"
+    },
+    {
+      "id": "DESIGN-DB-XXX",
+      "type": "database_design",
+      "location": "Design-Document.md#L360"
+    },
+    {
+      "id": "DESIGN-ARCH-XXX",
+      "type": "architecture",
+      "location": "Design-Document.md#L376"
+    },
+    {
+      "id": "DESIGN-API-XXX",
+      "type": "api_design",
+      "location": "Design-Document.md#L383"
+    },
+    {
+      "id": "DESIGN-DB-XXX",
+      "type": "database_design",
+      "location": "Design-Document.md#L400"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "Design-Document.md#L421"
+    },
+    {
+      "id": "DESIGN-XXX",
+      "type": "design",
+      "location": "Design-Document.md#L465"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-TEST-GEN-001",
+      "type": "design",
+      "location": "Design-Document.md#L476"
+    },
+    {
+      "id": "TEST-CASE-XXX",
+      "type": "test_case",
+      "location": "Design-Document.md#L494"
+    },
+    {
+      "id": "TEST-CASE-XXX",
+      "type": "test_case",
+      "location": "Design-Document.md#L515"
+    },
+    {
+      "id": "TEST-CASE-XXX-001",
+      "type": "test_case",
+      "location": "Design-Document.md#L518"
+    },
+    {
+      "id": "TEST-CASE-015",
+      "type": "test_case",
+      "location": "Design-Document.md#L548"
+    },
+    {
+      "id": "TEST-CASE-015-001",
+      "type": "test_case",
+      "location": "Design-Document.md#L551"
+    },
+    {
+      "id": "TEST-CASE-015-002",
+      "type": "test_case",
+      "location": "Design-Document.md#L580"
+    },
+    {
+      "id": "TEST-CASE-XXX",
+      "type": "test_case",
+      "location": "Design-Document.md#L603"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-CODE-GEN-001",
+      "type": "design",
+      "location": "Design-Document.md#L615"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Design-Document.md#L633"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Design-Document.md#L671"
+    },
+    {
+      "id": "CODE-API-008",
+      "type": "code",
+      "location": "Design-Document.md#L686"
+    },
+    {
+      "id": "CODE-SERVICE-009",
+      "type": "code",
+      "location": "Design-Document.md#L809"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Design-Document.md#L982"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-CODE-REV-001",
+      "type": "design",
+      "location": "Design-Document.md#L997"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Design-Document.md#L1074"
+    },
+    {
+      "id": "DESIGN-TEMPLATE-REVIEWERS-001",
+      "type": "design",
+      "location": "Design-Document.md#L1146"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L1169"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L1201"
+    },
+    {
+      "id": "DESIGN-WORKFLOW-OVERVIEW-001",
+      "type": "design",
+      "location": "Design-Document.md#L1212"
+    },
+    {
+      "id": "DESIGN-WORKFLOW-STAGES-001",
+      "type": "design",
+      "location": "Design-Document.md#L1287"
+    },
+    {
+      "id": "DESIGN-ARCH-XXX",
+      "type": "architecture",
+      "location": "Design-Document.md#L1336"
+    },
+    {
+      "id": "DESIGN-API-XXX",
+      "type": "api_design",
+      "location": "Design-Document.md#L1337"
+    },
+    {
+      "id": "DESIGN-DB-XXX",
+      "type": "database_design",
+      "location": "Design-Document.md#L1338"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "Design-Document.md#L1370"
+    },
+    {
+      "id": "DESIGN-XXX",
+      "type": "design",
+      "location": "Design-Document.md#L1414"
+    },
+    {
+      "id": "DESIGN-SCRIPT-INIT-001",
+      "type": "design",
+      "location": "Design-Document.md#L1430"
+    },
+    {
+      "id": "DESIGN-SCRIPT-PARSER-001",
+      "type": "design",
+      "location": "Design-Document.md#L1561"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Design-Document.md#L1683"
+    },
+    {
+      "id": "DESIGN-SCRIPT-GRAPH-001",
+      "type": "design",
+      "location": "Design-Document.md#L1698"
+    },
+    {
+      "id": "DESIGN-SCRIPT-IMPACT-001",
+      "type": "design",
+      "location": "Design-Document.md#L1854"
+    },
+    {
+      "id": "DESIGN-SCRIPT-CONSISTENCY-001",
+      "type": "design",
+      "location": "Design-Document.md#L2021"
+    },
+    {
+      "id": "DESIGN-ENV-001",
+      "type": "design",
+      "location": "Design-Document.md#L2296"
+    },
+    {
+      "id": "DESIGN-NFR-PERF-001",
+      "type": "design",
+      "location": "Design-Document.md#L2361"
+    },
+    {
+      "id": "DESIGN-NFR-COST-001",
+      "type": "design",
+      "location": "Design-Document.md#L2374"
+    },
+    {
+      "id": "DESIGN-NFR-MAINT-001",
+      "type": "design",
+      "location": "Design-Document.md#L2386"
+    },
+    {
+      "id": "DESIGN-SUMMARY-001",
+      "type": "design",
+      "location": "Design-Document.md#L2400"
+    },
+    {
+      "id": "DESIGN-NEXT-001",
+      "type": "design",
+      "location": "Design-Document.md#L2430"
+    },
+    {
+      "id": "RD-REQ-001",
+      "type": "unknown",
+      "location": "GEMINI.md#L75"
+    },
+    {
+      "id": "RD-GOAL-001",
+      "type": "unknown",
+      "location": "MIGRATION-GUIDE.md#L32"
+    },
+    {
+      "id": "RD-USER-001",
+      "type": "unknown",
+      "location": "MIGRATION-GUIDE.md#L33"
+    },
+    {
+      "id": "RD-REQ-001",
+      "type": "unknown",
+      "location": "MIGRATION-GUIDE.md#L34"
+    },
+    {
+      "id": "RD-NFR-001",
+      "type": "unknown",
+      "location": "MIGRATION-GUIDE.md#L35"
+    },
+    {
+      "id": "PRD-FEAT-001",
+      "type": "feature",
+      "location": "MIGRATION-GUIDE.md#L36"
+    },
+    {
+      "id": "RD-REQ-001",
+      "type": "unknown",
+      "location": "PRD.md#L27"
+    },
+    {
+      "id": "RD-GOAL-001",
+      "type": "unknown",
+      "location": "PRD.md#L28"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "PRD.md#L54"
+    },
+    {
+      "id": "PRD-GOAL-001",
+      "type": "goal",
+      "location": "PRD.md#L65"
+    },
+    {
+      "id": "PRD-USER-001",
+      "type": "user",
+      "location": "PRD.md#L81"
+    },
+    {
+      "id": "PRD-USER-002",
+      "type": "user",
+      "location": "PRD.md#L102"
+    },
+    {
+      "id": "PRD-INIT-001",
+      "type": "unknown",
+      "location": "PRD.md#L117"
+    },
+    {
+      "id": "PRD-SIZE-001",
+      "type": "unknown",
+      "location": "PRD.md#L160"
+    },
+    {
+      "id": "PRD-STRUCTURE-SMALL-001",
+      "type": "document_structure",
+      "location": "PRD.md#L171"
+    },
+    {
+      "id": "PRD-STRUCTURE-LARGE-001",
+      "type": "document_structure",
+      "location": "PRD.md#L190"
+    },
+    {
+      "id": "RD-GEN-STRATEGY-001",
+      "type": "unknown",
+      "location": "PRD.md#L239"
+    },
+    {
+      "id": "PRD-TRACE-MODULE-001",
+      "type": "traceability",
+      "location": "PRD.md#L273"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "PRD.md#L311"
+    },
+    {
+      "id": "PRD-XXX",
+      "type": "unknown",
+      "location": "PRD.md#L331"
+    },
+    {
+      "id": "DESIGN-XXX",
+      "type": "design",
+      "location": "PRD.md#L340"
+    },
+    {
+      "id": "TEST-XXX",
+      "type": "test",
+      "location": "PRD.md#L349"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "PRD.md#L358"
+    },
+    {
+      "id": "RD-XXX-YYY",
+      "type": "unknown",
+      "location": "PRD.md#L394"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L442"
+    },
+    {
+      "id": "PRD-TRACE-001",
+      "type": "traceability",
+      "location": "PRD.md#L699"
+    },
+    {
+      "id": "PREFIX-XXX-YYY",
+      "type": "unknown",
+      "location": "PRD.md#L703"
+    },
+    {
+      "id": "PRD-TRACE-002",
+      "type": "traceability",
+      "location": "PRD.md#L710"
+    },
+    {
+      "id": "PRD-TRACE-003",
+      "type": "traceability",
+      "location": "PRD.md#L722"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "PRD.md#L727"
+    },
+    {
+      "id": "CODE-API-008",
+      "type": "code",
+      "location": "PRD.md#L734"
+    },
+    {
+      "id": "PRD-STRUCTURE-001",
+      "type": "document_structure",
+      "location": "PRD.md#L746"
+    },
+    {
+      "id": "PRD-NFR-001",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L815"
+    },
+    {
+      "id": "PRD-NFR-002",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L823"
+    },
+    {
+      "id": "PRD-NFR-003",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L830"
+    },
+    {
+      "id": "PRD-NFR-004",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L837"
+    },
+    {
+      "id": "PRD-AC-001",
+      "type": "unknown",
+      "location": "PRD.md#L847"
+    },
+    {
+      "id": "PRD-SCENARIO-000",
+      "type": "scenario",
+      "location": "PRD.md#L864"
+    },
+    {
+      "id": "PRD-SCENARIO-001",
+      "type": "scenario",
+      "location": "PRD.md#L904"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "PRD.md#L920"
+    },
+    {
+      "id": "PRD-SCENARIO-002",
+      "type": "scenario",
+      "location": "PRD.md#L943"
+    },
+    {
+      "id": "PRD-SCENARIO-003",
+      "type": "scenario",
+      "location": "PRD.md#L961"
+    },
+    {
+      "id": "PRD-SCENARIO-004",
+      "type": "scenario",
+      "location": "PRD.md#L980"
+    },
+    {
+      "id": "PRD-SUMMARY-001",
+      "type": "summary",
+      "location": "PRD.md#L1007"
+    },
+    {
+      "id": "PRD-NEXT-001",
+      "type": "next_steps",
+      "location": "PRD.md#L1020"
+    },
+    {
+      "id": "PRD-EPIC-001",
+      "type": "epic",
+      "location": "PRD.md#L1044"
+    },
+    {
+      "id": "PRD-EPIC-002",
+      "type": "epic",
+      "location": "PRD.md#L1123"
+    },
+    {
+      "id": "RD-REQ-XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1152"
+    },
+    {
+      "id": "RD-AUTH-001",
+      "type": "unknown",
+      "location": "PRD.md#L1172"
+    },
+    {
+      "id": "RD-REQ-005",
+      "type": "unknown",
+      "location": "PRD.md#L1177"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1212"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1239"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1243"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "PRD.md#L1275"
+    },
+    {
+      "id": "PRD-US-XXX",
+      "type": "user_story",
+      "location": "PRD.md#L1276"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "PRD.md#L1289"
+    },
+    {
+      "id": "DESIGN-ARCH-XXX",
+      "type": "architecture",
+      "location": "PRD.md#L1328"
+    },
+    {
+      "id": "DESIGN-API-XXX",
+      "type": "api_design",
+      "location": "PRD.md#L1329"
+    },
+    {
+      "id": "DESIGN-DB-XXX",
+      "type": "database_design",
+      "location": "PRD.md#L1330"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "PRD.md#L1343"
+    },
+    {
+      "id": "TEST-CASE-XXX",
+      "type": "test_case",
+      "location": "PRD.md#L1389"
+    },
+    {
+      "id": "TEST-CASE-015",
+      "type": "test_case",
+      "location": "PRD.md#L1403"
+    },
+    {
+      "id": "TEST-CASE-015-001",
+      "type": "test_case",
+      "location": "PRD.md#L1406"
+    },
+    {
+      "id": "PRD-EPIC-003",
+      "type": "epic",
+      "location": "PRD.md#L1434"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1454"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1486"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1516"
+    },
+    {
+      "id": "RD-REQ-005",
+      "type": "unknown",
+      "location": "PRD.md#L1656"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "PRD.md#L1678"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "PRD.md#L1701"
+    },
+    {
+      "id": "CODE-API-008",
+      "type": "code",
+      "location": "PRD.md#L1735"
+    },
+    {
+      "id": "PRD-EPIC-004",
+      "type": "epic",
+      "location": "PRD.md#L1840"
+    },
+    {
+      "id": "PRD-FEAT-TEMPLATES-001",
+      "type": "feature",
+      "location": "PRD.md#L1939"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1943"
+    },
+    {
+      "id": "PRD-XXX",
+      "type": "unknown",
+      "location": "PRD.md#L1945"
+    },
+    {
+      "id": "DESIGN-XXX",
+      "type": "design",
+      "location": "PRD.md#L1947"
+    },
+    {
+      "id": "TEST-XXX",
+      "type": "test",
+      "location": "PRD.md#L1949"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "PRD.md#L1951"
+    },
+    {
+      "id": "PRD-FEAT-WORKFLOWS-001",
+      "type": "feature",
+      "location": "PRD.md#L1964"
+    },
+    {
+      "id": "PRD-FEAT-SCRIPTS-001",
+      "type": "feature",
+      "location": "PRD.md#L1980"
+    },
+    {
+      "id": "PRD-FEAT-SMALL-001",
+      "type": "feature",
+      "location": "PRD.md#L2009"
+    },
+    {
+      "id": "PRD-FEAT-LARGE-001",
+      "type": "feature",
+      "location": "PRD.md#L2030"
+    },
+    {
+      "id": "PRD-NFR-001",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L2066"
+    },
+    {
+      "id": "PRD-NFR-002",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L2077"
+    },
+    {
+      "id": "PRD-NFR-003",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L2088"
+    },
+    {
+      "id": "PRD-NFR-004",
+      "type": "non_functional_requirement",
+      "location": "PRD.md#L2099"
+    },
+    {
+      "id": "PRD-METRICS-001",
+      "type": "metrics",
+      "location": "PRD.md#L2112"
+    },
+    {
+      "id": "PRD-METRICS-002",
+      "type": "metrics",
+      "location": "PRD.md#L2122"
+    },
+    {
+      "id": "PRD-METRICS-003",
+      "type": "metrics",
+      "location": "PRD.md#L2132"
+    },
+    {
+      "id": "PRD-RISK-001",
+      "type": "unknown",
+      "location": "PRD.md#L2144"
+    },
+    {
+      "id": "PRD-LIMIT-001",
+      "type": "unknown",
+      "location": "PRD.md#L2156"
+    },
+    {
+      "id": "PRD-SUMMARY-001",
+      "type": "summary",
+      "location": "PRD.md#L2171"
+    },
+    {
+      "id": "PRD-SUMMARY-002",
+      "type": "summary",
+      "location": "PRD.md#L2184"
+    },
+    {
+      "id": "PRD-NEXT-001",
+      "type": "next_steps",
+      "location": "PRD.md#L2198"
+    },
+    {
+      "id": "RD-TASK-001",
+      "type": "unknown",
+      "location": "QUICK-START.md#L248"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "QUICK-START.md#L253"
+    },
+    {
+      "id": "PRD-REQ-002",
+      "type": "requirement",
+      "location": "QUICK-START.md#L264"
+    },
+    {
+      "id": "RD-XXX-XXX",
+      "type": "unknown",
+      "location": "QUICK-START.md#L290"
+    },
+    {
+      "id": "RD-MODULE-XXX",
+      "type": "unknown",
+      "location": "QUICK-START.md#L476"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "QUICK-START.md#L717"
+    },
+    {
+      "id": "RD-MODULE-USER",
+      "type": "unknown",
+      "location": "QUICK-START.md#L726"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "README.md#L208"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "README.md#L209"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "README.md#L236"
+    },
+    {
+      "id": "PRD-FEAT-012",
+      "type": "feature",
+      "location": "README.md#L251"
+    },
+    {
+      "id": "DESIGN-API-008",
+      "type": "api_design",
+      "location": "README.md#L267"
+    },
+    {
+      "id": "CODE-API-008",
+      "type": "code",
+      "location": "README.md#L276"
+    },
+    {
+      "id": "TEST-ENV-001",
+      "type": "test",
+      "location": "Test-Plan.md#L34"
+    },
+    {
+      "id": "TEST-ENV-002",
+      "type": "test",
+      "location": "Test-Plan.md#L92"
+    },
+    {
+      "id": "TEST-ENV-003",
+      "type": "test",
+      "location": "Test-Plan.md#L194"
+    },
+    {
+      "id": "TEST-ENV-004",
+      "type": "test",
+      "location": "Test-Plan.md#L222"
+    },
+    {
+      "id": "RD-TODO-001",
+      "type": "unknown",
+      "location": "Test-Plan.md#L234"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "Test-Plan.md#L237"
+    },
+    {
+      "id": "PRD-REQ-002",
+      "type": "requirement",
+      "location": "Test-Plan.md#L242"
+    },
+    {
+      "id": "TEST-ENV-005",
+      "type": "test",
+      "location": "Test-Plan.md#L253"
+    },
+    {
+      "id": "TEST-ENV-006",
+      "type": "test",
+      "location": "Test-Plan.md#L348"
+    },
+    {
+      "id": "TEST-STRATEGY-001",
+      "type": "test",
+      "location": "Test-Plan.md#L366"
+    },
+    {
+      "id": "TEST-STRATEGY-002",
+      "type": "test",
+      "location": "Test-Plan.md#L387"
+    },
+    {
+      "id": "TEST-CASE-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L403"
+    },
+    {
+      "id": "TEST-CASE-001-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L407"
+    },
+    {
+      "id": "PRD-REQ-XXX",
+      "type": "requirement",
+      "location": "Test-Plan.md#L427"
+    },
+    {
+      "id": "PRD-REQ-YYY",
+      "type": "requirement",
+      "location": "Test-Plan.md#L428"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "Test-Plan.md#L433"
+    },
+    {
+      "id": "TEST-CASE-001-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L442"
+    },
+    {
+      "id": "PRD-REQ-ZZZ",
+      "type": "requirement",
+      "location": "Test-Plan.md#L459"
+    },
+    {
+      "id": "TEST-CASE-001-003",
+      "type": "test_case",
+      "location": "Test-Plan.md#L472"
+    },
+    {
+      "id": "TEST-CASE-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L493"
+    },
+    {
+      "id": "TEST-CASE-002-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L497"
+    },
+    {
+      "id": "TEST-CASE-002-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L527"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Test-Plan.md#L530"
+    },
+    {
+      "id": "XXX",
+      "type": "unknown",
+      "location": "Test-Plan.md#L534"
+    },
+    {
+      "id": "RD-XXX",
+      "type": "unknown",
+      "location": "Test-Plan.md#L543"
+    },
+    {
+      "id": "TEST-CASE-003",
+      "type": "test_case",
+      "location": "Test-Plan.md#L554"
+    },
+    {
+      "id": "PRD-FEAT-XXX",
+      "type": "feature",
+      "location": "Test-Plan.md#L559"
+    },
+    {
+      "id": "DESIGN-ARCH-XXX",
+      "type": "architecture",
+      "location": "Test-Plan.md#L565"
+    },
+    {
+      "id": "DESIGN-API-XXX",
+      "type": "api_design",
+      "location": "Test-Plan.md#L566"
+    },
+    {
+      "id": "TEST-CASE-XXX",
+      "type": "test_case",
+      "location": "Test-Plan.md#L571"
+    },
+    {
+      "id": "TEST-CASE-CODE",
+      "type": "test_case",
+      "location": "Test-Plan.md#L580"
+    },
+    {
+      "id": "TEST-CASE-CODE-GEN-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L583"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Test-Plan.md#L598"
+    },
+    {
+      "id": "CODE-XXX",
+      "type": "code",
+      "location": "Test-Plan.md#L605"
+    },
+    {
+      "id": "TEST-CASE-CODE-REV-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L613"
+    },
+    {
+      "id": "TEST-CASE-CODE-REV-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L626"
+    },
+    {
+      "id": "TEST-CASE-004",
+      "type": "test_case",
+      "location": "Test-Plan.md#L644"
+    },
+    {
+      "id": "TEST-CASE-004-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L648"
+    },
+    {
+      "id": "TEST-CASE-004-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L682"
+    },
+    {
+      "id": "TEST-CASE-TASK-MGMT",
+      "type": "test_case",
+      "location": "Test-Plan.md#L712"
+    },
+    {
+      "id": "TEST-CASE-TASK-MGMT-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L715"
+    },
+    {
+      "id": "TEST-CASE-TASK-MGMT-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L736"
+    },
+    {
+      "id": "TEST-CASE-005",
+      "type": "test_case",
+      "location": "Test-Plan.md#L758"
+    },
+    {
+      "id": "TEST-CASE-005-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L762"
+    },
+    {
+      "id": "TEST-CASE-005-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L826"
+    },
+    {
+      "id": "TEST-CASE-006",
+      "type": "test_case",
+      "location": "Test-Plan.md#L875"
+    },
+    {
+      "id": "TEST-CASE-006-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L879"
+    },
+    {
+      "id": "RD-AUTH-001",
+      "type": "unknown",
+      "location": "Test-Plan.md#L886"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Test-Plan.md#L889"
+    },
+    {
+      "id": "RD-AUTH-001",
+      "type": "unknown",
+      "location": "Test-Plan.md#L938"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Test-Plan.md#L941"
+    },
+    {
+      "id": "TEST-CASE-006-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L964"
+    },
+    {
+      "id": "PRD-REQ-001",
+      "type": "requirement",
+      "location": "Test-Plan.md#L967"
+    },
+    {
+      "id": "PRD-FEAT-001",
+      "type": "feature",
+      "location": "Test-Plan.md#L968"
+    },
+    {
+      "id": "DESIGN-API-001",
+      "type": "api_design",
+      "location": "Test-Plan.md#L969"
+    },
+    {
+      "id": "TEST-CASE-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L970"
+    },
+    {
+      "id": "TEST-CASE-007",
+      "type": "test_case",
+      "location": "Test-Plan.md#L989"
+    },
+    {
+      "id": "TEST-CASE-007-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L993"
+    },
+    {
+      "id": "TEST-CASE-007-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1059"
+    },
+    {
+      "id": "TEST-CASE-008",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1079"
+    },
+    {
+      "id": "TEST-CASE-008-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1083"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Test-Plan.md#L1091"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Test-Plan.md#L1146"
+    },
+    {
+      "id": "PRD-REQ-005",
+      "type": "requirement",
+      "location": "Test-Plan.md#L1165"
+    },
+    {
+      "id": "TEST-CASE-CONSISTENCY",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1178"
+    },
+    {
+      "id": "TEST-CASE-CONSISTENCY-001",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1181"
+    },
+    {
+      "id": "TEST-CASE-CONSISTENCY-002",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1218"
+    },
+    {
+      "id": "TEST-CASE-CONSISTENCY-003",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1260"
+    },
+    {
+      "id": "TEST-CASE-CONSISTENCY-004",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1284"
+    },
+    {
+      "id": "TEST-CASE-009",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1311"
+    },
+    {
+      "id": "TEST-CASE-010",
+      "type": "test_case",
+      "location": "Test-Plan.md#L1344"
+    },
+    {
+      "id": "TEST-STRATEGY-003",
+      "type": "test",
+      "location": "Test-Plan.md#L1376"
+    },
+    {
+      "id": "TEST-STRATEGY-004",
+      "type": "test",
+      "location": "Test-Plan.md#L1397"
+    },
+    {
+      "id": "TEST-STRATEGY-005",
+      "type": "test",
+      "location": "Test-Plan.md#L1430"
+    },
+    {
+      "id": "TEST-STRATEGY-006",
+      "type": "test",
+      "location": "Test-Plan.md#L1452"
+    },
+    {
+      "id": "TEST-SUMMARY-001",
+      "type": "test",
+      "location": "Test-Plan.md#L1468"
+    },
+    {
+      "id": "TEST-SUMMARY-002",
+      "type": "test",
+      "location": "Test-Plan.md#L1480"
+    }
+  ],
+  "edges": [
+    {
+      "from": "DESIGN-ARCH-001",
+      "to": "PRD-STRUCTURE-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-STRUCT-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-RD-GEN-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "PRD-REQ-001",
+      "to": "PRD-REQ-CATEGORY-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-REQ-005",
+      "to": "PRD-REQ-AUTH-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-PRD-GEN-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "PRD-FEAT-XXX",
+      "to": "PRD-REQ-REQ-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-012",
+      "to": "PRD-REQ-REQ-005",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-DESIGN-GEN-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-ARCH-XXX",
+      "to": "PRD-FEAT-XXX",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-API-XXX",
+      "to": "PRD-FEAT-XXX",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-DB-XXX",
+      "to": "PRD-FEAT-XXX",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-API-008",
+      "to": "PRD-FEAT-012",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-TEST-GEN-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "TEST-CASE-XXX",
+      "to": "DESIGN-API-XXX",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-015",
+      "to": "DESIGN-API-008",
+      "relation": "tests-for"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-CODE-GEN-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "CODE-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "CODE-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "CODE-API-008",
+      "to": "DESIGN-API-008",
+      "relation": "implements"
+    },
+    {
+      "from": "CODE-SERVICE-009",
+      "to": "DESIGN-SERVICE-009",
+      "relation": "implements"
+    },
+    {
+      "from": "CODE-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-CODE-REV-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-TEMPLATE-REVIEWERS-001",
+      "to": "PRD-FEAT-TEMPLATES-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-WORKFLOW-OVERVIEW-001",
+      "to": "PRD-FEAT-WORKFLOWS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-WORKFLOW-STAGES-001",
+      "to": "PRD-FEAT-WORKFLOWS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-API-008",
+      "to": "PRD-FEAT-012",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-SCRIPT-INIT-001",
+      "to": "PRD-FEAT-SCRIPTS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-SCRIPT-PARSER-001",
+      "to": "PRD-FEAT-SCRIPTS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-SCRIPT-GRAPH-001",
+      "to": "PRD-FEAT-SCRIPTS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-SCRIPT-IMPACT-001",
+      "to": "PRD-FEAT-SCRIPTS-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-ENV-001",
+      "to": "PRD-NFR-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-NFR-PERF-001",
+      "to": "PRD-NFR-002",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-NFR-COST-001",
+      "to": "PRD-NFR-003",
+      "relation": "designs-for"
+    },
+    {
+      "from": "DESIGN-NFR-MAINT-001",
+      "to": "PRD-NFR-004",
+      "relation": "designs-for"
+    },
+    {
+      "from": "PRD-XXX",
+      "to": "PRD-REQ-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-XXX",
+      "to": "PRD-XXX",
+      "relation": "designs-for"
+    },
+    {
+      "from": "TEST-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "tests-for"
+    },
+    {
+      "from": "XXX",
+      "to": "XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "CODE-API-008",
+      "to": "DESIGN-API-008",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-EPIC-001",
+      "to": "PRD-REQ-INIT-001",
+      "relation": "implements"
+    },
+    {
+      "from": "RD-REQ-005",
+      "to": "RD-AUTH-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-FEAT-012",
+      "to": "PRD-REQ-REQ-005",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-API-008",
+      "to": "PRD-FEAT-012",
+      "relation": "designs-for"
+    },
+    {
+      "from": "TEST-CASE-015",
+      "to": "DESIGN-API-008",
+      "relation": "tests-for"
+    },
+    {
+      "from": "PRD-EPIC-003",
+      "to": "PRD-REQ-GOAL-004",
+      "relation": "implements"
+    },
+    {
+      "from": "RD-REQ-005",
+      "to": "RD-AUTH-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-FEAT-012",
+      "to": "PRD-REQ-REQ-005",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-API-008",
+      "to": "PRD-FEAT-012",
+      "relation": "designs-for"
+    },
+    {
+      "from": "CODE-API-008",
+      "to": "DESIGN-API-008",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-EPIC-004",
+      "to": "PRD-REQ-USER-001",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-TEMPLATES-001",
+      "to": "PRD-REQ-GOAL-001",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-XXX",
+      "to": "PRD-REQ-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-XXX",
+      "to": "PRD-XXX",
+      "relation": "designs-for"
+    },
+    {
+      "from": "TEST-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "tests-for"
+    },
+    {
+      "from": "CODE-XXX",
+      "to": "DESIGN-XXX",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-WORKFLOWS-001",
+      "to": "PRD-REQ-GOAL-002",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-SCRIPTS-001",
+      "to": "PRD-REQ-GOAL-004",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-SMALL-001",
+      "to": "PRD-REQ-STRUCTURE-SMALL-001",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-FEAT-LARGE-001",
+      "to": "PRD-REQ-STRUCTURE-LARGE-001",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-REQ-001",
+      "to": "RD-TASK-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-REQ-002",
+      "to": "RD-TASK-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-FEAT-012",
+      "to": "PRD-REQ-005",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-API-008",
+      "to": "PRD-FEAT-012",
+      "relation": "designs-for"
+    },
+    {
+      "from": "CODE-API-008",
+      "to": "DESIGN-API-008",
+      "relation": "implements"
+    },
+    {
+      "from": "PRD-REQ-001",
+      "to": "PRD-REQ-TODO-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-REQ-002",
+      "to": "PRD-REQ-TODO-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "TEST-CASE-001",
+      "to": "DESIGN-TEMPLATE-RD-GEN-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-002",
+      "to": "DESIGN-TEMPLATE-RD-GEN-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-TASK-MGMT",
+      "to": "DESIGN-WORKFLOW-TASK-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-005",
+      "to": "DESIGN-SCRIPT-INIT-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-006",
+      "to": "DESIGN-SCRIPT-PARSER-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "PRD-REQ-005",
+      "to": "PRD-REQ-AUTH-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-REQ-005",
+      "to": "PRD-REQ-AUTH-001",
+      "relation": "decomposes"
+    },
+    {
+      "from": "PRD-FEAT-001",
+      "to": "PRD-REQ-REQ-001",
+      "relation": "implements"
+    },
+    {
+      "from": "DESIGN-API-001",
+      "to": "PRD-FEAT-001",
+      "relation": "designs-for"
+    },
+    {
+      "from": "TEST-CASE-001",
+      "to": "DESIGN-API-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-007",
+      "to": "DESIGN-SCRIPT-GRAPH-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-008",
+      "to": "DESIGN-SCRIPT-IMPACT-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-CONSISTENCY",
+      "to": "DESIGN-SCRIPT-CONSISTENCY-001",
+      "relation": "tests-for"
+    },
+    {
+      "from": "TEST-CASE-010",
+      "to": "DESIGN-NFR-PERF-001",
+      "relation": "tests-for"
+    }
+  ]
 }

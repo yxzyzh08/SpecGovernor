@@ -89,7 +89,7 @@
 
 1. **Test-Plan.md 完整内容**
 2. **Design-Document.md 完整内容**（用于验证可追溯性）
-3. **PRD.md 完整内容**（用于验证覆盖度）
+3. **PPRD.md 完整内容**（用于验证覆盖度）
 
 ## Output Format
 
@@ -279,4 +279,4 @@
 
 ---
 
-**Ready to review?** 请提供 Test-Plan.md、Design-Document.md 和 PRD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/Test-Plan-Review-Report-[今天日期].md` 文件中。
+**Ready to review?** 请提供 Test-Plan.md、Design-Document.md 和 PPRD.md 完整内容，我将进行全面审查并输出详细的审查报告！审查完成后，请将报告保存到 `reviews/Test-Plan-Review-Report-[今天日期].md` 文件中。

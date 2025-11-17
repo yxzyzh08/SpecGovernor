@@ -8,7 +8,7 @@
 
 ## Task
 
-根据 PRD.md 和技术约束生成或修改 Design Document。
+根据 PPRD.md 和技术约束生成或修改 Design Document。
 
 ## Critical Requirements
 
@@ -55,7 +55,7 @@ Design Document 必须遵循以下结构：
 # Design Document
 
 > **Version**: X.X
-> **Based on**: PRD.md (vX.X)
+> **Based on**: PPRD.md (vX.X)
 > **Created**: YYYY-MM-DD
 > **Updated**: YYYY-MM-DD
 
@@ -122,7 +122,7 @@ CREATE TABLE table_name (
 ## 5. Security Design
 
 ### 5.1 [Security Mechanism]
-**[ID: DESIGN-SEC-XXX] [Designs-for: PRD-NFR-002]**
+**[ID: DESIGN-SEC-XXX] [Designs-for: PPRD-NFR-002]**
 
 [安全设计，包括认证、授权、加密]
 ```
@@ -144,8 +144,8 @@ CREATE TABLE table_name (
 
 **请提供以下输入：**
 
-1. **PRD.md 完整内容**（产品需求）
-2. **RD.md 完整内容**（供参考）
+1. **PPRD.md 完整内容**（产品需求）
+2. **PRD.md 完整内容**（供参考）
 3. **技术约束**：
    - 编程语言（如 Python 3.11、TypeScript 5.x）
    - 框架（如 FastAPI、NestJS、Django）
@@ -161,7 +161,7 @@ CREATE TABLE table_name (
 
 **请提供以下输入：**
 
-1. **PRD.md 完整内容**（最新版本）
+1. **PPRD.md 完整内容**（最新版本）
 2. **现有 Design-Document.md 内容**（完整文件）
 3. **变更请求**：
    - 要添加的新设计
@@ -591,4 +591,4 @@ External Services:
 
 ---
 
-**Ready to generate your Design Document?** 请提供 PRD.md、技术约束和项目上下文，我将帮助你生成 Design Document！
+**Ready to generate your Design Document?** 请提供 PPRD.md、技术约束和项目上下文，我将帮助你生成 Design Document！
