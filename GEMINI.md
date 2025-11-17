@@ -17,10 +17,9 @@
 
 | 文档类型 | 文件名 | 说明 |
 |---------|--------|------|
-| 需求文档 | `RD.md` | Requirements Document |
 | 产品需求文档 | `PRD.md` | Product Requirements Document |
-| 设计文档 | `DD.md` | Design Document |
-| 测试文档 | `TD.md` | Test Document |
+| 设计文档 | `Design.md` | Design Document |
+| 测试文档 | `Test.md` | Test Document |
 | 对比分析 | `comparison-analysis.md` | 各类对比分析文档 |
 | 实施方案 | `implementation-plan.md` | 实施计划文档 |
 
@@ -93,10 +92,9 @@ git commit -m "Refactor DD architecture design"
 
 遵循 SDLC 五阶段流程：
 
-1. **RD.md** - 需求文档（Requirements Document）
-2. **PRD.md** - 产品需求文档（Product Requirements Document）
-3. **DD.md** - 设计文档（Design Document）
-4. **TD.md** - 测试文档（Test Document）
-5. **Code** - 代码实现
+1. **PRD.md** - 产品需求文档（Product Requirements Document）
+2. **DD.md** - 设计文档（Design Document）
+3. **TD.md** - 测试文档（Test Document）
+4. **Code** - 代码实现
 
 每个阶段都使用 Generator-Reviewer 对模式，确保质量。
