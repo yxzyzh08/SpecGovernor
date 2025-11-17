@@ -1,9 +1,5 @@
 # **Test Plan - SpecGovernor**
 
-> **Version**: v2.0
-> **Based on**: PRD.md (v3.0) + Design-Document.md
-> **Created**: 2025-11-16
-> **Updated**: 2025-11-16
 > **Test Goal**: 工具包组件的综合测试策略
 
 ---

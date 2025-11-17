@@ -1,9 +1,5 @@
 # **🏗️ Design Document - SpecGovernor**
 
-> **Version**: v2.0
-> **Based on**: PRD.md (v2.0) + RD.md (v2.0)
-> **Created**: 2025-11-16
-> **Updated**: 2025-11-16
 > **Design Goal**: 工具箱组件（Prompt Templates、Workflows、Helper Scripts）的详细设计
 
 ---

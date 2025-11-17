@@ -1,6 +1,5 @@
 # SpecGovernor
 
-**Version**: 3.0.0 🎉
 **Type**: Toolkit (Prompt Templates + Workflow Documentation + Helper Scripts)
 
 SpecGovernor 是一个专为**超级个体** (Super Individuals) 设计的综合工具包，提供标准化的软件开发流程支持。

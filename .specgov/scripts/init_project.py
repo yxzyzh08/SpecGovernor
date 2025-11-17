@@ -31,7 +31,39 @@ def prompt_project_size():
         print("无效选择，请输入 1 或 2")
 
 
-def create_directory_structure(project_size):
+def prompt_project_info():
+    """收集项目的行业和领域信息。"""
+    print("\n" + "=" * 60)
+    print("项目背景信息收集")
+    print("=" * 60)
+    print("这些信息将帮助产品经理生成符合行业特点的需求文档。")
+    print()
+
+    # 行业/领域
+    print("1️⃣  项目所属行业/领域（如：电商、金融、医疗、教育、SaaS）")
+    industry = input("   > ").strip() or "通用软件"
+
+    # 项目类型
+    print("\n2️⃣  项目类型（如：Web应用、移动应用、API服务、CLI工具）")
+    project_type = input("   > ").strip() or "Web应用"
+
+    # 目标用户
+    print("\n3️⃣  目标用户群体（如：企业用户、个人用户、开发者）")
+    target_users = input("   > ").strip() or "通用用户"
+
+    # 核心业务场景
+    print("\n4️⃣  核心业务场景（1-2句话描述项目的主要功能）")
+    core_business = input("   > ").strip() or "待定义"
+
+    return {
+        'industry': industry,
+        'project_type': project_type,
+        'target_users': target_users,
+        'core_business': core_business
+    }
+
+
+def create_directory_structure(project_size, project_info):
     """根据项目规模创建目录结构。"""
     # 创建 .specgov/ 目录
     os.makedirs('.specgov', exist_ok=True)
@@ -70,7 +102,6 @@ def create_directory_structure(project_size):
     # 创建任务文件
     task_files = [
         'project-manager.md',
-        'rd-analyst.md',
         'product-manager.md',
         'architect.md',
         'test-manager.md',
@@ -82,19 +113,16 @@ def create_directory_structure(project_size):
     # 创建 docs/ 结构
     if project_size == 'small':
         os.makedirs('docs', exist_ok=True)
-        create_placeholder('docs/RD.md', 'Requirements Document')
         create_placeholder('docs/PRD.md', 'Product Requirements Document')
         create_placeholder('docs/Design-Document.md', 'Design Document')
         create_placeholder('docs/Test-Plan.md', 'Test Plan')
     else:  # large
-        os.makedirs('docs/RD', exist_ok=True)
         os.makedirs('docs/PRD', exist_ok=True)
         os.makedirs('docs/Design-Document', exist_ok=True)
         os.makedirs('docs/Test-Plan', exist_ok=True)
-        create_placeholder('docs/RD/RD-Overview.md', 'Requirements Overview')
-        create_placeholder('docs/PRD/PRD-Overview.md', 'Product Overview')
+        create_placeholder('docs/PRD/PRD-Overview.md', 'Product Requirements Overview')
         create_placeholder('docs/Design-Document/Design-Overview.md', 'Design Overview')
-        create_placeholder('docs/Test-Plan/Test-Overview.md', 'Test Overview')
+        create_placeholder('docs/Test-Plan/Test-Overview.md', 'Test Plan Overview')
 
     # 创建原始需求收集文档
     if project_size == 'small':
@@ -109,6 +137,10 @@ def create_directory_structure(project_size):
         "project_name": os.path.basename(os.getcwd()),
         "project_size": project_size,
         "document_structure": "single-tier" if project_size == 'small' else "two-tier",
+        "industry": project_info['industry'],
+        "project_type": project_info['project_type'],
+        "target_users": project_info['target_users'],
+        "core_business": project_info['core_business'],
         "created_at": datetime.now().isoformat(),
         "modules": []
     }
@@ -135,10 +167,7 @@ def create_placeholder(filepath, doc_type):
     """创建占位符文档。"""
     content = f"""# {doc_type}
 
-> **Version**: 1.0
-> **Created**: {datetime.now().strftime('%Y-%m-%d')}
-
-（此文档将使用 SpecGovernor prompt templates 生成）
+（此文档将使用 SpecGovernor v3.0 prompt templates 生成）
 """
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(content)
@@ -154,8 +183,6 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
         content = f"""# Raw Requirements - {project_name}
 
 **Project Type**: Small Project
-**Created**: {today}
-**Last Updated**: {today}
 
 > **用途**：记录人类提供的原始需求输入（口语化、零散）
 >
@@ -176,7 +203,7 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
 
 ---
 
-### Entry 001 - {today} (示例)
+### Entry 001 (示例)
 
 **Source**: Chat
 **Topic**: 示例需求
@@ -195,8 +222,6 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
 ---
 
 ## 📊 Summary Statistics
-
-**Last Updated**: {today}
 
 - **Total Entries**: 1 (示例)
 - **By Priority**:
@@ -226,8 +251,6 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
         content = f"""# Raw Requirements Overview - {project_name}
 
 **Project Type**: Large Project (Two-Tier)
-**Created**: {today}
-**Last Updated**: {today}
 
 > **用途**：记录项目级别的原始需求（跨模块、整体架构）
 >
@@ -245,7 +268,7 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
 
 ---
 
-### Entry 001 - {today} (示例)
+### Entry 001 (示例)
 
 **Source**: Chat
 **Topic**: 项目整体目标
@@ -289,8 +312,6 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
         content = f"""# Raw Requirements - {module_name}
 
 **Module**: {module_name}
-**Created**: {today}
-**Last Updated**: {today}
 
 > **用途**：记录 {module_name} 模块的原始需求输入
 
@@ -298,7 +319,7 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
 
 ## 📝 Input Log
 
-### Entry 001 - {today} (示例)
+### Entry 001 (示例)
 
 **Source**: Chat
 **Topic**: [主题]
@@ -325,13 +346,11 @@ def create_raw_requirements_template(filepath, project_size, is_overview=False):
         f.write(content)
 
 
-def create_claude_md(project_name, project_size):
+def create_claude_md(project_name, project_size, project_info):
     """创建用户项目的 CLAUDE.md 文件。"""
     # 根据项目规模定制命令列表
     if project_size == 'small':
         commands_section = '''**基础命令（小项目 - 单层文档结构）**：
-- `/specgov-rd-gen` - 生成 RD.md
-- `/specgov-rd-review` - 审查 RD
 - `/specgov-prd-gen` - 生成 PRD.md
 - `/specgov-prd-review` - 审查 PRD
 - `/specgov-design-gen` - 生成 Design-Document.md
@@ -345,22 +364,19 @@ def create_claude_md(project_name, project_size):
 - `/specgov-consistency` - 检查可追溯性一致性
 - `/specgov-impact` - 分析需求变更影响
 
-> **提示**：小项目使用单层文档结构，所有需求都在一个 RD.md 文件中。'''
+> **提示**：小项目使用单层文档结构，所有产品需求都在一个 PRD.md 文件中。'''
     else:  # large
         commands_section = '''**第 1 步：生成 Overview 文档（每个阶段调用一次）**：
-- `/specgov-rd-overview` - 生成 RD-Overview.md（项目整体需求概览）
 - `/specgov-prd-overview` - 生成 PRD-Overview.md（项目整体产品概览）
 - `/specgov-design-overview` - 生成 Design-Overview.md（项目整体架构概览）
 - `/specgov-test-overview` - 生成 Test-Overview.md（项目整体测试策略）
 
 **第 2 步：生成 Module 文档（每个模块调用一次）**：
-- `/specgov-rd-module` - 生成 RD-{Module}.md（模块具体需求）
 - `/specgov-prd-module` - 生成 PRD-{Module}.md（模块具体功能）
 - `/specgov-design-module` - 生成 Design-{Module}.md（模块具体设计）
 - `/specgov-test-module` - 生成 Test-{Module}.md（模块具体测试用例）
 
 **审查命令（通用）**：
-- `/specgov-rd-review` - 审查 RD 文档
 - `/specgov-prd-review` - 审查 PRD 文档
 - `/specgov-design-review` - 审查 Design Document
 - `/specgov-test-review` - 审查 Test Plan
@@ -383,24 +399,36 @@ def create_claude_md(project_name, project_size):
 
 **项目名称**: {project_name}
 **项目规模**: {"小项目（< 10 万行代码）" if project_size == 'small' else "大项目（≥ 10 万行代码）"}
-**文档结构**: {"单层（RD.md, PRD.md, ...）" if project_size == 'small' else "双层（Overview + Module 文档）"}
-**使用工具**: SpecGovernor + Claude Code
+**文档结构**: {"单层（PRD.md, Design-Document.md, Test-Plan.md）" if project_size == 'small' else "双层（Overview + Module 文档）"}
+**使用工具**: SpecGovernor v3.0 + Claude Code
 
-> 请在此处填写您的项目简介、目标用户、核心功能等信息。
+---
+
+## 项目背景
+
+**所属行业**: {project_info['industry']}
+**项目类型**: {project_info['project_type']}
+**目标用户**: {project_info['target_users']}
+**核心业务**: {project_info['core_business']}
+
+> 💡 **产品经理提示**：生成 PRD 时，请基于以上行业背景和业务场景，设计符合行业特点的功能和需求。
 
 ---
 
 ## 🛠️ SpecGovernor 工作流
 
-本项目使用 **SpecGovernor** 工具包进行需求到代码的全流程可追溯性管理。
+本项目使用 **SpecGovernor v3.0** 工具包进行需求到代码的全流程可追溯性管理。
 
-### SDLC 五阶段流程
+### SDLC 4 阶段流程
 
-1. **RD{"" if project_size == "small" else " (Overview + Modules)"}** - Requirements Document（需求文档）
-2. **PRD{"" if project_size == "small" else " (Overview + Modules)"}** - Product Requirements Document（产品需求文档）
-3. **Design-Document{"" if project_size == "small" else " (Overview + Modules)"}** - 设计文档
-4. **Test-Plan{"" if project_size == "small" else " (Overview + Modules)"}** - 测试计划
-5. **Code** - 代码实现
+```
+PRD → Design Document → Test Plan → Code
+```
+
+1. **PRD{"" if project_size == "small" else " (Overview + Modules)"}** - Product Requirements Document（产品需求文档）
+2. **Design-Document{"" if project_size == "small" else " (Overview + Modules)"}** - 设计文档
+3. **Test-Plan{"" if project_size == "small" else " (Overview + Modules)"}** - 测试计划
+4. **Code** - 代码实现
 
 ### Claude Code 斜杠命令
 
@@ -421,7 +449,7 @@ python .specgov/scripts/build_graph.py
 python .specgov/scripts/check_consistency.py
 
 # 影响分析
-python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
+python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 ```
 
 ---
@@ -432,8 +460,8 @@ python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
 
 **重要原则：所有文档文件名必须使用英文命名**
 
-- ✅ 正确示例：`RD.md`, `PRD.md`, `Design-Document.md`, `Test-Plan.md`
-- ❌ 错误示例：`需求文档.md`, `设计文档.md`, `DD.md`, `TD.md`
+- ✅ 正确示例：`PRD.md`, `Design-Document.md`, `Test-Plan.md`
+- ❌ 错误示例：`产品需求.md`, `设计文档.md`, `DD.md`, `TD.md`
 
 ### 2. 文档内容语言规范
 
@@ -449,9 +477,9 @@ python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
 
 **单一版本原则：所有文档只保留最新版本**
 
-- ✅ 只保留一个需求文档：`RD.md`
-- ❌ 不要创建：`RD-v1.md`, `RD-v2.md`, `需求补充.md`
-- ✅ 新需求直接更新到 `RD.md` 中
+- ✅ 只保留一个产品需求文档：`PRD.md`
+- ❌ 不要创建：`PRD-v1.md`, `PRD-v2.md`, `需求补充.md`
+- ✅ 新需求直接更新到 `PRD.md` 中
 - ✅ 使用 Git 版本控制来追踪历史变更
 
 ### 4. 可追溯性标记规范
@@ -459,13 +487,12 @@ python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
 文档中的可追溯性标记使用英文标识符：
 
 ```markdown
-[ID: RD-REQ-001]           # Requirements Document
-[ID: PRD-FEAT-012]         # Product Requirements Document
-[ID: DESIGN-API-008]       # Design Document
-[ID: TEST-CASE-015]        # Test Plan
+[ID: PRD-REQ-001]           # Product Requirements Document - Business Requirements
+[ID: PRD-FEAT-012]          # Product Requirements Document - Product Features
+[ID: DESIGN-API-008]        # Design Document
+[ID: TEST-CASE-015]         # Test Plan
 
-[Implements: RD-REQ-001]   # PRD 实现 RD
-[Decomposes: RD-AUTH-001]  # 分解父级需求
+[Implements: PRD-REQ-001]   # PRD Feature 实现 PRD Business Requirement
 [Designs-for: PRD-FEAT-012] # Design Document 设计 PRD 功能
 [Tests-for: DESIGN-API-008] # Test Plan 测试 Design
 ```
@@ -542,13 +569,12 @@ python .specgov/scripts/impact_analysis.py --changed=docs/RD.md
         f.write(claude_content)
 
 
-def create_claude_commands(project_size):
+def create_claude_commands(project_size, project_info):
     """创建 Claude Code 斜杠命令。"""
     os.makedirs('.claude/commands', exist_ok=True)
 
     # 定义文档路径映射（小项目：单层结构）
     small_project_paths = {
-        'rd': 'docs/RD.md',
         'prd': 'docs/PRD.md',
         'design': 'docs/Design-Document.md',
         'test-plan': 'docs/Test-Plan.md',
@@ -556,8 +582,6 @@ def create_claude_commands(project_size):
 
     # 定义文档路径映射（大项目：双层结构）
     large_project_paths = {
-        'rd-overview': 'docs/RD/RD-Overview.md',
-        'rd-module': 'docs/RD/RD-{MODULE}.md (replace {MODULE} with actual module name)',
         'prd-overview': 'docs/PRD/PRD-Overview.md',
         'prd-module': 'docs/PRD/PRD-{MODULE}.md',
         'design-overview': 'docs/Design-Document/Design-Overview.md',
@@ -568,8 +592,6 @@ def create_claude_commands(project_size):
 
     # 定义小项目模板（单层文档结构）
     small_project_commands = {
-        'rd-generator.md': ('specgov-rd-gen', 'Generate Requirements Document (RD)', 'rd'),
-        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)', 'rd'),
         'prd-generator.md': ('specgov-prd-gen', 'Generate Product Requirements Document (PRD)', 'prd'),
         'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)', 'prd'),
         'design-generator.md': ('specgov-design-gen', 'Generate Design Document', 'design'),
@@ -584,9 +606,6 @@ def create_claude_commands(project_size):
 
     # 定义大项目模板（双层文档结构：Overview + Module）
     large_project_commands = {
-        'rd-overview-generator.md': ('specgov-rd-overview', 'Generate RD Overview (large project)', 'rd-overview'),
-        'rd-module-generator.md': ('specgov-rd-module', 'Generate RD Module (large project)', 'rd-module'),
-        'rd-reviewer.md': ('specgov-rd-review', 'Review Requirements Document (RD)', 'rd-overview'),
         'prd-overview-generator.md': ('specgov-prd-overview', 'Generate PRD Overview (large project)', 'prd-overview'),
         'prd-module-generator.md': ('specgov-prd-module', 'Generate PRD Module (large project)', 'prd-module'),
         'prd-reviewer.md': ('specgov-prd-review', 'Review Product Requirements Document (PRD)', 'prd-overview'),
@@ -617,6 +636,15 @@ def create_claude_commands(project_size):
 - **Project Size**: {project_size} project
 - **Document Structure**: {"Single-tier (one file per document type)" if project_size == 'small' else "Two-tier (Overview + Module files)"}
 - **Configuration**: `.specgov/project-config.json`
+
+## Project Background
+
+- **Industry**: {project_info['industry']}
+- **Project Type**: {project_info['project_type']}
+- **Target Users**: {project_info['target_users']}
+- **Core Business**: {project_info['core_business']}
+
+> 💡 **重要提示**：生成文档时，请充分考虑项目所属行业的特点和目标用户的需求，确保设计的功能和方案符合行业规范和用户期望。
 """
 
         # 添加文档路径信息
@@ -660,7 +688,6 @@ def create_claude_commands(project_size):
             context_section += f"""
 ## Document Locations
 
-- **RD**: `{"docs/RD.md" if project_size == 'small' else "docs/RD/"}`
 - **PRD**: `{"docs/PRD.md" if project_size == 'small' else "docs/PRD/"}`
 - **Design Document**: `{"docs/Design-Document.md" if project_size == 'small' else "docs/Design-Document/"}`
 - **Test Plan**: `{"docs/Test-Plan.md" if project_size == 'small' else "docs/Test-Plan/"}`
@@ -707,23 +734,25 @@ def main():
         print()
 
     project_size = prompt_project_size()
+    project_info = prompt_project_info()
+
     print(f"\n正在创建 {project_size} 项目结构...")
     print()
 
     try:
         project_name = os.path.basename(os.getcwd())
-        create_directory_structure(project_size)
+        create_directory_structure(project_size, project_info)
 
         # 创建 Claude Code 命令
         print()
         print("正在创建 Claude Code 斜杠命令...")
-        command_count = create_claude_commands(project_size)
+        command_count = create_claude_commands(project_size, project_info)
         print(f"✅ 已创建 {command_count} 个 Claude Code 命令（{project_size} 项目）！")
 
         # 创建项目的 CLAUDE.md
         print()
         print("正在创建项目 CLAUDE.md 文件...")
-        create_claude_md(project_name, project_size)
+        create_claude_md(project_name, project_size, project_info)
         print(f"✅ 已创建 CLAUDE.md 项目指南！")
 
         print()
@@ -734,13 +763,14 @@ def main():
         print("=" * 60)
         print("  .specgov/")
         print("    ├── scripts/      (5 个 helper scripts)")
-        print("    ├── prompts/      (20 个 prompt 模板)")
+        print("    ├── prompts/      (14 个 prompt 模板)")
         print("    ├── workflows/    (7 个工作流文档)")
-        print("    ├── tasks/        (6 个任务文件)")
+        print("    ├── tasks/        (5 个任务文件)")
         print("    ├── index/        (索引目录)")
+        print("    ├── raw-requirements/ (原始需求收集)")
         print("    └── project-config.json")
         print("  .claude/")
-        print("    └── commands/     (20 个斜杠命令)")
+        print(f"    └── commands/     ({command_count} 个斜杠命令)")
         print("  docs/             (项目文档目录)")
         print("  reviews/          (审查报告目录)")
         print("  CLAUDE.md         (项目指南，请根据实际情况填写)")
@@ -755,7 +785,7 @@ def main():
         else:
             print("  1. 阅读工作流概览：type .specgov/workflows/workflow-overview.md")
             print("  2. 创建第一个 Epic：编辑 .specgov/tasks/project-manager.md")
-            print("  3. 生成需求文档：在 Claude Code 中加载 .specgov/prompts/rd-generator.md")
+            print("  3. 生成产品需求：在 Claude Code 中使用 /specgov-prd-gen")
         print()
         print("📖 详细文档：")
         print("  - 工作流概览：.specgov/workflows/workflow-overview.md")
@@ -767,37 +797,35 @@ def main():
         print("  - 解析标记：  python .specgov/scripts/parse_tags.py")
         print("  - 构建图谱：  python .specgov/scripts/build_graph.py")
         print("  - 一致性检查：python .specgov/scripts/check_consistency.py")
-        print("  - 影响分析：  python .specgov/scripts/impact_analysis.py --changed=docs/RD.md")
+        print("  - 影响分析：  python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md")
         print()
         print("💬 Claude Code 斜杠命令：")
         if project_size == 'small':
             print("  [小项目 - 单层文档结构]")
-            print("  - 生成 RD：       /specgov-rd-gen")
-            print("  - 审查 RD：       /specgov-rd-review")
             print("  - 生成 PRD：      /specgov-prd-gen")
+            print("  - 审查 PRD：      /specgov-prd-review")
             print("  - 生成 Design：   /specgov-design-gen")
             print("  - 生成 Test：     /specgov-test-gen")
+            print("  - 生成代码：      /specgov-code-gen")
         else:  # large
             print("  [大项目 - 双层文档结构]")
             print("  - 第 1 步（生成 Overview）：")
-            print("    • /specgov-rd-overview     - 生成 RD-Overview.md")
             print("    • /specgov-prd-overview    - 生成 PRD-Overview.md")
             print("    • /specgov-design-overview - 生成 Design-Overview.md")
             print("    • /specgov-test-overview   - 生成 Test-Overview.md")
             print("  - 第 2 步（生成 Module，每个模块调用一次）：")
-            print("    • /specgov-rd-module       - 生成 RD-Module.md")
             print("    • /specgov-prd-module      - 生成 PRD-Module.md")
             print("    • /specgov-design-module   - 生成 Design-Module.md")
             print("    • /specgov-test-module     - 生成 Test-Module.md")
             print("  - 审查命令（通用）：")
-            print("    • /specgov-rd-review")
             print("    • /specgov-prd-review")
+            print("    • /specgov-design-review")
         print("  - 查看全部：      .claude/commands/ 目录")
         print()
         print(f"📋 项目配置：")
         print(f"  - 配置文件：.specgov/project-config.json")
         print(f"  - 项目规模：{project_size} project")
-        print(f"  - 文档结构：{'单层（RD.md, PRD.md, ...）' if project_size == 'small' else '双层（Overview + Module 文档）'}")
+        print(f"  - 文档结构：{'单层（PRD.md, Design-Document.md, Test-Plan.md）' if project_size == 'small' else '双层（Overview + Module 文档）'}")
         print()
         print("=" * 60)
         print("🎉 SpecGovernor 初始化完成！开始您的开发之旅吧！")
