@@ -7,8 +7,8 @@
 ## 🎯 学习目标
 
 完成本指南后，您将：
-- ✅ 了解 SpecGovernor 的基本工作流
-- ✅ 使用 Claude Code 生成第一个需求文档（RD）
+- ✅ 了解 SpecGovernor v3.0 的 4 阶段工作流
+- ✅ 使用 Claude Code 生成第一个产品需求文档（PRD）
 - ✅ 使用 Claude Code 审查文档质量
 - ✅ 运行 Helper Scripts 构建依赖图谱
 - ✅ 理解可追溯性标记的工作原理
@@ -42,8 +42,7 @@ SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文�
 ### 小项目（< 10 万行代码）- 单层文档结构
 
 **使用命令**：
-- `/specgov-prd-gen` - 生成 PRD.md（所有需求在一个文件）
-- `/specgov-prd-gen` - 生成 PPRD.md（所有功能在一个文件）
+- `/specgov-prd-gen` - 生成 PRD.md（包含业务需求和产品功能）
 - `/specgov-design-gen` - 生成 Design-Document.md（所有设计在一个文件）
 - `/specgov-test-gen` - 生成 Test-Plan.md（所有测试用例在一个文件）
 
@@ -60,16 +59,14 @@ SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文�
 **两步生成流程**：
 
 **第 1 步：生成 Overview 文档**（每个阶段调用一次）
-- `/specgov-rd-overview` - 生成 RD-Overview.md（项目整体需求概览）
-- `/specgov-prd-overview` - 生成 PRD-Overview.md（项目整体产品概览）
-- `/specgov-design-overview` - 生成 Design-Overview.md（项目整体架构概览）
-- `/specgov-test-overview` - 生成 Test-Overview.md（项目整体测试策略）
+- `/specgov-prd-overview-gen` - 生成 PRD-Overview.md（项目整体需求和产品概览）
+- `/specgov-design-overview-gen` - 生成 Design-Overview.md（项目整体架构概览）
+- `/specgov-test-overview-gen` - 生成 Test-Overview.md（项目整体测试策略）
 
 **第 2 步：生成 Module 文档**（每个模块调用一次）
-- `/specgov-rd-module` - 生成 RD-{Module}.md（模块具体需求）
-- `/specgov-prd-module` - 生成 PRD-{Module}.md（模块具体功能）
-- `/specgov-design-module` - 生成 Design-{Module}.md（模块具体设计）
-- `/specgov-test-module` - 生成 Test-{Module}.md（模块具体测试用例）
+- `/specgov-prd-module-gen` - 生成 PRD-{Module}.md（模块具体需求和功能）
+- `/specgov-design-module-gen` - 生成 Design-{Module}.md（模块具体设计）
+- `/specgov-test-module-gen` - 生成 Test-{Module}.md（模块具体测试用例）
 
 **特点**：
 - ✅ 文档分层管理（Overview + 多个 Module）
@@ -91,8 +88,8 @@ SpecGovernor 根据项目规模提供不同的命令集，以适应不同的文�
 
 **初始化脚本会根据您的选择显示对应的命令列表**：
 
-- 小项目：显示 `/specgov-prd-gen`, `/specgov-prd-gen` 等单层命令
-- 大项目：显示 `/specgov-rd-overview` + `/specgov-rd-module` 等两步命令
+- 小项目：显示 `/specgov-prd-gen`, `/specgov-design-gen` 等单层命令
+- 大项目：显示 `/specgov-prd-overview-gen` + `/specgov-prd-module-gen` 等两步命令
 
 > **提示**：您生成的 `CLAUDE.md` 文件中也会包含您项目规模对应的命令列表，随时可查阅。
 
@@ -122,7 +119,7 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 **项目特点**：
 - ✅ 小巧简单（适合 5-10 分钟快速上手）
 - ✅ 功能清晰（创建、完成、删除任务）
-- ✅ 涵盖完整 SDLC 流程（RD → PRD → Design → Test → Code）
+- ✅ 涵盖完整 SDLC 流程（PRD → Design → Test → Code）
 
 ---
 
@@ -166,21 +163,21 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 
 ---
 
-## 第 1 步：生成需求文档（RD）
+## 第 1 步：生成产品需求文档（PRD）
 
-### 1.1 切换到需求分析师角色
+### 1.1 切换到产品经理角色
 
-现在切换到 **Requirements Analyst** 角色开始执行第一个子任务：
+现在切换到 **Product Manager** 角色开始执行第一个子任务：
 
-1. 打开 `.specgov/tasks/rd-analyst.md`
+1. 打开 `.specgov/tasks/product-manager.md`
 2. 添加分配的任务：
 
 ```markdown
 ## Active Tasks
 
-### Task 1: 生成 To-Do List App 需求文档
+### Task 1: 生成 To-Do List App 产品需求文档
 - **Epic**：Epic 1 - To-Do List App 核心功能开发
-- **描述**：基于用户故事和业务需求生成 Requirements Document
+- **描述**：收集原始需求并生成 Product Requirements Document（包含业务需求和产品功能）
 - **状态**：进行中
 - **预估时间**：1 小时
 - **输出**：docs/PRD.md
@@ -189,7 +186,7 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 
 3. 保存文件
 
-### 1.2 在 Claude Code 中生成 RD
+### 1.2 在 Claude Code 中生成 PRD
 
 **在 Claude Code 对话框中，复制粘贴以下完整内容**（一次性发送）：
 
@@ -228,44 +225,58 @@ ls .claude/commands/     # 应该有 20 个 .md 文件
 - 部署平台：Vercel / GitHub Pages
 ```
 
-### 1.2 Claude Code 自动生成 RD
+### 1.2 Claude Code 自动生成 PRD
 
 Claude Code 将：
-1. ✅ 加载 `.specgov/prompts/rd-generator.md` 模板
-2. ✅ 根据您的需求生成完整的 PRD.md（包含可追溯性标记）
-3. ✅ 自动写入 `docs/PRD.md` 文件
-4. ✅ 显示生成的文档内容
+1. ✅ 询问您的原始需求（口语化输入）
+2. ✅ 记录原始需求到 `.specgov/raw-requirements/inputs.md`
+3. ✅ 加载 `.specgov/prompts/prd-generator.md` 模板
+4. ✅ 根据您的需求生成完整的 PRD.md（包含可追溯性标记）
+5. ✅ 自动写入 `docs/PRD.md` 文件
+6. ✅ 显示生成的文档内容
 
 **生成的 PRD.md 示例片段**：
 
 ```markdown
-# Requirements Document (RD)
+# Product Requirements Document (PRD)
 
-> **Version**: 1.0
-> **Created**: 2025-11-16
+## Part 1: Business Requirements
 
-## 1. Task Management Requirements
-**[ID: RD-TASK-001]**
+### 1.1 Task Management Requirements
+**[ID: PRD-REQ-SECTION-001]**
 
-本章节定义待办事项管理的核心需求。
-
-### 1.1 Create Task
-**[ID: PRD-REQ-001] [Decomposes: RD-TASK-001]**
-
-系统必须允许用户创建新的待办任务。
+本章节定义待办事项管理的核心业务需求。
 
 **验收标准**：
+- ✅ 用户能够完整管理待办任务的生命周期
+- ✅ 任务数据能够持久化保存
+- ✅ 界面简洁直观，易于使用
+
+## Part 2: Product Features
+
+### 2.1 Create Task Feature
+**[ID: PRD-FEAT-001] [Implements: PRD-REQ-SECTION-001]**
+
+#### User Story
+> **As** 用户
+> **I want** 创建新的待办任务
+> **So that** 我可以记录需要完成的事项
+
+#### Acceptance Criteria
 - ✅ 用户可以输入任务标题（必填，最多 100 字符）
 - ✅ 用户可以输入任务描述（可选，最多 500 字符）
 - ✅ 任务创建后立即显示在任务列表中
 - ✅ 任务状态默认为 "active"（未完成）
 
-### 1.2 Mark Task as Completed
-**[ID: PRD-REQ-002] [Decomposes: RD-TASK-001]**
+### 2.2 Mark Task as Completed Feature
+**[ID: PRD-FEAT-002] [Implements: PRD-REQ-SECTION-001]**
 
-系统必须允许用户标记任务为完成状态。
+#### User Story
+> **As** 用户
+> **I want** 标记任务为完成状态
+> **So that** 我可以追踪已完成的工作
 
-**验收标准**：
+#### Acceptance Criteria
 - ✅ 用户可以点击任务旁的复选框标记为完成
 - ✅ 已完成任务显示删除线样式
 - ✅ 完成状态持久化到 localStorage
@@ -286,22 +297,23 @@ ls docs/
 
 您应该看到：
 - ✅ `docs/PRD.md` 文件已创建
-- ✅ 包含所有需求（6 个用户故事 → 6-8 个需求）
-- ✅ 每个需求都有 `[ID: RD-XXX-XXX]` 标记
-- ✅ 使用 `[Decomposes: XXX]` 表示层级关系
+- ✅ 包含 Part 1（业务需求）和 Part 2（产品功能）两部分
+- ✅ 业务需求使用 `[ID: PRD-REQ-XXX]` 标记
+- ✅ 产品功能使用 `[ID: PRD-FEAT-XXX]` 标记
+- ✅ 使用 `[Implements: PRD-REQ-XXX]` 表示功能实现需求
 
 ---
 
-## 第 2 步：审查需求文档
+## 第 2 步：审查产品需求文档
 
-### 2.1 在 Claude Code 中审查 RD
+### 2.1 在 Claude Code 中审查 PRD
 
 **复制粘贴以下内容到 Claude Code**：
 
 ```
-/specgov-rd-review
+/specgov-prd-review
 
-请审查以下 Requirements Document (RD)：
+请审查以下 Product Requirements Document (PRD)：
 
 [粘贴 docs/PRD.md 的完整内容]
 
@@ -315,7 +327,7 @@ ls docs/
 Claude Code 将输出审查报告，例如：
 
 ```markdown
-# RD Review Report
+# PRD Review Report
 
 ## Summary
 - **Overall Quality**: Good
@@ -325,10 +337,10 @@ Claude Code 将输出审查报告，例如：
 
 ## Important Issues
 
-### 1. [重要-可追溯性] 缺少分层标记
-- **位置**: PRD-REQ-006（编辑任务）
-- **问题**: 没有 [Decomposes: RD-TASK-001] 标记
-- **建议**: 添加 [Decomposes: RD-TASK-001]，因为它属于 Task Management Requirements
+### 1. [重要-可追溯性] 缺少实现关系标记
+- **位置**: PRD-FEAT-006（编辑任务功能）
+- **问题**: 没有 [Implements: PRD-REQ-SECTION-001] 标记
+- **建议**: 添加 [Implements: PRD-REQ-SECTION-001]，因为它属于 Task Management Requirements
 
 ## Suggestions
 
@@ -348,12 +360,12 @@ mkdir -p reviews
 
 # 将 Claude Code 输出的报告保存为文件（替换为当前日期）
 # 复制粘贴 Claude Code 的完整输出到文件中
-echo "# RD Review Report
-[粘贴 Claude Code 的完整审查报告内容]" > reviews/RD-Review-Report-2025-11-17.md
+echo "# PRD Review Report
+[粘贴 Claude Code 的完整审查报告内容]" > reviews/PRD-Review-Report-2025-11-17.md
 
 # 添加到版本控制
-git add reviews/RD-Review-Report-*.md
-git commit -m "Add RD review report 2025-11-17"
+git add reviews/PRD-Review-Report-*.md
+git commit -m "Add PRD review report 2025-11-17"
 ```
 
 > **💡 提示**：保存审查报告有助于：
@@ -361,20 +373,20 @@ git commit -m "Add RD review report 2025-11-17"
 > - 为团队提供审查参考
 > - 支持后续的影响分析
 
-### 2.4 根据审查反馈修改 RD（如需要）
+### 2.4 根据审查反馈修改 PRD（如需要）
 
 如果有问题，再次使用 `/specgov-prd-gen` 修改：
 
 ```
 /specgov-prd-gen
 
-请修改现有 Requirements Document (RD)。
+请修改现有 Product Requirements Document (PRD)。
 
 现有 PRD.md 内容：
 [粘贴 docs/PRD.md 内容]
 
 审查反馈：
-- PRD-REQ-006 缺少 [Decomposes: RD-TASK-001] 标记
+- PRD-FEAT-006 缺少 [Implements: PRD-REQ-SECTION-001] 标记
 
 请根据审查反馈修改 PRD.md。
 ```
@@ -383,11 +395,11 @@ git commit -m "Add RD review report 2025-11-17"
 
 ## 第 3 步：更新项目进度
 
-### 3.1 更新需求分析师任务状态
+### 3.1 更新产品经理任务状态
 
-RD 生成和审查完成后，更新任务状态：
+PRD 生成和审查完成后，更新任务状态：
 
-1. 打开 `.specgov/tasks/rd-analyst.md`
+1. 打开 `.specgov/tasks/product-manager.md`
 2. 将任务移到 "Completed Tasks" 部分：
 
 ```markdown
@@ -410,11 +422,10 @@ RD 生成和审查完成后，更新任务状态：
 
 ```markdown
 ### Epic 1: To-Do List App 核心功能开发
-- **进度**：0% → 20%
+- **进度**：0% → 25%
 - **子任务**：
-  - ✅ 需求分析（Requirements Analyst）- 已完成
-  - ⬜ 产品规划（Product Manager）- 下一步
-  - ⬜ 技术设计（Architect）
+  - ✅ 产品规划（Product Manager）- 已完成
+  - ⬜ 技术设计（Architect）- 下一步
   - ⬜ 测试规划（Test Manager）
   - ⬜ 代码实现（Developer）
 - **已用时间**：[实际花费时间]
@@ -440,40 +451,40 @@ python .specgov/scripts/parse_tags.py
 **输出示例（小项目）**：
 ```
 Parsing docs/PRD.md...
-Found 9 tags:
-- RD-TASK-001 (section)
-- PRD-REQ-001 (requirement, decomposes: RD-TASK-001)
-- PRD-REQ-002 (requirement, decomposes: RD-TASK-001)
-- PRD-REQ-003 (requirement, decomposes: RD-TASK-001)
-- PRD-REQ-004 (requirement, decomposes: RD-TASK-001)
-- PRD-REQ-005 (requirement, decomposes: RD-TASK-001)
-- PRD-REQ-006 (requirement, decomposes: RD-TASK-001)
-- RD-NFR-001 (non-functional requirement)
-- RD-NFR-002 (non-functional requirement)
+Found 12 tags:
+- PRD-REQ-SECTION-001 (business requirement section)
+- PRD-FEAT-001 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-FEAT-002 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-FEAT-003 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-FEAT-004 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-FEAT-005 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-FEAT-006 (feature, implements: PRD-REQ-SECTION-001)
+- PRD-REQ-NFR-001 (non-functional requirement)
+- PRD-REQ-NFR-002 (non-functional requirement)
 
 Tags saved to .specgov/index/tags.json
 ```
 
-**输出示例（大项目，生成 RD-Overview.md 后）**：
+**输出示例（大项目，生成 PRD-Overview.md 后）**：
 ```
-Parsing docs/RD/RD-Overview.md...
+Parsing docs/PRD/PRD-Overview.md...
 Found 5 tags:
-- RD-PROJECT-001 (requirement)
-- RD-MODULE-USER (module, decomposes: RD-PROJECT-001)
-- RD-MODULE-ORDER (module, decomposes: RD-PROJECT-001)
-- RD-MODULE-PAYMENT (module, decomposes: RD-PROJECT-001)
-- RD-CROSS-AUTH-001 (requirement)
+- PRD-REQ-PROJECT-001 (business requirement)
+- PRD-MODULE-USER (module, implements: PRD-REQ-PROJECT-001)
+- PRD-MODULE-ORDER (module, implements: PRD-REQ-PROJECT-001)
+- PRD-MODULE-PAYMENT (module, implements: PRD-REQ-PROJECT-001)
+- PRD-REQ-CROSS-AUTH-001 (cross-cutting requirement)
 
 Tags saved to .specgov/index/tags.json
 
 📦 Updated project modules:
-  - User (USER) in docs/RD/RD-Overview.md:25
-  - Order (ORDER) in docs/RD/RD-Overview.md:35
-  - Payment (PAYMENT) in docs/RD/RD-Overview.md:45
+  - User (USER) in docs/PRD/PRD-Overview.md:25
+  - Order (ORDER) in docs/PRD/PRD-Overview.md:35
+  - Payment (PAYMENT) in docs/PRD/PRD-Overview.md:45
 ✓ Updated 3 modules in .specgov/project-config.json
 ```
 
-> **大项目提示**：`parse_tags.py` 会自动从 `RD-Overview.md` 中提取模块定义（`[ID: RD-MODULE-XXX]`）并更新 `.specgov/project-config.json` 中的 `modules` 字段。这样后续脚本和工具就能知道项目有哪些模块了。
+> **大项目提示**：`parse_tags.py` 会自动从 `PRD-Overview.md` 中提取模块定义（`[ID: PRD-MODULE-XXX]`）并更新 `.specgov/project-config.json` 中的 `modules` 字段。这样后续脚本和工具就能知道项目有哪些模块了。
 
 ### 4.2 构建依赖图谱
 
@@ -502,13 +513,13 @@ cat .specgov/index/dependency-graph.json
 ```json
 {
   "nodes": [
-    {"id": "RD-TASK-001", "type": "section", "label": "Task Management Requirements", "location": "docs/PRD.md:10"},
-    {"id": "PRD-REQ-001", "type": "requirement", "label": "Create Task", "location": "docs/PRD.md:15"},
-    {"id": "PRD-REQ-002", "type": "requirement", "label": "Mark Task as Completed", "location": "docs/PRD.md:25"}
+    {"id": "PRD-REQ-SECTION-001", "type": "business_requirement", "label": "Task Management Requirements", "location": "docs/PRD.md:10"},
+    {"id": "PRD-FEAT-001", "type": "feature", "label": "Create Task Feature", "location": "docs/PRD.md:25"},
+    {"id": "PRD-FEAT-002", "type": "feature", "label": "Mark Task as Completed Feature", "location": "docs/PRD.md:40"}
   ],
   "edges": [
-    {"from": "PRD-REQ-001", "to": "RD-TASK-001", "type": "decomposes"},
-    {"from": "PRD-REQ-002", "to": "RD-TASK-001", "type": "decomposes"}
+    {"from": "PRD-FEAT-001", "to": "PRD-REQ-SECTION-001", "type": "implements"},
+    {"from": "PRD-FEAT-002", "to": "PRD-REQ-SECTION-001", "type": "implements"}
   ]
 }
 ```
@@ -517,27 +528,9 @@ cat .specgov/index/dependency-graph.json
 
 ## 第 5 步：继续 SDLC 流程（可选）
 
-您已经完成了 RD 生成！现在可以继续：
+您已经完成了 PRD 生成！现在可以继续：
 
-### 5.1 生成 PRD（Product Requirements Document）
-
-```
-/specgov-prd-gen
-
-请基于以下 RD 生成 PRD。
-
-RD 内容：
-[粘贴 docs/PRD.md 内容]
-
-项目信息：
-- 项目名称：To-Do List App
-- 目标用户：个人用户
-- 竞品分析：Todoist, Microsoft To Do（参考其简洁设计）
-
-请生成 PRD，包含功能优先级、UI/UX 设计要点。
-```
-
-### 5.2 生成 Design Document
+### 5.1 生成 Design Document
 
 ```
 /specgov-design-gen
@@ -545,7 +538,7 @@ RD 内容：
 请基于以下 PRD 生成 Design Document。
 
 PRD 内容：
-[粘贴 docs/PPRD.md 内容]
+[粘贴 docs/PRD.md 内容]
 
 技术选型：
 - 前端：React 18 + TypeScript + Vite
@@ -556,7 +549,7 @@ PRD 内容：
 请生成 Design Document，包含架构设计、数据模型、API 设计。
 ```
 
-### 5.3 生成 Test Plan
+### 5.2 生成 Test Plan
 
 ```
 /specgov-test-gen
@@ -583,9 +576,9 @@ Design Document 内容：
 ### 您已经学会了：
 
 - ✅ **项目规划**：作为 Project Manager 创建 Epic 和任务分解
-- ✅ **角色切换**：在不同视角间切换（Project Manager → Requirements Analyst → Project Manager）
-- ✅ 使用 Claude Code 斜杠命令（`/specgov-prd-gen`、`/specgov-rd-review`）
-- ✅ 生成带可追溯性标记的需求文档
+- ✅ **角色切换**：在不同视角间切换（Project Manager → Product Manager → Project Manager）
+- ✅ 使用 Claude Code 斜杠命令（`/specgov-prd-gen`、`/specgov-prd-review`）
+- ✅ 生成带可追溯性标记的产品需求文档（PRD）
 - ✅ 使用 Reviewer 审查文档质量
 - ✅ **任务管理**：更新任务状态和 Epic 进度
 - ✅ 运行 Helper Scripts 构建依赖图谱
@@ -601,8 +594,7 @@ your-project/
 │   ├── workflows/            # 工作流文档
 │   ├── tasks/                # ✅ 任务跟踪文件（项目管理）
 │   │   ├── project-manager.md    # ✅ 您创建的 Epic
-│   │   ├── rd-analyst.md         # ✅ 您更新的任务状态
-│   │   ├── product-manager.md
+│   │   ├── product-manager.md    # ✅ 您更新的任务状态
 │   │   ├── architect.md
 │   │   ├── test-manager.md
 │   │   └── developer.md
@@ -610,11 +602,11 @@ your-project/
 │       ├── tags.json         # ✅ 可追溯性标记索引
 │       └── dependency-graph.json  # ✅ 依赖图谱
 ├── .claude/
-│   └── commands/             # 20 个斜杠命令
+│   └── commands/             # 小项目：10 个斜杠命令，大项目：13 个斜杠命令
 ├── docs/
-│   └── PRD.md                 # ✅ 您生成的需求文档
+│   └── PRD.md                 # ✅ 您生成的产品需求文档
 ├── reviews/                  # ✅ 审查报告（质量保证）
-│   └── RD-Review-Report-2025-11-17.md  # ✅ 您保存的审查报告
+│   └── PRD-Review-Report-2025-11-17.md  # ✅ 您保存的审查报告
 └── CLAUDE.md                 # 项目指南（请填写）
 ```
 
@@ -626,22 +618,17 @@ your-project/
 
 按照以下顺序继续：
 
-1. **生成 PRD（Product Requirements Document）**
-   - 使用: `/specgov-prd-gen`
-   - 审查: `/specgov-prd-review`
-   - 工作流: `.specgov/workflows/workflow-prd.md`
-
-2. **生成 Design Document**
+1. **生成 Design Document**
    - 使用: `/specgov-design-gen`
    - 审查: `/specgov-design-review`
    - 工作流: `.specgov/workflows/workflow-design.md`
 
-3. **生成 Test Plan**
+2. **生成 Test Plan**
    - 使用: `/specgov-test-gen`
    - 审查: `/specgov-test-review`
    - 工作流: `.specgov/workflows/workflow-test-plan.md`
 
-4. **生成代码**
+3. **生成代码**
    - 使用: `/specgov-code-gen`
    - 审查: `/specgov-code-review`
 
@@ -654,11 +641,11 @@ your-project/
 ### 使用 Helper Scripts
 
 ```bash
-# 影响分析：修改 RD 后运行
+# 影响分析：修改 PRD 后运行
 python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 # 一致性检查：验证可追溯性链
-python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001
+python .specgov/scripts/check_consistency.py --scope=PRD-FEAT-001
 ```
 
 ---
@@ -668,14 +655,12 @@ python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001
 1. **使用 Claude 斜杠命令**：在 Claude Code 中使用 `/specgov-xx-gen` 命令，无需手动打开 prompt 文件
 2. **一次性提供完整上下文**：将需求、约束、示例等信息一次性粘贴到 Claude Code，生成质量更好
 3. **定期运行 Helper Scripts**：每次修改文档后运行 `parse_tags.py` 和 `build_graph.py`
-4. **大项目模块管理**：生成 RD-Overview.md 后立即运行 `parse_tags.py`，它会自动提取模块信息到 `project-config.json`
+4. **大项目模块管理**：生成 PRD-Overview.md 后立即运行 `parse_tags.py`，它会自动提取模块信息到 `project-config.json`
 5. **使用 Git 追踪变更**：所有文档都应该提交到 Git，便于团队协作和版本追溯
 6. **双重质量保证**：始终使用 Generator + Reviewer 模式（生成 + 审查）
 7. **填写 CLAUDE.md**：根据您的项目实际情况填写 `CLAUDE.md` 中的技术栈、架构约束等信息
 
 **可用的 Claude 斜杠命令（小项目）**：
-- `/specgov-prd-gen` - 生成 RD
-- `/specgov-rd-review` - 审查 RD
 - `/specgov-prd-gen` - 生成 PRD
 - `/specgov-prd-review` - 审查 PRD
 - `/specgov-design-gen` - 生成 Design Document
@@ -707,7 +692,7 @@ python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001
 **A**: 检查：
 - 是否使用了正确的 prompt 模板（`/specgov-prd-gen`）
 - 是否在提示中明确要求包含标记
-- 使用 `/specgov-rd-review` 审查，它会检测缺失的标记
+- 使用 `/specgov-prd-review` 审查，它会检测缺失的标记
 
 ### Q3: Helper Scripts 运行失败怎么办？
 
@@ -719,11 +704,11 @@ python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001
 
 ### Q3a: 大项目中 project-config.json 的 modules 字段为什么是空的？
 
-**A**: `modules` 字段会在您生成 RD-Overview.md 后自动更新。
+**A**: `modules` 字段会在您生成 PRD-Overview.md 后自动更新。
 
 **解决步骤**：
-1. 使用 `/specgov-rd-overview` 生成 `docs/RD/RD-Overview.md`
-2. 确保 Overview 中包含模块定义（如 `[ID: RD-MODULE-USER]`, `[ID: RD-MODULE-ORDER]`）
+1. 使用 `/specgov-prd-overview-gen` 生成 `docs/PRD/PRD-Overview.md`
+2. 确保 Overview 中包含模块定义（如 `[ID: PRD-MODULE-USER]`, `[ID: PRD-MODULE-ORDER]`）
 3. 运行 `python .specgov/scripts/parse_tags.py`
 4. 脚本会自动提取模块信息并更新 `project-config.json`
 
@@ -735,7 +720,7 @@ cat .specgov/project-config.json
 
 ### Q4: 我可以跳过某个阶段吗？
 
-**A**: 不推荐。完整的 SDLC 流程确保需求到代码的完整可追溯性。如果跳过某个阶段（如 PRD），后续阶段的文档将缺少上游链接，可追溯性链会断裂。
+**A**: 不推荐。完整的 SDLC 流程确保需求到代码的完整可追溯性。如果跳过某个阶段（如 Design Document），后续阶段的文档将缺少上游链接，可追溯性链会断裂。
 
 ### Q5: 如何处理大项目？
 

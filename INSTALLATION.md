@@ -128,10 +128,8 @@ your-project/                   # 您的项目根目录
 │   │   ├── build_graph.py          # 构建图谱
 │   │   ├── check_consistency.py    # 一致性检查
 │   │   └── impact_analysis.py      # 影响分析
-│   ├── prompts/                # Prompt 模板（20 个）
-│   │   ├── rd-generator.md
-│   │   ├── rd-reviewer.md
-│   │   ├── prd-generator.md
+│   ├── prompts/                # Prompt 模板（14 个，v3.0）
+│   │   ├── prd-generator.md            # 小项目
 │   │   ├── prd-reviewer.md
 │   │   ├── design-generator.md
 │   │   ├── design-reviewer.md
@@ -141,44 +139,49 @@ your-project/                   # 您的项目根目录
 │   │   ├── code-reviewer.md
 │   │   ├── consistency-checker.md
 │   │   ├── impact-analyzer.md
-│   │   ├── rd-overview-generator.md      # 大项目
-│   │   ├── rd-module-generator.md        # 大项目
 │   │   ├── prd-overview-generator.md     # 大项目
-│   │   ├── prd-module-generator.md       # 大项目
-│   │   ├── design-overview-generator.md  # 大项目
-│   │   ├── design-module-generator.md    # 大项目
-│   │   ├── test-plan-overview-generator.md   # 大项目
-│   │   └── test-plan-module-generator.md     # 大项目
-│   ├── workflows/              # 工作流文档（7 个）
+│   │   ├── prd-module-generator.md
+│   │   ├── design-overview-generator.md
+│   │   ├── design-module-generator.md
+│   │   ├── test-plan-overview-generator.md
+│   │   └── test-plan-module-generator.md
+│   ├── workflows/              # 工作流文档（6 个）
 │   │   ├── workflow-overview.md
-│   │   ├── workflow-rd.md
 │   │   ├── workflow-prd.md
 │   │   ├── workflow-design.md
 │   │   ├── workflow-test-plan.md
 │   │   ├── workflow-task-mgmt.md
 │   │   └── workflow-large-project.md
-│   ├── tasks/                  # 任务跟踪文件（6 个）
+│   ├── tasks/                  # 任务跟踪文件（5 个）
 │   │   ├── project-manager.md
-│   │   ├── rd-analyst.md
 │   │   ├── product-manager.md
 │   │   ├── architect.md
 │   │   ├── test-manager.md
 │   │   └── developer.md
+│   ├── raw-requirements/       # 原始需求收集
+│   │   └── inputs.md           # 小项目：单个文件
+│   │                           # 大项目：overview.md + modules/*.md
 │   ├── index/                  # 索引数据（由脚本生成）
 │   │   ├── tags.json           # 可追溯性标记索引
 │   │   └── dependency-graph.json   # 依赖图谱
 │   └── project-config.json     # 项目配置
 │
 ├── .claude/                    # ✨ Claude Code 命令集成
-│   └── commands/               # 斜杠命令（20 个）
-│       ├── specgov-rd-gen.md
-│       ├── specgov-rd-review.md
+│   └── commands/               # 斜杠命令（小项目 10 个，大项目 13 个）
 │       ├── specgov-prd-gen.md
-│       └── ...                 # 其他 17 个命令
+│       ├── specgov-prd-review.md
+│       ├── specgov-design-gen.md
+│       ├── specgov-design-review.md
+│       ├── specgov-test-gen.md
+│       ├── specgov-test-review.md
+│       ├── specgov-code-gen.md
+│       ├── specgov-code-review.md
+│       ├── specgov-consistency.md
+│       ├── specgov-impact.md
+│       └── ...                 # 大项目还有 overview/module 命令
 │
 ├── docs/                       # ✨ 您的项目文档目录
-│   ├── PRD.md                   # 您的 Requirements Document
-│   ├── PPRD.md                  # 您的 Product Requirements Document
+│   ├── PRD.md                   # 您的 Product Requirements Document
 │   ├── Design-Document.md      # 您的 Design Document
 │   └── Test-Plan.md            # 您的 Test Plan
 │
@@ -286,10 +289,10 @@ python .specgov/scripts/build_graph.py
 ### 4. 检查文档模板
 
 ```powershell
-# 检查 PRD.md 模板
+# 检查 PRD.md 占位符
 type docs/PRD.md
 
-# 应该看到 RD 模板内容
+# 应该看到 PRD 占位符内容（提示使用 SpecGovernor v3.0 生成）
 ```
 
 ---
