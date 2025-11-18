@@ -125,29 +125,30 @@ git commit -m "Refactor DD architecture design"
 **SpecGovernor v3.0 遵循 4 阶段 SDLC 流程：**
 
 ```
-PRD → Design Document → Test Plan → Code
+原始需求 → PRD → Design Document → Test Plan → Code
 ```
 
-1. **PRD.md** - 产品需求文档（Product Requirements Document）
-   - Part 1: Business Requirements（业务需求）
-   - Part 2: Product Features（产品功能）
-2. **Design-Document.md** - 设计文档（**完整名称，不缩写**）
-3. **Test-Plan.md** - 测试计划（**完整名称，不缩写**）
-4. **Code** - 代码实现
+1. **raw-requirements/** - 原始需求收集（离散、口语化、非结构化）
+2. **PRD.md** - 产品需求文档（Product Requirements Document）
+   - 基于原始需求定义产品功能
+   - 可选引用原始需求 Entry
+3. **Design-Document.md** - 设计文档（**完整名称，不缩写**）
+4. **Test-Plan.md** - 测试计划（**完整名称，不缩写**）
+5. **Code** - 代码实现
 
 **每个阶段都使用 Generator-Reviewer 对模式，确保质量。**
 
 ### 可追溯性链
 
 ```
-PRD-REQ-XXX (业务需求)
-    ↓ [Decomposes]
+原始需求（Raw Requirements）
+  Entry-001, Entry-002, ... (离散、非结构化)
+    ↓ [可选引用: Raw-Req: Entry-XXX]
 PRD-FEAT-XXX (产品功能)
-    ↓ [Implements: PRD-REQ-XXX]
-DESIGN-XXX (设计)
     ↓ [Designs-for: PRD-FEAT-XXX]
-TEST-XXX (测试)
+DESIGN-XXX (设计)
     ↓ [Tests-for: DESIGN-XXX]
-CODE-XXX (代码)
+TEST-XXX (测试)
     ↓ [Implements: DESIGN-XXX]
+CODE-XXX (代码)
 ```

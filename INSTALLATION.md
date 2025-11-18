@@ -48,14 +48,14 @@ SpecGovernor 使用自动化安装脚本，将工具包集成到您的项目中�
 
 ```powershell
 # 在项目根目录下载安装脚本
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install/install-specgov.ps1" -OutFile "install-specgov.ps1"
 ```
 
 **Linux/Mac (Bash)**:
 
 ```bash
 # 在项目根目录下载安装脚本
-curl -O https://raw.githubusercontent.com/yourname/SpecGovernor/main/install-specgov.sh
+curl -O https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install/install-specgov.sh
 chmod +x install-specgov.sh
 ```
 

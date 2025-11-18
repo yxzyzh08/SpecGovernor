@@ -13,12 +13,16 @@
 PRD → Design Document → Test Plan → Code
 ```
 
-**说明**：
-- ✅ PRD 包含两部分内容：
-  - **Part 1: Business Requirements**（业务需求）- 定义"需要什么"
-  - **Part 2: Product Features**（产品功能）- 定义"如何实现"
-- ✅ 每个阶段使用 Generator-Reviewer 对模式确保质量
-- ✅ 通过可追溯性标记建立完整追踪链
+**v3.0 简化架构说明**：
+- ✅ **原始需求收集**：产品经理收集离散、口语化的原始需求（存储在 `raw-requirements/`）
+- ✅ **PRD 定义产品功能**：基于原始需求，直接定义产品功能（无需中间的"业务需求"层）
+- ✅ **每个阶段使用 Generator-Reviewer 对模式**确保质量
+- ✅ **通过可追溯性标记建立完整追踪链**
+
+**与 v2.0 的主要变化**：
+- ❌ 取消了独立的 RD（Requirements Document）
+- ❌ 取消了 PRD Part 1（Business Requirements）层
+- ✅ PRD 直接定义产品功能，可选引用原始需求 Entry
 
 ---
 
@@ -29,44 +33,46 @@ PRD → Design Document → Test Plan → Code
 本文档采用**显式可追溯性标记 (Explicit Traceability Tagging)** 策略，建立：
 
 ```
-PRD-REQ-XXX (业务需求)
-    ↓ [Decomposes]
+原始需求（Raw Requirements）
+  Entry 001, Entry 002, ... (离散、非结构化)
+    ↓ [可选引用: Raw-Req: Entry-XXX]
 PRD-FEAT-XXX (产品功能)
-    ↓ [Implements: PRD-REQ-XXX]
-DESIGN-XXX (设计)
     ↓ [Designs-for: PRD-FEAT-XXX]
-TEST-XXX (测试)
+DESIGN-XXX (设计)
     ↓ [Tests-for: DESIGN-XXX]
-CODE-XXX (代码)
+TEST-XXX (测试)
     ↓ [Implements: DESIGN-XXX]
+CODE-XXX (代码)
 ```
 
+**标记说明**：
+- **[ID: PRD-FEAT-XXX]**：产品功能唯一标识
+- **[Raw-Req: Entry-XXX]**：可选，引用原始需求的 Entry 编号
+- **[Designs-for: PRD-FEAT-XXX]**：设计实现某个产品功能
+- **[Tests-for: DESIGN-XXX]**：测试验证某个设计
+- **[Implements: DESIGN-XXX]**：代码实现某个设计
+
 ---
 
-# **Part 1: Business Requirements（业务需求）**
-
-> 本部分定义业务需求、目标用户、项目目标等。
-
----
-
-## **一、术语与缩略语 (Terminology and Glossary)**
+## **术语与缩略语 (Terminology and Glossary)**
 
 **[ID: PRD-GLOSSARY-001]**
 
 | 术语/缩略语 | 英文全称 | 解释说明 |
 |:-----------|:--------|:--------|
 | **SDLC** | Software Development Life Cycle | 软件开发生命周期 |
-| **PRD** | Product Requirements Document | 产品需求文档（包含业务需求和产品功能） |
+| **PRD** | Product Requirements Document | 产品需求文档（定义产品功能） |
 | **Design Document** | Design Document | 设计文档（**必须使用完整名称，不缩写为 DD**） |
 | **Test Plan** | Test Plan | 测试计划（**必须使用完整名称，不缩写为 TD/TP**） |
 | **Claude Code** | Claude Code | Anthropic 的 AI 编程助手 |
 | **Prompt Template** | 提示词模板 | 预定义的 AI 提示词，用于引导 Claude Code 生成特定内容 |
-| **Traceability Tag** | 可追溯性标记 | 在文档或代码中嵌入的结构化标记，如 `[ID: PRD-REQ-005]` |
+| **Traceability Tag** | 可追溯性标记 | 在文档或代码中嵌入的结构化标记，如 `[ID: PRD-FEAT-012]` |
 | **Workflow** | 工作流程 | 标准化的开发流程步骤 |
 | **Helper Script** | 辅助脚本 | 自动化处理某些任务的 Python 脚本 |
 | **Epic** | Epic | 高层级任务，由项目经理管理 |
 | **Module** | 模块 | 大型项目中的功能模块（如用户模块、支付模块） |
 | **Raw Requirements** | 原始需求 | 人类提供的口语化、零散的需求输入 |
+| **Entry** | Entry | 原始需求文档中的单个需求条目 |
 
 **重要原则**：
 - ✅ 文档文件名必须使用英文：`PRD.md`, `Design-Document.md`, `Test-Plan.md`
@@ -75,301 +81,9 @@ CODE-XXX (代码)
 
 ---
 
-## **二、项目目标 (Project Goals)**
+# **Product Features（产品功能）**
 
-**[ID: PRD-GOAL-001]**
-
-| ID | 目标描述 | 达成标准 |
-|:---|:--------|:--------|
-| **G-1** | **提供标准化提示词模板** | 覆盖 PRD/Design Document/Test Plan/Code 生成和评审的所有场景 |
-| **G-2** | **定义规范化开发流程** | 提供清晰的 4 阶段流程文档（PRD → Design → Test → Code） |
-| **G-3** | **实现 100% 可追溯性** | 通过嵌入标记，建立 PRD → Design Document → Test Plan → Code 的完整追溯链 |
-| **G-4** | **提供辅助工具** | Python 脚本帮助解析标记、构建依赖图、影响分析、一致性检查 |
-| **G-5** | **易于使用** | 超级个体可以直接使用，无需安装复杂软件，零成本 |
-| **G-6** | **支持原始需求收集** | 产品经理能记录和追溯人类的口语化原始需求输入 |
-
----
-
-## **三、目标用户 (Target Users)**
-
-### **3.1 超级个体 (Super Individual)**
-
-**[ID: PRD-USER-001]**
-
-目标用户是**超级个体**，即一人承担多个研发角色的技术专家：
-
-| 角色 | 职责 | 任务视角 |
-|:----|:-----|:--------|
-| **项目经理** | 创建 Epic，分解子任务，跟踪整体进度，协调各角色 | High-level（Epic 级别） |
-| **产品经理** | 收集原始需求，使用 PRD Generator 生成产品文档 | Low-level（Task 级别） |
-| **架构师** | 使用 Design Document Generator 生成设计文档 | Low-level（Task 级别） |
-| **测试经理** | 使用 Test Plan Generator 生成测试计划 | Low-level（Task 级别） |
-| **开发工程师** | 使用 Code Generator 生成代码 | Low-level（Task 级别） |
-
-**说明**：
-- 虽然使用者是同一个人（超级个体），但需要在**不同视角**间切换
-- **项目经理视角**：关注整体进度、里程碑、交付物（High-level）
-- **具体角色视角**：关注具体任务、技术细节、实现（Low-level）
-- 每个角色完成任务后需要更新**两处**：自己的任务文档 + 项目经理的任务文档
-
-### **3.2 使用方式**
-
-**[ID: PRD-USER-002]**
-
-1. 打开 **Claude Code**
-2. 加载 SpecGovernor 提供的**提示词模板**（通过斜杠命令）
-3. 提供项目上下文和输入
-4. Claude Code 按照模板生成规范化的文档/代码
-5. 使用 **Reviewer 提示词**进行评审
-6. 使用 **Helper Scripts** 解析标记、构建依赖图
-
----
-
-## **四、项目规模与文档结构策略 (Project Size & Document Structure)**
-
-**[ID: PRD-SIZE-001]**
-
-### **4.1 项目规模分类**
-
-| 项目规模 | 代码量 | 模块数 | 文档结构 | 适用场景 |
-|:--------|:------|:------|:--------|:--------|
-| **小项目** | < 10 万行 | 1-3 个 | 单层文档 | 单体应用、小型工具、原型项目 |
-| **大项目** | ≥ 10 万行 | 4+ 个 | 双层文档 | 企业级应用、微服务系统、复杂业务系统 |
-
-### **4.2 小项目：单层文档结构**
-
-**[ID: PRD-STRUCTURE-SMALL-001]**
-
-所有需求、设计、测试都写在单个文档中：
-
-```
-docs/
-├── PRD.md                    # 所有业务需求和产品功能
-├── Design-Document.md        # 所有架构和技术设计
-└── Test-Plan.md              # 所有测试用例和策略
-```
-
-**优点**：
-- ✅ 简单直接，易于导航
-- ✅ 适合 AI 一次性处理（< 10K tokens）
-- ✅ 无需管理模块间关系
-
-### **4.3 大项目：双层文档结构**
-
-**[ID: PRD-STRUCTURE-LARGE-001]**
-
-每个文档类型都有两层：**Overview**（总览）+ **Module**（模块详细）
-
-**PRD 层面**：
-```
-docs/PRD/
-├── PRD-Overview.md          # 业务需求和产品功能总览
-├── PRD-User-Module.md       # 用户模块产品设计
-├── PRD-Order-Module.md      # 订单模块产品设计
-└── ...
-```
-
-**Design Document 层面**：
-```
-docs/Design-Document/
-├── Design-Overview.md       # 架构总览
-├── Design-User-Module.md    # 用户模块设计
-├── Design-Order-Module.md   # 订单模块设计
-└── ...
-```
-
-**Test Plan 层面**：
-```
-docs/Test-Plan/
-├── Test-Overview.md         # 测试策略总览
-├── Test-User-Module.md      # 用户模块测试
-├── Test-Order-Module.md     # 订单模块测试
-└── ...
-```
-
-**优点**：
-- ✅ 避免单个文档过大（每个模块 < 10K tokens）
-- ✅ 模块化管理，职责清晰
-- ✅ 支持模块并行开发
-- ✅ AI 可以分别处理每个模块
-
----
-
-## **五、核心业务需求 (Core Business Requirements)**
-
-### **5.1 原始需求收集需求**
-
-**[ID: PRD-REQ-001]**
-
-**需求描述**：
-系统必须支持产品经理收集和记录人类提供的原始需求输入（口语化、零散）。
-
-**业务价值**：
-- 保留需求的原始上下文和意图
-- 便于后期追溯需求来源和演化
-- 帮助产品经理整理思路
-
-**验收标准**：
-- ✅ 产品经理可以记录口语化的原始需求
-- ✅ 记录包含时间戳、来源、原始输入、初步分析
-- ✅ 支持小项目（单个汇总文档）和大项目（Overview + Module 文档）
-- ✅ 原始需求与正式 PRD 建立追溯关系
-- ✅ 支持统计功能（按优先级、类别、状态）
-
-### **5.2 提示词模板需求**
-
-**[ID: PRD-REQ-002]**
-
-**需求描述**：
-系统必须提供标准化的提示词模板，覆盖 PRD、Design Document、Test Plan、Code 的生成和评审。
-
-**业务价值**：
-- 确保文档质量和一致性
-- 减少人工编写提示词的时间
-- 保证可追溯性标记的正确性
-
-**验收标准**：
-- ✅ 提供 PRD Generator 和 Reviewer 模板
-- ✅ 提供 Design Document Generator 和 Reviewer 模板
-- ✅ 提供 Test Plan Generator 和 Reviewer 模板
-- ✅ 提供 Code Generator 和 Reviewer 模板
-- ✅ 提供一致性检查和影响分析模板
-- ✅ 支持小项目（单层）和大项目（双层）
-
-### **5.3 工作流程文档需求**
-
-**[ID: PRD-REQ-003]**
-
-**需求描述**：
-系统必须提供清晰的工作流程文档，指导超级个体完成 4 阶段 SDLC 流程。
-
-**业务价值**：
-- 标准化开发流程
-- 减少学习成本
-- 确保质量保证步骤不被遗漏
-
-**验收标准**：
-- ✅ 提供工作流程总览文档
-- ✅ 提供每个阶段的详细工作流程（PRD、Design、Test、Code）
-- ✅ 提供任务管理工作流程（Epic 和 Task 两层管理）
-- ✅ 提供影响分析和一致性检查工作流程
-
-### **5.4 辅助脚本需求**
-
-**[ID: PRD-REQ-004]**
-
-**需求描述**：
-系统必须提供 Python 辅助脚本，自动化处理可追溯性标记解析、依赖图构建、影响分析等任务。
-
-**业务价值**：
-- 自动化重复性工作
-- 提高准确性
-- 快速定位问题
-
-**验收标准**：
-- ✅ 提供标记解析脚本（`parse_tags.py`）
-- ✅ 提供依赖图构建脚本（`build_graph.py`）
-- ✅ 提供影响分析脚本（`impact_analysis.py`）
-- ✅ 提供一致性检查脚本（`check_consistency.py`）
-- ✅ 提供项目初始化脚本（`init_project.py`）
-- ✅ 脚本支持 Python 3.8+，跨平台（Windows/Linux/Mac）
-
-### **5.5 任务管理需求**
-
-**[ID: PRD-REQ-005]**
-
-**需求描述**：
-系统必须支持两层任务管理：Epic（项目经理）和 Task（具体角色），便于超级个体在不同视角间切换。
-
-**业务价值**：
-- 明确任务分解和进度跟踪
-- 支持角色切换
-- 保持项目整体可见性
-
-**验收标准**：
-- ✅ 提供 6 个角色的任务文件（project-manager, product-manager, architect, test-manager, developer）
-- ✅ 项目经理文件管理 Epic 和整体进度
-- ✅ 具体角色文件管理 Task 和具体实现
-- ✅ 提供任务管理工作流程文档
-
-### **5.6 可追溯性需求**
-
-**[ID: PRD-REQ-006]**
-
-**需求描述**：
-系统必须通过嵌入式标记实现 100% 可追溯性，建立 PRD → Design → Test → Code 的完整追踪链。
-
-**业务价值**：
-- 需求变更时快速定位影响范围
-- 确保所有需求都有对应的实现和测试
-- 支持合规性审计
-
-**验收标准**：
-- ✅ 所有业务需求都有 `[ID: PRD-REQ-XXX]` 标记
-- ✅ 所有产品功能都有 `[ID: PRD-FEAT-XXX]` 标记和 `[Implements: PRD-REQ-XXX]` 关系
-- ✅ 所有设计都有 `[ID: DESIGN-XXX]` 标记和 `[Designs-for: PRD-FEAT-XXX]` 关系
-- ✅ 所有测试都有 `[ID: TEST-XXX]` 标记和 `[Tests-for: DESIGN-XXX]` 关系
-- ✅ 所有代码都有 `[ID: CODE-XXX]` 注释和 `[Implements: DESIGN-XXX]` 关系
-
-### **5.7 Claude Code 集成需求**
-
-**[ID: PRD-REQ-007]**
-
-**需求描述**：
-系统必须与 Claude Code 深度集成，提供斜杠命令快速加载提示词模板。
-
-**业务价值**：
-- 提高使用效率
-- 减少手动文件查找
-- 统一用户体验
-
-**验收标准**：
-- ✅ 为小项目提供 12 个斜杠命令
-- ✅ 为大项目提供 20 个斜杠命令（包括 Overview 和 Module）
-- ✅ 命令自动加载对应的提示词模板
-- ✅ 命令提供项目上下文和文档路径
-
----
-
-## **六、非功能需求 (Non-Functional Requirements)**
-
-### **6.1 易用性需求**
-
-**[ID: PRD-NFR-001]**
-
-- **NFR-1.1**: 安装时间 < 5 分钟
-- **NFR-1.2**: 学习曲线 < 1 小时（通过快速开始指南）
-- **NFR-1.3**: 文档清晰，使用示例完整
-
-### **6.2 性能需求**
-
-**[ID: PRD-NFR-002]**
-
-- **NFR-2.1**: 标记解析脚本处理 100K LOC 项目 < 1 分钟
-- **NFR-2.2**: 依赖图构建 < 1 分钟
-- **NFR-2.3**: 影响分析 < 10 秒
-
-### **6.3 兼容性需求**
-
-**[ID: PRD-NFR-003]**
-
-- **NFR-3.1**: 支持 Python 3.8+
-- **NFR-3.2**: 支持 Windows, Linux, macOS
-- **NFR-3.3**: 支持 Git 2.0+
-
-### **6.4 可扩展性需求**
-
-**[ID: PRD-NFR-004]**
-
-- **NFR-4.1**: 支持小项目（< 10 万行代码）
-- **NFR-4.2**: 支持大项目（≥ 10 万行代码）
-- **NFR-4.3**: 支持自定义提示词模板
-
----
-
-# **Part 2: Product Features（产品功能）**
-
-> 本部分定义具体的产品功能和用户体验。
+> 本部分基于原始需求，定义具体的产品功能和用户体验。每个功能可选地引用原始需求的 Entry 编号，建立追溯关系。
 
 ---
 
@@ -377,7 +91,7 @@ docs/Test-Plan/
 
 ### **1.1 原始需求记录功能**
 
-**[ID: PRD-FEAT-001] [Implements: PRD-REQ-001]**
+**[ID: PRD-FEAT-001]**
 
 #### **功能描述**
 
@@ -440,7 +154,7 @@ docs/Test-Plan/
 
 ### **1.2 统计分析功能**
 
-**[ID: PRD-FEAT-002] [Implements: PRD-REQ-001]**
+**[ID: PRD-FEAT-002]**
 
 #### **功能描述**
 
@@ -467,7 +181,7 @@ docs/Test-Plan/
 
 ### **1.3 追溯查询功能**
 
-**[ID: PRD-FEAT-003] [Implements: PRD-REQ-001]**
+**[ID: PRD-FEAT-003]**
 
 #### **功能描述**
 
@@ -477,7 +191,7 @@ docs/Test-Plan/
 
 ```markdown
 ### OAuth2 Login Feature
-**[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
+**[ID: PRD-FEAT-012]**
 **[Raw-Req: Entry-003, Entry-007]**
 
 基于用户的原始需求（见 docs/raw-requirements/inputs.md Entry-003）...
@@ -489,7 +203,7 @@ docs/Test-Plan/
 
 ### **2.1 PRD Generator 模板**
 
-**[ID: PRD-FEAT-004] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-004]**
 
 #### **功能描述**
 
@@ -513,7 +227,7 @@ docs/Test-Plan/
 
 ### **2.2 PRD Reviewer 模板**
 
-**[ID: PRD-FEAT-005] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-005]**
 
 #### **功能描述**
 
@@ -529,7 +243,7 @@ docs/Test-Plan/
 
 ### **2.3 Design Document Generator 模板**
 
-**[ID: PRD-FEAT-006] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-006]**
 
 #### **功能描述**
 
@@ -552,7 +266,7 @@ docs/Test-Plan/
 
 ### **2.4 Design Document Reviewer 模板**
 
-**[ID: PRD-FEAT-007] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-007]**
 
 #### **功能描述**
 
@@ -560,7 +274,7 @@ docs/Test-Plan/
 
 ### **2.5 Test Plan Generator 模板**
 
-**[ID: PRD-FEAT-008] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-008]**
 
 #### **功能描述**
 
@@ -583,7 +297,7 @@ docs/Test-Plan/
 
 ### **2.6 Test Plan Reviewer 模板**
 
-**[ID: PRD-FEAT-009] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-009]**
 
 #### **功能描述**
 
@@ -591,7 +305,7 @@ docs/Test-Plan/
 
 ### **2.7 Code Generator 模板**
 
-**[ID: PRD-FEAT-010] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-010]**
 
 #### **功能描述**
 
@@ -606,7 +320,7 @@ docs/Test-Plan/
 
 ### **2.8 Code Reviewer 模板**
 
-**[ID: PRD-FEAT-011] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-011]**
 
 #### **功能描述**
 
@@ -621,7 +335,7 @@ docs/Test-Plan/
 
 ### **2.9 一致性检查模板**
 
-**[ID: PRD-FEAT-012] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-012]**
 
 #### **功能描述**
 
@@ -629,7 +343,7 @@ docs/Test-Plan/
 
 ### **2.10 影响分析模板**
 
-**[ID: PRD-FEAT-013] [Implements: PRD-REQ-002]**
+**[ID: PRD-FEAT-013]**
 
 #### **功能描述**
 
@@ -641,7 +355,7 @@ docs/Test-Plan/
 
 ### **3.1 工作流程总览**
 
-**[ID: PRD-FEAT-014] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-014]**
 
 #### **功能描述**
 
@@ -656,7 +370,7 @@ docs/Test-Plan/
 
 ### **3.2 PRD 工作流程**
 
-**[ID: PRD-FEAT-015] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-015]**
 
 #### **功能描述**
 
@@ -672,7 +386,7 @@ docs/Test-Plan/
 
 ### **3.3 Design Document 工作流程**
 
-**[ID: PRD-FEAT-016] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-016]**
 
 #### **功能描述**
 
@@ -680,7 +394,7 @@ docs/Test-Plan/
 
 ### **3.4 Test Plan 工作流程**
 
-**[ID: PRD-FEAT-017] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-017]**
 
 #### **功能描述**
 
@@ -688,7 +402,7 @@ docs/Test-Plan/
 
 ### **3.5 Code 工作流程**
 
-**[ID: PRD-FEAT-018] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-018]**
 
 #### **功能描述**
 
@@ -696,7 +410,7 @@ docs/Test-Plan/
 
 ### **3.6 任务管理工作流程**
 
-**[ID: PRD-FEAT-019] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-019]**
 
 #### **功能描述**
 
@@ -709,7 +423,7 @@ docs/Test-Plan/
 
 ### **3.7 大项目工作流程**
 
-**[ID: PRD-FEAT-020] [Implements: PRD-REQ-003]**
+**[ID: PRD-FEAT-020]**
 
 #### **功能描述**
 
@@ -721,7 +435,7 @@ docs/Test-Plan/
 
 ### **4.1 项目初始化脚本**
 
-**[ID: PRD-FEAT-021] [Implements: PRD-REQ-004]**
+**[ID: PRD-FEAT-021]**
 
 #### **功能描述**
 
@@ -739,7 +453,7 @@ docs/Test-Plan/
 
 ### **4.2 标记解析脚本**
 
-**[ID: PRD-FEAT-022] [Implements: PRD-REQ-004]**
+**[ID: PRD-FEAT-022]**
 
 #### **功能描述**
 
@@ -755,7 +469,7 @@ docs/Test-Plan/
 
 ### **4.3 依赖图构建脚本**
 
-**[ID: PRD-FEAT-023] [Implements: PRD-REQ-004]**
+**[ID: PRD-FEAT-023]**
 
 #### **功能描述**
 
@@ -771,7 +485,7 @@ docs/Test-Plan/
 
 ### **4.4 影响分析脚本**
 
-**[ID: PRD-FEAT-024] [Implements: PRD-REQ-004]**
+**[ID: PRD-FEAT-024]**
 
 #### **功能描述**
 
@@ -786,7 +500,7 @@ docs/Test-Plan/
 
 ### **4.5 一致性检查脚本**
 
-**[ID: PRD-FEAT-025] [Implements: PRD-REQ-004]**
+**[ID: PRD-FEAT-025]**
 
 #### **功能描述**
 
@@ -805,7 +519,7 @@ docs/Test-Plan/
 
 ### **5.1 任务文件**
 
-**[ID: PRD-FEAT-026] [Implements: PRD-REQ-005]**
+**[ID: PRD-FEAT-026]**
 
 #### **功能描述**
 
@@ -823,7 +537,7 @@ docs/Test-Plan/
 
 ### **5.2 任务模板**
 
-**[ID: PRD-FEAT-027] [Implements: PRD-REQ-005]**
+**[ID: PRD-FEAT-027]**
 
 #### **任务文件结构**
 
@@ -850,7 +564,7 @@ docs/Test-Plan/
 
 ### **6.1 斜杠命令（小项目）**
 
-**[ID: PRD-FEAT-028] [Implements: PRD-REQ-007]**
+**[ID: PRD-FEAT-028]**
 
 #### **命令列表**
 
@@ -869,7 +583,7 @@ docs/Test-Plan/
 
 ### **6.2 斜杠命令（大项目）**
 
-**[ID: PRD-FEAT-029] [Implements: PRD-REQ-007]**
+**[ID: PRD-FEAT-029]**
 
 #### **Overview 命令**
 
@@ -891,7 +605,7 @@ docs/Test-Plan/
 
 ## **七、可追溯性标记规范 (Traceability Tag Specification)**
 
-**[ID: PRD-FEAT-030] [Implements: PRD-REQ-006]**
+**[ID: PRD-FEAT-030]**
 
 ### **7.1 标记类型**
 
@@ -931,7 +645,7 @@ docs/Test-Plan/
 ---
 
 ### OAuth2 Social Login Feature
-**[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
+**[ID: PRD-FEAT-012]**
 
 用户可以使用 Google、GitHub 账号登录...
 ```

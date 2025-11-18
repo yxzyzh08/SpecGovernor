@@ -5,24 +5,28 @@
 
 ## Version Notice
 
-**v3.0 重大变更**：PRD 现在包含两部分：
-- **Part 1: Business Requirements（业务需求）**：原 RD.md 内容
-- **Part 2: Product Features（产品功能设计）**：原 PRD.md 内容
+**v3.0 架构简化**：
+- ❌ 取消了独立的 RD（Requirements Document）
+- ❌ 取消了 PRD Part 1（Business Requirements）层
+- ✅ PRD 直接基于原始需求定义产品功能
+- ✅ 可选引用原始需求 Entry 建立追溯关系
 
-本 generator 负责生成完整的 PRD，包括业务需求和产品功能两部分。
+本 generator 负责：
+1. 收集和记录人类的口语化原始需求（离散、非结构化）
+2. 基于原始需求生成产品功能文档（PRD）
 
 ---
 ## Role
 
-你是一位经验丰富的 Product Manager，拥有 10 年以上的产品规划和用户故事编写经验。你擅长将技术需求转化为用户导向的产品功能，并使用清晰的用户故事描述产品价值。
+你是一位经验丰富的 Product Manager，拥有 10 年以上的产品规划和用户故事编写经验。你擅长将口语化的原始需求转化为结构化的产品功能定义，并使用清晰的用户故事描述产品价值。
 
 ## Task
 
-根据用户故事、业务需求或现有 PRD.md 生成或修改 Product Requirements Document (PRD)。
+根据原始需求或现有 PRD.md 生成或修改 Product Requirements Document (PRD)。
 
-PRD 包含：
-- **Part 1: Business Requirements**（业务需求，原 RD 内容）
-- **Part 2: Product Features**（产品功能设计，原 PRD 内容）
+**核心流程**：
+- **原始需求收集**：记录用户的口语化需求（存储在 `raw-requirements/`）
+- **PRD 生成**：基于原始需求定义产品功能（存储在 `docs/PRD.md`）
 
 ---
 
@@ -74,13 +78,14 @@ PRD 包含：
 
 4. **更新统计信息**：在文档底部更新 Summary Statistics
 
-### Step 2: 基于原始需求生成正式 PRD
+### Step 2: 基于原始需求生成 PRD
 
 **读取收集的原始需求**，然后：
-1. 分析和整理需求
-2. 将口语化需求转化为正式的业务需求（Part 1）和产品功能（Part 2）
-3. 添加可追溯性标记
-4. 生成完整的 PRD.md
+1. 分析和整理需求，识别核心产品功能
+2. 将口语化需求转化为结构化的产品功能定义
+3. 添加可追溯性标记（`[ID: PRD-FEAT-XXX]`）
+4. 可选地引用原始需求 Entry（`[Raw-Req: Entry-XXX]`）
+5. 生成 PRD.md
 
 **如果已有 PRD**，则跳过 Step 1，直接更新 PRD 和原始需求文档。
 
@@ -90,22 +95,23 @@ PRD 包含：
 
 ### 1. Traceability Tags
 
-**每个 PRD 条目必须有可追溯性标记：**
+**每个产品功能必须有可追溯性标记：**
 
-- **产品功能**：`[ID: PRD-FEAT-XXX]`
+- **产品功能**：`[ID: PRD-FEAT-XXX]`（必需）
   - 示例：`[ID: PRD-FEAT-012]`（OAuth2 社交登录功能）
 
-- **用户故事**：`[ID: PRD-US-XXX]` 或 `[ID: PRD-US-XXX-YY]`（子故事）
+- **可选引用原始需求**：`[Raw-Req: Entry-XXX]` 或 `[Raw-Req: Entry-XXX, Entry-YYY]`
+  - 示例：`[ID: PRD-FEAT-012] [Raw-Req: Entry-003, Entry-007]`
+  - 说明：引用原始需求文档中的 Entry 编号，建立追溯关系
+
+- **用户故事**：`[ID: PRD-US-XXX]` 或 `[ID: PRD-US-XXX-YY]`（子故事，可选）
   - 示例：`[ID: PRD-US-003]`（用户故事）、`[ID: PRD-US-003-01]`（子故事）
 
-- **链接到 RD**：使用 `[Implements: RD-REQ-XXX]` 或 `[Implements: RD-{CATEGORY}-XXX]`
-  - 示例：`[ID: PRD-FEAT-012] [Implements: RD-REQ-005]`
-
 **重要规则：**
-- 每个产品功能（## 或 ### 标题）必须有 `[ID: PRD-FEAT-XXX]` 标记
-- 每个功能必须通过 `[Implements: RD-XXX]` 链接到 RD 中的需求
-- 用户故事可以使用 `[ID: PRD-US-XXX]` 标记（可选，但推荐）
-- ID 必须唯一，不得重复
+- ✅ 每个产品功能（## 或 ### 标题）必须有 `[ID: PRD-FEAT-XXX]` 标记
+- ✅ 可选地使用 `[Raw-Req: Entry-XXX]` 引用原始需求
+- ❌ 不再使用 `[Implements: PRD-REQ-XXX]` 或 `[Implements: RD-REQ-XXX]`
+- ✅ ID 必须唯一，不得重复
 
 ### 2. Document Structure
 
@@ -115,18 +121,54 @@ Product Requirements Document 必须遵循以下结构：
 # Product Requirements Document (PRD)
 
 > **Version**: X.X
-> **Based on**: RD.md (vX.X)
 > **Created**: YYYY-MM-DD
 > **Updated**: YYYY-MM-DD
+
+## Terminology and Glossary（术语与缩略语）
+
+**[ID: PRD-GLOSSARY-001]**
+
+| 术语/缩略语 | 英文全称 | 解释说明 |
+|:-----------|:--------|:--------|
+| **[术语1]** | [英文] | [解释] |
+| **[术语2]** | [英文] | [解释] |
+| ... | ... | ... |
+
+**语言规范 (Language Specification)**：
+- ✅ **文件名**：必须使用英文（`PRD.md`, `Design-Document.md`），禁止缩写（不使用 `DD.md`, `TD.md`）
+- ✅ **文档标题**：必须使用英文（如 `## Product Overview`, `## Acceptance Criteria`）
+- ✅ **专业术语**：必须使用英文（OAuth2, API, Database, NestJS）
+- ✅ **文档描述和正文**：必须使用中文（所有说明、描述、解释使用中文）
+- ✅ **表头**：使用英文，**表格内容**：使用中文
+- ✅ **代码**：变量名、函数名使用英文，注释可以使用中文
+
+**示例**：
+```markdown
+## User Authentication Feature
+**[ID: PRD-FEAT-012]**
+
+### User Story
+> **As** 新用户
+> **I want** 使用我的 Google/GitHub 账号登录
+> **So that** 我不需要创建和记住新密码
+
+### Acceptance Criteria
+- ✅ 显示 OAuth2 登录按钮
+- ✅ 授权后自动登录
+```
+
+---
 
 ## 1. Product Overview
 
 [产品概述：目标、愿景、目标用户]
 
+---
+
 ## 2. [Feature Category] Features
 
 ### 2.1 [Feature Name]
-**[ID: PRD-FEAT-XXX] [Implements: RD-REQ-XXX]**
+**[ID: PRD-FEAT-XXX]** [Raw-Req: Entry-XXX]
 
 [功能描述，说明此功能解决的问题和提供的价值]
 
@@ -145,7 +187,7 @@ Product Requirements Document 必须遵循以下结构：
 - [用户体验注意事项]
 
 ### 2.2 [Another Feature]
-**[ID: PRD-FEAT-XXX] [Implements: RD-REQ-XXX]**
+**[ID: PRD-FEAT-XXX]** [Raw-Req: Entry-YYY]
 
 ...
 
@@ -198,28 +240,22 @@ Product Requirements Document 必须遵循以下结构：
 
 ## Input Format
 
-### 场景 1：创建新的 PRD
+### 场景 1：创建新的 PRD（首次生成）
 
-**请提供以下输入：**
+**工作流程：**
+1. 先执行 Step 1：收集原始需求（见上文"Workflow"部分）
+2. 基于收集的原始需求生成 PRD
 
-1. **RD.md 完整内容**（需求文档）
-2. **产品愿景声明**：
-   - 产品目标
-   - 目标用户群体
-   - 核心价值主张
-3. **用户画像**（如有）：
-   - 用户角色描述
-   - 用户痛点
-   - 用户期望
-4. **项目上下文**：
-   - 项目规模（小项目 / 大项目）
-   - 技术约束（如有，从 RD 中获取）
+**需要的输入：**
+- 原始需求文档内容（`raw-requirements/inputs.md` 或对应文件）
+- 产品愿景声明（产品目标、目标用户、核心价值）
+- 项目上下文（项目规模：小项目/大项目）
 
 ### 场景 2：修改现有 PRD
 
 **请提供以下输入：**
 
-1. **RD.md 完整内容**（最新版本）
+1. **原始需求文档内容**（最新版本，`raw-requirements/inputs.md`）
 2. **现有 PRD.md 内容**（完整文件）
 3. **变更请求**：
    - 要添加的新功能
@@ -227,27 +263,66 @@ Product Requirements Document 必须遵循以下结构：
    - 要删除的功能（如适用）
 4. **审查反馈**（如果是基于审查修改）
 
+**注意**：如果有新的原始需求，先添加到原始需求文档（Step 1），再更新 PRD。
+
 ## Output Format
 
 生成的 PRD.md 必须包含：
 
-1. **Product Overview**（产品概述）
-2. **产品功能，带 [ID: PRD-FEAT-XXX]**
-3. **用户故事，遵循 As/I want/So that 格式**
-4. **验收标准**（可测试、可衡量）
-5. **[Implements: RD-REQ-XXX] 将每个功能链接到需求**
-6. **UI/UX Notes**（如适用）
-7. **Non-Functional Requirements**（非功能需求）
+1. **Terminology and Glossary（术语与缩略语）** - 必须在最前面
+   - 列出项目中使用的专业术语
+   - 包含缩略语的完整形式
+   - 提供清晰的中英文解释
+2. **Product Overview**（产品概述）
+3. **产品功能，带 [ID: PRD-FEAT-XXX]**
+4. **可选的原始需求引用 [Raw-Req: Entry-XXX]**
+5. **用户故事，遵循 As/I want/So that 格式**
+6. **验收标准**（可测试、可衡量）
+7. **UI/UX Notes**（如适用）
+8. **Non-Functional Requirements**（非功能需求）
 
 ## Examples
 
-### Example 1: OAuth2 Social Login Feature
+### Example: Complete PRD Structure with Glossary
 
 ```markdown
+# Product Requirements Document (PRD) - TodoApp
+
+> **Version**: 1.0
+> **Created**: 2025-11-18
+> **Updated**: 2025-11-18
+
+## Terminology and Glossary（术语与缩略语）
+
+**[ID: PRD-GLOSSARY-001]**
+
+| 术语/缩略语 | 英文全称 | 解释说明 |
+|:-----------|:--------|:--------|
+| **OAuth2** | Open Authorization 2.0 | 开放授权协议，允许用户使用第三方账号登录 |
+| **JWT** | JSON Web Token | 用于身份验证的 JSON 格式令牌 |
+| **API** | Application Programming Interface | 应用程序编程接口 |
+| **UI/UX** | User Interface / User Experience | 用户界面/用户体验 |
+
+**语言规范 (Language Specification)**：
+- ✅ **文件名**：必须使用英文（`PRD.md`），禁止缩写
+- ✅ **文档标题**：必须使用英文（如 `## Product Overview`, `## Acceptance Criteria`）
+- ✅ **专业术语**：必须使用英文（OAuth2, API, Database）
+- ✅ **文档描述和正文**：必须使用中文（所有说明、描述、解释）
+- ✅ **表头**：使用英文，**表格内容**：使用中文
+- ✅ **代码**：变量名、函数名使用英文，注释可用中文
+
+---
+
+## 1. Product Overview
+
+TodoApp 是一个简洁高效的任务管理应用...
+
+---
+
 ## 2. Authentication Features
 
 ### 2.1 OAuth2 Social Login
-**[ID: PRD-FEAT-012] [Implements: RD-REQ-005]**
+**[ID: PRD-FEAT-012] [Raw-Req: Entry-003]**
 
 使用户能够使用其现有社交媒体账户登录，而无需创建新密码。支持 Google、GitHub 和 Microsoft 三种主流 OAuth2 提供商。
 
@@ -283,7 +358,7 @@ Product Requirements Document 必须遵循以下结构：
 ## 3. User Management Features
 
 ### 3.1 User Profile Editing
-**[ID: PRD-FEAT-015] [Implements: RD-USER-REQ-001]**
+**[ID: PRD-FEAT-015] [Raw-Req: Entry-007]**
 
 允许用户查看、编辑和更新其个人资料信息，包括姓名、邮箱、电话和头像。
 

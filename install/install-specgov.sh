@@ -95,7 +95,7 @@ scripts=(
 )
 
 for script in "${scripts[@]}"; do
-    url="$RAW_URL/.specgov/scripts/$script"
+    url="$RAW_URL/scripts/$script"
     output=".specgov/scripts/$script"
 
     echo "  Downloading $script..."
@@ -132,7 +132,7 @@ prompts=(
 prompt_count=0
 prompt_total=${#prompts[@]}
 for prompt in "${prompts[@]}"; do
-    url="$RAW_URL/.specgov/prompts/$prompt"
+    url="$RAW_URL/templates/prompts/$prompt"
     output=".specgov/prompts/$prompt"
 
     echo -n "  [$((prompt_count+1))/$prompt_total] Downloading $prompt... "
@@ -161,7 +161,7 @@ workflows=(
 workflow_count=0
 workflow_total=${#workflows[@]}
 for workflow in "${workflows[@]}"; do
-    url="$RAW_URL/.specgov/workflows/$workflow"
+    url="$RAW_URL/templates/workflows/$workflow"
     output=".specgov/workflows/$workflow"
 
     echo -n "  [$((workflow_count+1))/$workflow_total] Downloading $workflow... "

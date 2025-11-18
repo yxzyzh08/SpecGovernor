@@ -85,7 +85,7 @@
 #### Overview Tags
 ```markdown
 **[ID: PRD-PROJECT-001]**                      # 产品整体愿景
-**[ID: PRD-MODULE-USER]** [Implements: PPRD-REQ-MODULE-USER]]**  # 模块产品目标
+**[ID: PRD-MODULE-USER]**]**  # 模块产品目标
 **[ID: PRD-CROSS-UX-001]**                     # 跨模块用户体验
 ```
 
@@ -103,18 +103,52 @@
 > **Version**: X.X
 > **Project**: [项目名称]
 > **Scope**: Overview（整体产品概览）
-> **Based on**: PRD.md (v1.0)
 > **Created**: YYYY-MM-DD
 
+## Terminology and Glossary（术语与缩略语）
+
+**[ID: PRD-GLOSSARY-001]**
+
+| 术语/缩略语 | 英文全称 | 解释说明 |
+|:-----------|:--------|:--------|
+| **[术语1]** | [英文] | [解释] |
+| **[术语2]** | [英文] | [解释] |
+| ... | ... | ... |
+
+**语言规范 (Language Specification)**：
+- ✅ **文件名**：必须使用英文（如 `PRD.md`, `Design-Document.md`），禁止缩写（不使用 `DD.md`, `TD.md`）
+- ✅ **文档标题**：必须使用英文（如 `## Product Overview`, `## Acceptance Criteria`, `## API Design`）
+- ✅ **专业术语**：必须使用英文（OAuth2, API, Database, NestJS, PostgreSQL）
+- ✅ **文档描述和正文**：必须使用中文（所有说明、描述、解释使用中文）
+- ✅ **表头**：使用英文，**表格内容**：使用中文
+- ✅ **代码**：变量名、函数名使用英文，注释可以使用中文
+
+**示例**：
+```markdown
+## User Authentication Feature
+**[ID: PRD-FEAT-012]**
+
+### User Story
+> **As** 新用户
+> **I want** 使用我的 Google/GitHub 账号登录
+> **So that** 我不需要创建和记住新密码
+
+### Acceptance Criteria
+- ✅ 显示 OAuth2 登录按钮
+- ✅ 授权后自动登录
+```
+
+---
+
 ## 1. Product Overview
-**[ID: PRD-PROJECT-001] [Implements: PPRD-REQ-PROJECT-001]**
+**[ID: PRD-PROJECT-001]**
 
 [产品整体愿景、目标用户、核心价值]
 
 ## 2. Module Product Goals
 
 ### 2.1 [Module Name 1]
-**[ID: PRD-MODULE-XXX] [Implements: PPRD-REQ-MODULE-XXX]**
+**[ID: PRD-MODULE-XXX]**
 
 [模块产品目标和核心用户价值]
 
@@ -125,14 +159,14 @@
 **详细功能见：** `PRD-[Module].md`
 
 ### 2.2 [Module Name 2]
-**[ID: PRD-MODULE-YYY] [Implements: PPRD-REQ-MODULE-YYY]**
+**[ID: PRD-MODULE-YYY]**
 
 ...
 
 ## 3. Cross-Module User Experience
 
 ### 3.1 [Cross-Module UX 1]
-**[ID: PRD-CROSS-UX-001] [Implements: PPRD-REQ-CROSS-XXX-001]**
+**[ID: PRD-CROSS-UX-001]**
 
 [跨所有模块的用户体验要求，如统一导航、一致性设计等]
 
@@ -209,7 +243,7 @@ PRD.md（Overview）内容（用于验证一致性）：
 2. **Module Product Goals** - 模块产品目标和核心用户价值
 3. **Cross-Module User Experience** - 跨模块用户体验
 4. **Traceability Tags** - 所有模块和跨模块UX都有 ID
-5. **Links to RD** - 所有内容都链接到 RD（[Implements: PPRD-REQ-XXX]）
+5. **Links to RD** - 所有内容都可选引用原始需求 Entry
 
 **重要**：Overview 只定义"模块产品目标"和"核心价值"，不包含详细功能实现。详细功能由 `PRD-[Module].md` 定义。
 
@@ -244,7 +278,7 @@ PRD.md（Overview）内容：
 > **Created**: 2025-11-16
 
 ## 1. Product Overview
-**[ID: PRD-PROJECT-001] [Implements: PPRD-REQ-PROJECT-001]**
+**[ID: PRD-PROJECT-001]**
 
 电商平台是一个现代化、用户友好的在线购物平台，为用户、商家和管理员提供安全、便捷、高效的服务。
 
@@ -266,7 +300,7 @@ PRD.md（Overview）内容：
 ## 2. Module Product Goals
 
 ### 2.1 User Module
-**[ID: PRD-MODULE-USER] [Implements: PPRD-REQ-MODULE-USER]**
+**[ID: PRD-MODULE-USER]**
 
 User 模块旨在提供便捷的用户注册和登录体验，降低用户进入门槛。
 
@@ -287,7 +321,7 @@ User 模块旨在提供便捷的用户注册和登录体验，降低用户进入
 **详细功能见：** `PRD-User.md`
 
 ### 2.2 Order Module
-**[ID: PRD-MODULE-ORDER] [Implements: PPRD-REQ-MODULE-ORDER]**
+**[ID: PRD-MODULE-ORDER]**
 
 Order 模块旨在提供简单、透明的订单管理体验，让用户轻松创建和跟踪订单。
 
@@ -308,7 +342,7 @@ Order 模块旨在提供简单、透明的订单管理体验，让用户轻松�
 **详细功能见：** `PRD-Order.md`
 
 ### 2.3 Payment Module
-**[ID: PRD-MODULE-PAYMENT] [Implements: PPRD-REQ-MODULE-PAYMENT]**
+**[ID: PRD-MODULE-PAYMENT]**
 
 Payment 模块旨在提供安全、多样的支付体验，支持主流支付方式。
 
@@ -329,7 +363,7 @@ Payment 模块旨在提供安全、多样的支付体验，支持主流支付方
 **详细功能见：** `PRD-Payment.md`
 
 ### 2.4 Product Module
-**[ID: PRD-MODULE-PRODUCT] [Implements: PPRD-REQ-MODULE-PRODUCT]**
+**[ID: PRD-MODULE-PRODUCT]**
 
 Product 模块旨在提供丰富的商品浏览和搜索体验，帮助用户快速找到目标商品。
 
@@ -350,7 +384,7 @@ Product 模块旨在提供丰富的商品浏览和搜索体验，帮助用户快
 **详细功能见：** `PRD-Product.md`
 
 ### 2.5 Notification Module
-**[ID: PRD-MODULE-NOTIFICATION] [Implements: PPRD-REQ-MODULE-NOTIFICATION]**
+**[ID: PRD-MODULE-NOTIFICATION]**
 
 Notification 模块旨在提供及时、相关的通知服务，增强用户参与度。
 
@@ -373,7 +407,7 @@ Notification 模块旨在提供及时、相关的通知服务，增强用户参�
 ## 3. Cross-Module User Experience
 
 ### 3.1 Unified Navigation and Layout
-**[ID: PRD-CROSS-UX-NAV-001] [Implements: PPRD-REQ-CROSS-I18N-001]**
+**[ID: PRD-CROSS-UX-NAV-001]**
 
 所有模块必须提供统一的导航和布局，确保用户体验一致性。
 

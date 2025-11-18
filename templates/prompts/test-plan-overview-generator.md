@@ -109,6 +109,31 @@
 - 性能测试（多模块压力测试）
 - 安全测试（跨模块漏洞测试）
 
+### 7. Language Specification
+
+**语言规范 (Language Specification)**：
+- ✅ **文件名**：必须使用英文（如 `PRD.md`, `Design-Document.md`），禁止缩写（不使用 `DD.md`, `TD.md`）
+- ✅ **文档标题**：必须使用英文（如 `## Product Overview`, `## Acceptance Criteria`, `## API Design`）
+- ✅ **专业术语**：必须使用英文（OAuth2, API, Database, NestJS, PostgreSQL）
+- ✅ **文档描述和正文**：必须使用中文（所有说明、描述、解释使用中文）
+- ✅ **表头**：使用英文，**表格内容**：使用中文
+- ✅ **代码**：变量名、函数名使用英文，注释可以使用中文
+
+**示例**：
+```markdown
+## User Authentication Feature
+**[ID: PRD-FEAT-012]**
+
+### User Story
+> **As** 新用户
+> **I want** 使用我的 Google/GitHub 账号登录
+> **So that** 我不需要创建和记住新密码
+
+### Acceptance Criteria
+- ✅ 显示 OAuth2 登录按钮
+- ✅ 授权后自动登录
+```
+
 ## Input Format
 
 ### 1. Creating New docs/Test-Plan/Test-Overview.md (Overview)

@@ -2,7 +2,7 @@
 
 **Type**: Toolkit (Prompt Templates + Workflow Documentation + Helper Scripts)
 
-SpecGovernor 是一个专为**超级个体** (Super Individuals) 设计的综合工具包，提供标准化的软件开发流程支持。
+SpecGovernor 4.0 是一个专为**超级个体** (Super Individuals) 设计的综合工具包，提供标准化的软件开发流程支持 ，它是基于SpecGovernor 3.0 自我迭代的新版本
 
 > **v3.0 重大更新**：RD 和 PRD 已合并为单一 PRD 文档，简化流程，提高效率！
 
@@ -50,17 +50,18 @@ bash --version
 
 ### 1. 下载安装脚本
 
-Windows (PowerShell): 
-```powershell
-
-#在您的项目根目录
-cd your-project
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install-specgov.ps1" -OutFile "install-specgov.ps1" 
-```
-
+**Windows (PowerShell)**:
+\`\`\`powershell
 # 在您的项目根目录
 cd your-project
-curl -O https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install-specgov.sh
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install/install-specgov.ps1" -OutFile "install-specgov.ps1"
+\`\`\`
+
+**Linux/Mac (Bash)**:
+\`\`\`bash
+# 在您的项目根目录
+cd your-project
+curl -O https://raw.githubusercontent.com/yxzyzh08/SpecGovernor/main/install/install-specgov.sh
 chmod +x install-specgov.sh
 \`\`\`
 
@@ -108,15 +109,15 @@ cat .specgov/workflows/workflow-overview.md
 
 SpecGovernor 提供 5 个 Python helper scripts：
 
-| Script | 功能 | 用法 |
+| Script | 功能 | 用法（在用户项目中） |
 |--------|------|------|
-| **init_project.py** | 初始化项目结构 | \`python scripts/init_project.py\` |
-| **parse_tags.py** | 解析可追溯性标记 | \`python scripts/parse_tags.py\` |
-| **build_graph.py** | 构建依赖图谱 | \`python scripts/build_graph.py\` |
-| **impact_analysis.py** | 分析变更影响 | \`python scripts/impact_analysis.py --changed=docs/PRD.md\` |
-| **check_consistency.py** | 收集一致性检查上下文 | \`python scripts/check_consistency.py --scope=PRD-REQ-001\` |
+| **init_project.py** | 初始化项目结构 | \`python .specgov/scripts/init_project.py\` |
+| **parse_tags.py** | 解析可追溯性标记 | \`python .specgov/scripts/parse_tags.py\` |
+| **build_graph.py** | 构建依赖图谱 | \`python .specgov/scripts/build_graph.py\` |
+| **impact_analysis.py** | 分析变更影响 | \`python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md\` |
+| **check_consistency.py** | 收集一致性检查上下文 | \`python .specgov/scripts/check_consistency.py --scope=PRD-REQ-001\` |
 
-### 典型工作流
+### 典型工作流（在用户项目中）
 
 \`\`\`powershell
 # 0. 项目规划（Project Manager 角色）
@@ -126,49 +127,83 @@ SpecGovernor 提供 5 个 Python helper scripts：
 # 在 Claude Code 中使用 /specgov-prd-gen 命令
 
 # 2. 生成文档后，解析标记
-python scripts/parse_tags.py
+python .specgov/scripts/parse_tags.py
 
 # 3. 构建依赖图谱
-python scripts/build_graph.py
+python .specgov/scripts/build_graph.py
 
 # 4. 更新任务进度
 # 编辑 .specgov/tasks/product-manager.md 和 project-manager.md
 
 # 5. 修改文档后，分析影响
-python scripts/impact_analysis.py --changed=docs/PRD.md
+python .specgov/scripts/impact_analysis.py --changed=docs/PRD.md
 
 # 6. 检查特定需求的一致性
-python scripts/check_consistency.py --scope=PRD-REQ-005 --output=context.md
+python .specgov/scripts/check_consistency.py --scope=PRD-REQ-005 --output=context.md
 \`\`\`
 
 ---
 
 ## 🏗️ 项目结构
 
+### SpecGovernor 工具包仓库结构
+
+\`\`\`
+SpecGovernor/                    # 工具包仓库
+├── templates/                   # 📦 模板资源（分发到用户项目）
+│   ├── prompts/                # Prompt 模板（16 个）
+│   ├── workflows/              # 工作流文档（6 个）
+│   ├── tasks/                  # 任务文件模板（5 个）
+│   ├── claude-commands/        # Claude Code 命令模板（预留）
+│   └── raw-requirements/       # 原始需求模板
+│
+├── scripts/                    # 🛠️ Helper Scripts（分发到用户项目）
+│   ├── init_project.py        # 项目初始化脚本
+│   ├── parse_tags.py          # 标记解析脚本
+│   ├── build_graph.py         # 依赖图构建脚本
+│   ├── impact_analysis.py     # 影响分析脚本
+│   └── check_consistency.py   # 一致性检查脚本
+│
+├── install/                    # 📥 安装脚本
+│   ├── install-specgov.ps1   # Windows 安装脚本
+│   └── install-specgov.sh    # Linux/Mac 安装脚本
+│
+├── docs/                       # 📚 SpecGovernor 自身文档
+│   ├── PRD.md                 # SpecGovernor 产品需求
+│   ├── Design-Document.md     # SpecGovernor 设计文档
+│   └── Test-Plan.md          # SpecGovernor 测试计划
+│
+├── README.md                   # 主说明文档
+├── CLAUDE.md                   # Claude Code 项目指南
+├── INSTALLATION.md             # 安装指南
+└── QUICK-START.md              # 快速开始指南
+\`\`\`
+
+### 用户项目结构（使用 SpecGovernor 后）
+
 成功初始化后，您的项目将包含：
 
 \`\`\`
 your-project/
-├── .specgov/
-│   ├── prompts/              # Prompt templates（从 SpecGovernor 复制）
-│   ├── workflows/            # Workflow 文档（从 SpecGovernor 复制）
-│   ├── tasks/                # 任务跟踪文件
-│   ├── index/                # 脚本生成的索引
+├── .specgov/                   # SpecGovernor 资源（从工具包复制）
+│   ├── prompts/               # Prompt templates
+│   ├── workflows/             # Workflow 文档
+│   ├── scripts/               # Helper scripts
+│   ├── tasks/                 # 任务跟踪文件
+│   ├── index/                 # 脚本生成的索引
 │   │   ├── tags.json
 │   │   └── dependency-graph.json
-│   └── project-config.json   # 项目配置
+│   └── project-config.json    # 项目配置
 │
-├── docs/                     # 您的项目文档
-│   ├── PRD.md                # 产品需求文档（包含业务需求和产品功能）
+├── .claude/commands/           # Claude Code 斜杠命令
+│
+├── docs/                       # 您的项目文档
+│   ├── PRD.md                 # 产品需求文档
 │   ├── Design-Document.md
-│   └── Test-Plan.md
+│   ├── Test-Plan.md
+│   └── raw-requirements/      # 原始需求收集
 │
-├── reviews/                  # 审查报告（质量保证）
-│   ├── PRD-Review-Report-YYYY-MM-DD.md
-│   ├── Design-Review-Report-YYYY-MM-DD.md
-│   └── Test-Review-Report-YYYY-MM-DD.md
-│
-└── src/                      # 您的源代码
+└── src/                        # 您的源代码
 \`\`\`
 
 ---
@@ -204,20 +239,18 @@ SpecGovernor 使用嵌入式标记建立文档间的追溯链：
 ### 标记类型
 
 \`\`\`markdown
-[ID: PRD-REQ-001]                 # 定义业务需求（Part 1）
-[ID: PRD-FEAT-012]                # 定义产品功能（Part 2）
-[Implements: PRD-REQ-001]         # 功能实现需求
+[ID: PRD-FEAT-012]                # 定义产品功能
+[Raw-Req: Entry-003]              # 可选引用原始需求
 [Designs-for: PRD-FEAT-012]       # 设计某功能
 [Tests-for: DESIGN-API-008]       # 测试某设计
-[Decomposes: PRD-REQ-001]         # 分解父级需求
 \`\`\`
 
 ### ID 前缀规范
 
 | 阶段 | 前缀 | 示例 |
 |------|------|------|
-| PRD (Part 1: 业务需求) | PRD-REQ-, PRD-GOAL-, PRD-USER- | PRD-REQ-001 |
-| PRD (Part 2: 产品功能) | PRD-FEAT-, PRD-US- | PRD-FEAT-012 |
+| 原始需求 | Entry-XXX | Entry-003（离散、非结构化） |
+| PRD (产品功能) | PRD-FEAT-, PRD-US- | PRD-FEAT-012 |
 | Design | DESIGN-API-, DESIGN-DB- | DESIGN-API-008 |
 | Test | TEST-CASE-, TEST-PERF- | TEST-CASE-015 |
 | Code | CODE-API-, CODE-SERVICE- | CODE-API-008 |
@@ -226,37 +259,41 @@ SpecGovernor 使用嵌入式标记建立文档间的追溯链：
 
 ## 💡 示例
 
-### 业务需求 (PRD.md - Part 1)
+### 原始需求 (raw-requirements/inputs.md)
 
 \`\`\`markdown
-## Part 1: Business Requirements
+### Entry 003 - 2025-11-18 14:30
 
-### OAuth2 Authentication Requirement
-**[ID: PRD-REQ-005]**
+**Source**: Chat
+**Topic**: 用户登录
 
-系统需支持通过 OAuth2 协议进行用户登录。
+**Original Input**:
+> 我希望用户可以用 Google、GitHub 或者 Microsoft 账号登录，
+> 这样他们就不用记另一个密码了。
 
-**验收标准：**
-- ✅ 支持 Google/GitHub/Microsoft OAuth2
-- ✅ 安全处理 token
+**PM Analysis**:
+- **Category**: Functional Requirement
+- **Priority**: High
+- **Status**: New
 \`\`\`
 
-### 产品功能 (PRD.md - Part 2)
+### 产品功能 (PRD.md)
 
 \`\`\`markdown
-## Part 2: Product Features
+## 2. Authentication Features
 
-### OAuth2 Social Login Feature
-**[ID: PRD-FEAT-012] [Implements: PRD-REQ-005]**
+### 2.1 OAuth2 Social Login Feature
+**[ID: PRD-FEAT-012]** [Raw-Req: Entry-003]
 
 #### User Story
 > **As** 新用户
-> **I want** 使用我的 Google 账号登录
-> **So that** 我不需要创建新密码
+> **I want** 使用我的 Google/GitHub/Microsoft 账号登录
+> **So that** 我不需要创建和记住新密码
 
 #### Acceptance Criteria
-- ✅ 显示 OAuth2 登录按钮
-- ✅ 授权后自动登录
+- ✅ 显示 OAuth2 登录按钮（Google、GitHub、Microsoft）
+- ✅ 授权后自动登录并获取用户信息
+- ✅ 失败时显示清晰的错误消息
 \`\`\`
 
 ### API 设计 (Design-Document.md)
@@ -288,11 +325,12 @@ export class AuthController {
 运行 \`build_graph.py\` 后，会生成依赖图谱：
 
 \`\`\`
-PRD-REQ-005 (业务需求)
-  └─ PRD-FEAT-012 (implements) (产品功能)
-      └─ DESIGN-API-008 (designs-for) (API 设计)
-          └─ TEST-CASE-015 (tests-for) (测试用例)
-              └─ CODE-API-008 (implements) (代码实现)
+Entry-003 (原始需求 - 离散、非结构化)
+  ↓ [可选引用]
+PRD-FEAT-012 (产品功能)
+  └─ DESIGN-API-008 (designs-for) (API 设计)
+      └─ TEST-CASE-015 (tests-for) (测试用例)
+          └─ CODE-API-008 (implements) (代码实现)
 \`\`\`
 
 ---

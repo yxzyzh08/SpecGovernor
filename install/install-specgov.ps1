@@ -81,7 +81,7 @@ $scripts = @(
 )
 
 foreach ($script in $scripts) {
-    $url = "$RAW_URL/.specgov/scripts/$script"
+    $url = "$RAW_URL/scripts/$script"
     $output = ".specgov/scripts/$script"
 
     try {
@@ -119,7 +119,7 @@ $prompts = @(
 $promptCount = 0
 $promptTotal = $prompts.Count
 foreach ($prompt in $prompts) {
-    $url = "$RAW_URL/.specgov/prompts/$prompt"
+    $url = "$RAW_URL/templates/prompts/$prompt"
     $output = ".specgov/prompts/$prompt"
 
     try {
@@ -149,7 +149,7 @@ $workflows = @(
 $workflowCount = 0
 $workflowTotal = $workflows.Count
 foreach ($workflow in $workflows) {
-    $url = "$RAW_URL/.specgov/workflows/$workflow"
+    $url = "$RAW_URL/templates/workflows/$workflow"
     $output = ".specgov/workflows/$workflow"
 
     try {
