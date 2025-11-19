@@ -284,7 +284,7 @@ code D:\test_workspace\SpecGovernor\SpecGovernor-Testing.code-workspace
 
 ```
 📁 SPECGOVERNOR (DEV)
-  ├── templates/prompts/
+  ├── .specgov/prompts/
   │   ├── rd-generator.md          ← 开发中的模板
   │   └── ...
   ├── scripts/
@@ -314,7 +314,7 @@ code D:\test_workspace\SpecGovernor\SpecGovernor-Testing.code-workspace
 3. 发现生成的 RD.md 有问题 ❌
 4. 在同一个 VS Code 窗口中：
    - 切换到 SpecGovernor (Dev) 项目
-   - 修改 templates/prompts/rd-generator.md
+   - 修改 .specgov/prompts/rd-generator.md
    - 保存
 5. 重新安装工具包到 TestProject：
    cd TestProject

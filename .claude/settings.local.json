@@ -22,7 +22,11 @@
       "Bash(git commit:*)",
       "Bash(git mv:*)",
       "Bash(tree:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(if [ -d .specgov ])",
+      "Bash(then ls -la .specgov/)",
+      "Bash(else echo \"No .specgov directory\")",
+      "Bash(fi)"
     ],
     "deny": [],
     "ask": []

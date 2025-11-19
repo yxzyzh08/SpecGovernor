@@ -23,17 +23,29 @@
 
 ```
 SpecGovernor Repository/
-├── .specgov/                     # 初始化时生成（不在 repo 中）
-│   ├── prompts/                  # 从 templates/ 复制
-│   ├── workflows/                # 从 templates/ 复制
-│   ├── tasks/                    # 生成的任务文件
-│   ├── index/                    # 脚本生成的索引
-│   │   ├── tags.json
-│   │   └── dependency-graph.json
-│   └── project-config.json       # 生成的配置
-│
-├── templates/                    # 源模板（在 repo 中）
+├── .specgov/                     # SpecGovernor 工具包资源（在 repo 中）
 │   ├── prompts/                  # 所有 prompt template .md 文件
+│   ├── workflows/                # 所有 workflow 文档
+│   ├── scripts/                  # Helper Scripts
+│   ├── tasks/                    # 任务文件模板
+│   ├── index/                    # 索引目录（空，用户项目生成）
+│   │   ├── tags.json             # （用户项目生成）
+│   │   └── dependency-graph.json # （用户项目生成）
+│   └── project-config.json       # （用户项目生成）
+│
+├── .claude/commands/             # Claude Code 斜杠命令
+│
+├── docs/                         # SpecGovernor 自己的文档
+│   ├── PRD.md
+│   ├── Design-Document.md
+│   └── Test-Plan.md
+│
+├── install/                      # 安装脚本（分发用）
+│   ├── install-specgov.ps1
+│   └── install-specgov.sh
+│
+├── CLAUDE.md                     # SpecGovernor 项目指南
+└── README.md                     # 主说明文档
 │   │   ├── rd-generator.md
 │   │   ├── rd-reviewer.md
 │   │   ├── prd-generator.md
@@ -75,11 +87,12 @@ SpecGovernor Repository/
 └── README.md                     # SpecGovernor 工具箱文档
 ```
 
-**核心原则：**
-- **Templates 是源头** - 存储在 repo 的 `templates/` 目录中
-- **`.specgov/` 是生成的** - 项目初始化时创建
-- **无需安装软件** - 只需下载 repo 并运行脚本
-- **Git 可追踪** - 所有 templates、workflows、scripts 的变更都有版本控制
+**核心原则（自我迭代 - Dog-fooding）：**
+- **`.specgov/` 是源头** - SpecGovernor 仓库本身使用 `.specgov/` 存储所有工具包资源
+- **SpecGovernor 管理自己** - SpecGovernor 项目本身也是一个标准的 SpecGovernor 用户项目
+- **无需安装软件** - 只需下载 repo 并运行安装脚本
+- **Git 可追踪** - 所有 prompts、workflows、scripts 的变更都有版本控制
+- **一致性结构** - 工具包项目和用户项目使用相同的 `.specgov/` 结构
 
 ---
 
@@ -89,8 +102,8 @@ SpecGovernor Repository/
 
 | 组件类型 | 格式 | 存储位置 | 用途 |
 |---------|------|---------|------|
-| **Prompt Templates** | Markdown (.md) | `templates/prompts/` | 引导 Claude Code 生成/审查文档 |
-| **Workflow Docs** | Markdown (.md) | `templates/workflows/` | 为人类提供分步指南 |
+| **Prompt Templates** | Markdown (.md) | `.specgov/prompts/` | 引导 Claude Code 生成/审查文档 |
+| **Workflow Docs** | Markdown (.md) | `.specgov/workflows/` | 为人类提供分步指南 |
 | **Helper Scripts** | Python (.py) | `scripts/` | 自动化标记解析、图谱构建、影响分析 |
 | **Task Files** | Markdown (.md) | `.specgov/tasks/` | 追踪 Epics 和 Tasks（生成，用户编辑） |
 | **Index Files** | JSON (.json) | `.specgov/index/` | 存储解析的标记和依赖图谱（生成） |
@@ -150,7 +163,7 @@ SpecGovernor Repository/
 
 **[ID: DESIGN-TEMPLATE-RD-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/rd-generator.md`
+**文件**: `.specgov/prompts/rd-generator.md`
 
 **关键章节：**
 
@@ -247,7 +260,7 @@ Markdown 文件，包含：
 
 **[ID: DESIGN-TEMPLATE-PRD-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/prd-generator.md`
+**文件**: `.specgov/prompts/prd-generator.md`
 
 **关键章节：**
 
@@ -335,7 +348,7 @@ Markdown 文件，包含：
 
 **[ID: DESIGN-TEMPLATE-DESIGN-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/design-generator.md`
+**文件**: `.specgov/prompts/design-generator.md`
 
 **关键章节：**
 
@@ -471,7 +484,7 @@ Markdown 文件，包含：
 
 **[ID: DESIGN-TEMPLATE-TEST-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/test-plan-generator.md`
+**文件**: `.specgov/prompts/test-plan-generator.md`
 
 **关键章节：**
 
@@ -610,7 +623,7 @@ Markdown 文件，包含：
 
 **[ID: DESIGN-TEMPLATE-CODE-GEN-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/code-generator.md`
+**文件**: `.specgov/prompts/code-generator.md`
 
 **关键章节：**
 
@@ -992,7 +1005,7 @@ class OAuth2Service:
 
 **[ID: DESIGN-TEMPLATE-CODE-REV-001] [Designs-for: PRD-FEAT-TEMPLATES-001]**
 
-**文件**: `templates/prompts/code-reviewer.md`
+**文件**: `.specgov/prompts/code-reviewer.md`
 
 **关键章节：**
 
@@ -1148,7 +1161,7 @@ class OAuth2Service:
 3. **质量评估**：内容清晰、无歧义、可测试吗？
 4. **一致性检查**：内容与上游文档一致吗？
 
-**示例结构** (`templates/prompts/rd-reviewer.md`)：
+**示例结构** (`.specgov/prompts/rd-reviewer.md`)：
 
 ```markdown
 # Requirements Document (RD) Reviewer
@@ -1207,7 +1220,7 @@ class OAuth2Service:
 
 **[ID: DESIGN-WORKFLOW-OVERVIEW-001] [Designs-for: PRD-FEAT-WORKFLOWS-001]**
 
-**文件**: `templates/workflows/workflow-overview.md`
+**文件**: `.specgov/workflows/workflow-overview.md`
 
 **内容结构：**
 
@@ -1291,7 +1304,7 @@ Claude Code 生成带有嵌入式可追溯性标记的文档。
 5. **常见陷阱**：避免什么
 6. **检查清单**：进入下一阶段前的最终验证
 
-**示例** (`templates/workflows/workflow-design.md`)：
+**示例** (`.specgov/workflows/workflow-design.md`)：
 
 ```markdown
 # Design Document Workflow
@@ -1462,9 +1475,8 @@ def create_directory_structure(project_size):
     os.makedirs('.specgov/tasks', exist_ok=True)
     os.makedirs('.specgov/index', exist_ok=True)
 
-    # 从 templates/ 复制 prompts
-    shutil.copytree('templates/prompts', '.specgov/prompts', dirs_exist_ok=True)
-    shutil.copytree('templates/workflows', '.specgov/workflows', dirs_exist_ok=True)
+    shutil.copytree(.SpecGovernor/.specgov/prompts., '.specgov/prompts', dirs_exist_ok=True)
+    shutil.copytree(.SpecGovernor/.specgov/workflows., '.specgov/workflows', dirs_exist_ok=True)
 
     # 创建任务文件
     task_files = [
@@ -2397,7 +2409,7 @@ claude --version
 
 基于此 Design Document，将实现以下内容：
 
-1. **Prompt Templates**（`templates/prompts/` 中的 12+ markdown 文件）
+1. **Prompt Templates**（`.specgov/prompts/` 中的 12+ markdown 文件）
    - rd-generator.md、rd-reviewer.md
    - prd-generator.md、prd-reviewer.md
    - design-generator.md、design-reviewer.md
@@ -2406,7 +2418,7 @@ claude --version
    - consistency-checker.md、impact-analyzer.md
    - 大项目变体（overview/module generators）
 
-2. **Workflow Documentation**（`templates/workflows/` 中的 7 个 markdown 文件）
+2. **Workflow Documentation**（`.specgov/workflows/` 中的 7 个 markdown 文件）
    - workflow-overview.md
    - workflow-rd.md、workflow-prd.md、workflow-design.md、workflow-test-plan.md
    - workflow-task-mgmt.md
